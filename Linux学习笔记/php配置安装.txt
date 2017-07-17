@@ -1,0 +1,230 @@
+php配置安装
+
+首先确认apache和mysql已经安装好
+然后查看apache和mysql版本号
+[root@test html]# /etc/init.d/httpd restart
+Stopping httpd:                                            [  OK  ]
+Starting httpd:                                            [  OK  ]
+You have mail in /var/spool/mail/root
+[root@test html]# ps -ef|grep mysql
+root     28495     1  0 01:57 pts/3    00:00:00 /bin/sh /usr/local/mysql/bin/mysqld_safe --datadir=/usr/local/mysql/data --pid-file=/usr/local/mysql/data/test.pid
+mysql    28592 28495  0 01:57 pts/3    00:00:00 /usr/local/mysql/libexec/mysqld --basedir=/usr/local/mysql --datadir=/usr/local/mysql/data --user=mysql --log-error=/usr/local/mysql/data/test.err --pid-file=/usr/local/mysql/data/test.pid --socket=/usr/local/mysql/tmp/mysql.sock --port=3306
+root     28764 28624  0 02:22 pts/0    00:00:00 grep mysql
+[root@test html]# ps -ef|grep mysql|http
+-bash: http: command not found
+[root@test html]# ps -ef|grep 'mysql|http'
+root     28769 28624  0 02:22 pts/0    00:00:00 grep mysql|http
+[root@test html]# ps -ef|grep 'mysql\|http'
+root     28495     1  0 01:57 pts/3    00:00:00 /bin/sh /usr/local/mysql/bin/mysqld_safe --datadir=/usr/local/mysql/data --pid-file=/usr/local/mysql/data/test.pid
+mysql    28592 28495  0 01:57 pts/3    00:00:00 /usr/local/mysql/libexec/mysqld --basedir=/usr/local/mysql --datadir=/usr/local/mysql/data --user=mysql --log-error=/usr/local/mysql/data/test.err --pid-file=/usr/local/mysql/data/test.pid --socket=/usr/local/mysql/tmp/mysql.sock --port=3306
+root     28753     1  0 02:21 ?        00:00:00 /usr/sbin/httpd
+apache   28755 28753  0 02:21 ?        00:00:00 /usr/sbin/httpd
+apache   28756 28753  0 02:21 ?        00:00:00 /usr/sbin/httpd
+apache   28757 28753  0 02:21 ?        00:00:00 /usr/sbin/httpd
+apache   28758 28753  0 02:21 ?        00:00:00 /usr/sbin/httpd
+apache   28759 28753  0 02:21 ?        00:00:00 /usr/sbin/httpd
+apache   28760 28753  0 02:21 ?        00:00:00 /usr/sbin/httpd
+apache   28761 28753  0 02:21 ?        00:00:00 /usr/sbin/httpd
+apache   28762 28753  0 02:21 ?        00:00:00 /usr/sbin/httpd
+root     28771 28624  0 02:22 pts/0    00:00:00 grep mysql\|http
+[root@test html]# apachectl -v
+Server version: Apache/2.2.15 (Unix)
+Server built:   Jan 12 2017 17:09:39
+[root@test html]# mysql -uroot -p'123456' -e "select version();"
++-----------+
+| version() |
++-----------+
+| 5.1.62    |
++-----------+
+
+apache可以访问
+[root@test zhangcai]# wget 127.0.0.1
+--2014-04-17 02:26:05--  http://127.0.0.1/
+Connecting to 127.0.0.1:80... connected.
+HTTP request sent, awaiting response... 200 OK
+Length: 15 [text/html]
+Saving to: “index.html”
+
+100%[=============================================>] 15          --.-K/s   in 0s      
+
+2014-04-17 02:26:05 (1.17 MB/s) - “index.html” saved [15/15]
+
+检查库安装情况
+[root@test zhangcai]# rpm -qa zlib libxml libjpeg freetype libpng gd curl libiconv zlib-devel libxml2-devel libjpeg-devel freetype-devel libpng-devel gd-devel curl-devel
+在后面的configure过程中报错
+checking for XSL support... yes configure: error: xslt-config not found. Please reinstall the libxslt >= 1.1.0 distribution
+说明还需要依赖libxslt-devel 
+解决方法yum install libxslt-devel
+如果没有这些库可能导致php安装不成，或者安装完成之后一些程序不可用
+*-devel安装基本可以表示已经安装了，检查*-devel就可以了
+
+或者安装yum groupinstall “x software development”
+
+安装libiconv包
+[root@test tools]# wget https://ftp.gnu.org/pub/gnu/libiconv/libiconv-1.15.tar.gz --no-check-certificate
+尽量使用官方源
+./configure --prefix=/usr/local
+make
+make install
+
+下载php安装包
+https://secure.php.net/releases/
+
+wget http://museum.php.net/php5/php-5.3.10.tar.gz
+php安装依赖mysql安装的库
+可以查看安装文档less INSTALL
+
+./configure \
+--prefix=/usr/local/php5.3.10 \
+--with-apxs2=/usr/sbin/apxs \
+--with-mysql=/usr/local/mysql  \
+--with-xmlrpc \
+--with-openssl \
+--with-zlib \
+--with-freetype-dir \
+--with-gd \
+--with-jpeg-dir \
+--with-png-dir \
+--with-iconv=/user/local/libconv \
+--enable-short-tags \
+--enable-sockets \
+--enable-zend-multibyte \
+--enable-soap \
+--enable-mbstring \
+--enable-static \
+--enable-gd-natice-ttf \
+--with-curl \
+--with-xsl \
+--enable-ftp \
+--with-libxml-dir \
+--enable-sigchild \
+--enable-pchtl \
+--enable-bcmatc
+#以上3行为解决msn robot “Call to undefined function pcnctl_fork()”报错而加，适合nagios的php环境
+
+
+configure后结果
++--------------------------------------------------------------------+
+| License:                                                           |
+| This software is subject to the PHP License, available in this     |
+| distribution in the file LICENSE.  By continuing this installation |
+| process, you are bound by the terms of this license agreement.     |
+| If you do not agree with the terms of this license, you must abort |
+| the installation process at this point.                            |
++--------------------------------------------------------------------+
+
+Thank you for using PHP.
+
+Notice: Following unknown configure options were used:
+
+--enable-gd-natice-ttf
+--enable-pchtl
+--enable-bcmatc
+
+Check './configure --help' for available options
+
+
+--with-apxs2=/usr/sbin/apxs 以dso模块加载配置
+--with-mysql=/usr/local/mysql依赖于mysql
+
+然后make test
+make install
+
+[root@test php-5.3.10]# make install
+Installing PHP SAPI module:       apache2handler
+/usr/lib64/httpd/build/instdso.sh SH_LIBTOOL='/usr/lib64/apr-1/build/libtool' libphp5.la /usr/lib64/httpd/modules
+/usr/lib64/apr-1/build/libtool --mode=install cp libphp5.la /usr/lib64/httpd/modules/
+libtool: install: cp .libs/libphp5.so /usr/lib64/httpd/modules/libphp5.so
+libtool: install: cp .libs/libphp5.lai /usr/lib64/httpd/modules/libphp5.la
+libtool: install: warning: remember to run `libtool --finish /home/zhangcai/tools/php-5.3.10/libs'
+chmod 755 /usr/lib64/httpd/modules/libphp5.so
+[activating module `php5' in /etc/httpd/conf/httpd.conf]
+Installing PHP CLI binary:        /usr/local/php5.3.10/bin/
+Installing PHP CLI man page:      /usr/local/php5.3.10/man/man1/
+Installing build environment:     /usr/local/php5.3.10/lib/php/build/
+Installing header files:          /usr/local/php5.3.10/include/php/
+Installing helper programs:       /usr/local/php5.3.10/bin/
+  program: phpize
+  program: php-config
+Installing man pages:             /usr/local/php5.3.10/man/man1/
+  page: phpize.1
+  page: php-config.1
+Installing PEAR environment:      /usr/local/php5.3.10/lib/php/
+[PEAR] Archive_Tar    - installed: 1.3.7
+[PEAR] Console_Getopt - installed: 1.3.0
+[PEAR] Structures_Graph- installed: 1.0.4
+[PEAR] XML_Util       - installed: 1.2.1
+[PEAR] PEAR           - installed: 1.9.4
+Wrote PEAR system config file at: /usr/local/php5.3.10/etc/pear.conf
+You may want to add: /usr/local/php5.3.10/lib/php to your php.ini include_path
+/home/zhangcai/tools/php-5.3.10/build/shtool install -c ext/phar/phar.phar /usr/local/php5.3.10/bin
+ln -s -f /usr/local/php5.3.10/bin/phar.phar /usr/local/php5.3.10/bin/phar
+Installing PDO headers:          /usr/local/php5.3.10/include/php/ext/pdo/
+You have new mail in /var/spool/mail/root
+
+做link
+[root@test php-5.3.10]# mkdir /application/php5.3.10 -p
+[root@test php-5.3.10]# ln -s /usr/local/php5.3.10 /application/php
+You have new mail in /var/spool/mail/root
+[root@test php-5.3.10]# ll /application/php
+lrwxrwxrwx 1 root root 20 May  2 19:01 /application/php -> /usr/local/php5.3.10
+[root@test php-5.3.10]# ll php.ini-*
+-rw-r--r-- 1 101 101 69624 Dec 15  2011 php.ini-development
+-rw-r--r-- 1 101 101 69636 Dec 15  2011 php.ini-production
+
+ php.ini*是php的配置文件
+[root@test php-5.3.10]# /bin/cp php.ini-production  /application/php/lib/php.ini
+
+
+在httpd.conf中添加，记得做好备份 
+
+修改ServerName为127.0.0.1:80
+#AddType application/x-tar .tgz
+AddType application/x-httpd-php .php .php3
+AddType application/x-httpd-php-source .phps
+修改用户和组为ett
+添加主index文件
+DirectoryIndex index.html index.html.var index.php
+
+验证apache语法
+[root@test conf]# vim httpd.conf
+You have new mail in /var/spool/mail/root
+[root@test conf]# apachectl -t
+Syntax OK
+这个也可以
+[root@test conf]# apachectl configtest
+Syntax OK
+重启
+[root@test conf]# apachectl graceful
+
+[root@test conf]# grep php httpd.conf
+LoadModule php5_module        /usr/lib64/httpd/modules/libphp5.so#此行是php配置时apxs添加到httpd.conf中的
+DirectoryIndex index.html index.html.var index.php
+AddType application/x-httpd-php .php .php3
+AddType application/x-httpd-php .php .phtml
+AddType application/x-httpd-php-source .phps
+
+创建index.php文件
+
+<?php
+phpinfo();
+
+?>
+这是个危险的信息，测试完成后删除或者移除
+
+DirectoryIndex index.html index.html.var index.php谁在前面谁就是默认的http://192.168.31.60/出现的页面
+
+新建mysql-connect.php文件连接mysql
+<?php
+  $link_id=mysql_connect('localhost','root','123456') or mysql_error();
+  if($link_id){
+      echo "mysql is connnected by zhangcai.";
+   }else{
+  echo  mysql_error();
+   }
+?>
+
+网址栏输入http://192.168.31.60/mysql-connect.php
+显示mysql is connnected by zhangcai.说明成功了
+注意总结php配置文件
+

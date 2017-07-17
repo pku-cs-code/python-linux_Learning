@@ -1,0 +1,204 @@
+Linux目录结构
+Linux一个顶点/根目录，不同的目录可以存在不同的分区和不同的硬盘设备上，
+/dev/sda第一块硬盘
+/dev/sda1，第一块硬盘的第一个分区
+/dev/sdb第二块硬盘
+/dev/sdb1，第二块硬盘的第一个分区
+硬盘一定要挂载
+/usr/local存放用户自己的程序，yum和rpm不遵循这个原则
+/opt用于存放第三方厂商开发的程序
+
+[root@centos5 /]# ll /dev/sda
+brw-r----- 1 root disk 8, 0 Apr  5  2017 /dev/sda
+[root@centos5 /]# ll /dev/sda*
+brw-r----- 1 root disk 8, 0 Apr  5  2017 /dev/sda
+brw-r----- 1 root disk 8, 1 Apr  4 16:44 /dev/sda1
+brw-r----- 1 root disk 8, 2 Apr  5  2017 /dev/sda2
+brw-r----- 1 root disk 8, 3 Apr  4 16:44 /dev/sda3
+
+显示磁盘挂载信息
+[root@centos5 /]# df -h
+Filesystem            Size  Used Avail Use% Mounted on
+/dev/sda3             5.3G  2.3G  2.8G  46% /
+/dev/sda1             190M   19M  163M  11% /boot
+tmpfs                 123M     0  123M   0% /dev/shm
+/挂载到/dev/sda3上
+挂载：目录和分区建立起关系
+mount /dev/sda1 /mnt
+挂载完了成为挂载点
+/etc/fstab这个文件直接把目录和分区进行挂载
+磁盘分区挂载到目录上
+
+
+[root@centos5 /]# cat /etc/fstab 
+LABEL=/                 /                       ext3    defaults        1 1
+LABEL=/boot             /boot                   ext3    defaults        1 2
+tmpfs                   /dev/shm                tmpfs   defaults        0 0
+devpts                  /dev/pts                devpts  gid=5,mode=620  0 0
+sysfs                   /sys                    sysfs   defaults        0 0
+proc                    /proc                   proc    defaults        0 0
+LABEL=SWAP-sda2         swap                    swap    defaults        0 0
+第一列：被挂载点，第二列：挂载目录，第三列：文件系统类型，第四列：挂载选项
+第五列： 备份，第六列：磁盘检查，第五和第六列一般给设置为0，以防启动不来。
+mnt命令是临时挂载
+
+linux系统中的目录内容按照类别组织，linux下的应用程序，可执行程序在/usr/bin下，数据文件和帮助在/usr/share下，
+运行时加载的配置文件和启动命令在/etc下。
+
+FHS目录层次标准Filesystem Hierarchy Standard
+两层规范：第一层规范/下面应该放什么数据，/etc目录下放置系统的配置文件，/bin和/sbin放程序及系统命令
+第二层针对/usr和/var这两个目录的子目录进行定义的，如/var/log放系统日志
+/var分区单独分出来，不必，因为硬盘足够大，我们有监控，就算分出来也是会满的。var一旦满了服务就会不正常
+
+根目录系统结构
+[root@centos5 /]# tree -L 1 /
+/
+|-- bin
+|-- boot
+|-- dev
+|-- etc
+|-- home
+|-- lib
+|-- lib64
+|-- lost+found
+|-- media
+|-- misc
+|-- mnt
+|-- net
+|-- opt
+|-- proc
+|-- root
+|-- sbin
+|-- selinux
+|-- srv
+|-- sys
+|-- tmp
+|-- usr
+`-- var
+/bin所有用户二进制的命令，和/usr/bin很类似，而/usr/bin一般是安装的程序命令
+/boot是Linux的内核及一道系统程序所需的文件目录，引导的静态文件，静态文件很少更新
+操作系统内核必须在/或者/root下
+/dev设备文件目录，声卡、磁盘、光驱
+/etc(Host-specific system configuration)二进制安装包，yum或者rpm配置文件默认目录，
+服务启动放在/etc/init.d/下，erports，fatab,hosts,inittab,issue...
+/lib（Essential shared libraries and kernel modules）库文件存放目录
+/lost+found系统崩溃或者意外关机，会产生一些文件碎片，系统在开机启动时fsck工具会进行磁盘
+检查，并且修复已经损坏的文件系统
+/mnt （Mount point for mounting a filesystem temporarily）设备临时挂载点
+mount /dev/cdrom /mnt即可进入/mnt中查看ISO文件内容
+6.4可以进入Packages中手动安装软件，rpm -ivh file.rpm
+/opt（Add-on application software packages）自定义软件包，./configure --prefix=/opt
+/proc(Kernal and process information virtual filesystem),操作系统运行时，进程信息及内核信息（比如cpu、硬盘分区、内存信息等）
+/proc目录伪装的文件系统proc的挂载目录，proc并不是真正的文件系统
+可以查看硬件信息
+cat /proc/meminfo 内存信息
+cat /proc/cpuinfo cpu信息
+cat /proc/loadavg 负载情况，系统繁忙情况
+/root 管理员的家目录
+/sbin （Essential system binaries）大多涉及系统管理命令，普通的bin是都能用
+如fdisk,fsck,halt...特别提示：对于5.x的系统直接ifconfig是无法直接出结果的
+/tmp(Temporary files)
+/usr (Secondary hierarchy)系统存放程序的目录
+/usr/bin /usr/local /usr/local/bin /usr/sbin /usr/share /usr/src(此为源码目录)
+/var (Variable data)一般系统日志文件放在/var/log/messages，此外/var/spool/cron定时任务配置文件路径
+重要目录/dev,/proc,/home,/tmp,/var
+
+重要的子目录
+/etc/sysconfig/network-scripts/ifcfg-eth0，通过setup-network configuration修改网卡配置就是在修改这个文件
+/etc/resolv.conf设置linux本地客户端DNS的文件,6.x可以在网卡里面修改，在setup里直接读DNS进行修改会在/etc/resolv.conf中变化，但是不会在/etc/sysconfig/network-scripts/ifcfg-eth0中生效
+如果两个地方都加可能就会有冲突
+/etc/hosts IP和域名的对应表，1用于通过域名测试2服务器之间的调用可以用域名（内部的DNS）
+/etc/sysconfig/network可修改机器名和网卡启动、网关配置
+/etc/fstab记录开机要mount的文件系统的一个文件，/etc/rc.local也可以
+/etc/inittab系统启动时设置的runlevel及加载配置文件
+/etc/exports设置NFS网络文件系统的配置文件
+/etc/init.d通过yum或者rpm安装的启动放在里面，ls -l /etc/init.d显示软链接,->/etc/rc.d/init.d
+/etc/xinit.d 服务器以xinetd模式运行，不太稳定
+/etc/profile系统全局变量配置文件，任何地方都可以调用
+/etc/profile.d 加载系统登录程序一个目录，命令独立存在
+
+/etc/issue记录用户登录前显示的信息，一般显示版本号CentOS release 5.11 (Final)
+Kernel \r on an \m
+/etc/motd登录提醒，在/etc/profile.d中也可以设置， The  contents of /etc/motd are displayed by login(1) after a successful login
+       but just before it executes the login shell.
+/etc/redhat-release redhat发行版，内核版本uname -r 2.6.32-358.e16.x86_64
+/etc/group登录用户的组信息
+/etc/passwd账号信息文件
+/etc/shadow密码信息文件（加密了）
+/etc/sudoers可以sudo命令的配置文件(权限提升),     sudoers - default sudo security policy module
+/etc/security设置哪些中断可以让root登录
+/etc/login.defs所有用户登录时的缺省配置
+/etc/modprobe.conf内核模块额外参数设定
+/etc/syslog.conf日志设置文件，5.x
+/etc/rsyslog.conf日志设置文件6.x
+
+/lib函数库
+/lib/modules kernel的相关模块
+/var/lib/rpm rpm套件安装处
+/usr/bin可执行命令的目录
+/lib64库文件存放目录
+/usr/sbin可执行命令的目录，但大多存放涉及系统管理的命令，相似目录是/sbin或/usr/local/sbin或/usr/x11R6、sbin
+/usr/local编译安装软件的存放目录，特指通过源码安装的软件
+/usr/local/bin用户安装的小的应用程序，和一些在/usr/local目录下大应用程序的符号连接
+/usr/local/sbin系统全局环境目录，可放置一些不需要加路径执行的脚本
+/usr/share系统共用的东西存放地，比如/usr/share/doc和/usr/share/man帮助文件
+/usr/src内核源码存放目录，比如下面有内核源码目录，比如linux、linux-2.xxx.xx目录等
+/usr/bin使用者可执行的binary file的目录
+/usr/local/bin使用者可执行的binary file的目录
+/usr/lib系统会使用到的函数库
+/usr/local/lib系统会使用到的函数库
+
+/var 日志文件
+/var/log 各种系统日志存放地
+/var/log/messages系统信息默认日志文件，非常重要。按周自动轮循，新的不带后缀
+/var/log/secure记录登入系统存取信息的文件，按周自动轮循，如pop3，ssh，telnet，ftp等都会记录在此
+/var/log/wtmp执行last（最近登录列表）等相关信息记录在此
+[root@mode-cai ~]# man last
+[root@mode-cai ~]# w
+ 08:33:23 up  7:49,  2 users,  load average: 0.00, 0.00, 0.16
+USER     TTY      FROM              LOGIN@   IDLE   JCPU   PCPU WHAT
+root     tty1     -                06:05    2:04m  0.09s  0.09s -bash
+zhangcai pts/2    192.168.1.24     08:16    1.00s  0.19s  0.28s sshd: zhangcai [priv]
+[root@mode-cai ~]# who
+root     tty1         2017-04-05 06:05
+zhangcai pts/2        2017-04-05 08:16 (192.168.1.24)
+[root@mode-cai ~]# lastlog
+
+/var/spool /var/spool/cron/root定时任务crontab默认路径，按用户名命名的文件
+[root@mode-cai ~]# cat /var/spool/cron/root 
+#time sync by by zhangcai at 20170403
+*/5 * * * * /usr/sbin/ntpdate time.nist.gov > /dev/dull 2>$1
+
+#del file by zhangcai at 20170403
+00 00 * * 6 /bin/sh /server/scripts/del.sh >/dev/dull 2>$1
+
+/var/spool/mail系统用户邮件存放目录
+/var/spool/clientmqueue临时邮件文件目录，很多原因导致这个目录碎文件很多，需要定时清除
+
+/proc虚拟目录，内存的映射
+/proc/version内核版本
+/proc/sys/kernel系统内核功能
+ /proc/sys系统优化，在/etc/sysctl.conf中也存在，但是前者重启后会失效
+eg：修改/etc/sysctl.conf后的值会改变cat /proc/sys/net/ipv4/tcp_tw_reuse 的值，但是修改后者只会临时生效，重启后数值会失效
+也可放在/etc/rc.local中
+/proc/cpuinfo处理器的信息
+/proc/meminfo系统内存信息
+/proc/devices当前运行内核所配置的所有设备清单
+/proc/dma正在使用的DMA通道
+/proc/filesystems当前运行内核所配置的文件系统
+/proc/interrupts正在使用的中断，和曾经有多少个中断
+/proc/ioports当前正在使用的I/O端口
+/proc/loadavg系统负载信息（系统的繁忙情况，比较准备但是不够细致的系统性能指标），uptime的结果
+[root@mode-cai ~]# uptime
+ 09:02:49 up  8:18,  2 users,  load average: 0.00, 0.00, 0.00
+达到cpu的核数系统效能就不佳了，负载平均值15min内的，
+
+/etc/DIR_COLORS设定颜色
+/etc/host.conf文件说明用户的系统如何查询节点名，默认order hosts,bind
+/etc/hosts.allow设置允许使用inetd的机器使用
+/etc/hosts.deny设置不允许使用inetd的机器使用
+/etc/protocols系统支持的协议文件
+/etc/X11 X Window的配置文件
+
+
+

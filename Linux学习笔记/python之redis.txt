@@ -1,0 +1,249 @@
+python之redis
+
+memcached，非持久化，通过第三方可以持久化，轻量级
+非关系型数据库
+Mongondb
+
+将数据存在第三方，因为内存别人不能访问
+MongoDB持久化
+redis可以配置持久化（持久化就是关机了数据还在）
+
+以上都是线程安全的，改数据不需要加锁
+
+redis是key-value存储系统，支持存储等待类型相对memcached更多，包括string
+redis可以配置周期性地把数据写入磁盘，并在此基础上配置master-slave
+
+端口6379
+wget http://download.redis.io/releases/redis-3.2.9.tar.gz
+tar zxf redis-3.2.9.tar.gz 
+cd redis-3.2.9
+make
+src/redis-server#启动服务端
+
+启动客户端
+src/redis-cli 
+[root@test redis-3.2.9]# src/redis-cli 
+127.0.0.1:6379> set foo bar
+OK
+127.0.0.1:6379> get foo
+"bar"
+127.0.0.1:6379> keys *
+1) "foo"
+127.0.0.1:6379> set name zhang
+OK
+127.0.0.1:6379> keys *
+1) "name"
+2) "foo"
+127.0.0.1:6379> set name cai ex 5#设置失效时间
+OK
+127.0.0.1:6379> get name
+"cai"
+127.0.0.1:6379> get name
+"cai"
+127.0.0.1:6379> get name
+"cai"
+127.0.0.1:6379> get name
+(nil)
+127.0.0.1:6379> get name
+(nil)
+127.0.0.1:6379> set name zhang
+OK
+127.0.0.1:6379> save#刷到磁盘里
+OK
+
+
+连接池
+
+
+nx设置为True，只有Name不存在时，当前操作set才执行
+xx设置为True时，只有Name存在时，当前set操作才执行
+
+setnx只有name不存在时才执行操作
+setex设置过期时间，单位为妙，px单位为毫秒
+mset批量设置
+mget批量get
+getrange获取子序列，切片
+	r.set("id","123456789")
+	print(r.getrange("id",2,7))#打印id的3-8位
+setrange修改字符串内容
+setbit二进制位的操作
+	统计UV
+	uv_set=set([A,B,C])
+	
+	
+自增	
+>>> import redis
+im>>> import tab
+>>> r = redis.Redis()
+>>> r.incr("count",1)
+1
+>>> r.incr("count",1)
+2
+>>> r.incr("count",1)
+3
+>>> r.incr("count",1)
+4
+>>> r.get("count")
+b'4'
+
+incrfloat自增小数
+decr	自减
+append	在字符串后面增加内容，拼接
+	>>> r.get("count")
+b'4'
+>>> r.append("count","__")
+3
+>>> r.get("count")
+b'4__'
+
+hash存储（字典）
+>>> r.hset("stu_info","stu1","zhang")
+1
+>>> r.hset("stu_info","stu2","rain")
+1
+>>> r.hmset("stu_info",{'stu3':'wind','stu4':'sun'})
+True
+>>> r.hget("stu_info",'stu3')
+b'wind'
+>>> r.hgetall("stu_info")
+{b'stu2': b'rain', b'stu3': b'wind', b'stu1': b'zhang', b'stu4': b'sun'}
+
+列表存储
+>>> r.lpush("name_list",'a','b','c')
+3
+>>> r.lrange("name_list",0,-1)
+[b'c', b'b', b'a']
+>>> r.rpush("name_list",'d','e','f')#顺序
+6
+>>> r.lrange("name_list",0,-1)
+[b'c', b'b', b'a', b'd', b'e', b'f']
+
+linsert
+>>> r.linsert("name_list","BEFORE",'a',"-")
+7
+>>> r.lrange("name_list",0,-1)#找到那个值了插入
+[b'c', b'b', b'-', b'a', b'd', b'e', b'f']
+
+
+set操作，Set集合就是不允许重复的列表
+>>> r.sadd("set_list",1,2)
+2
+>>> r.sadd("set_list",1,2,4)
+1
+>>> r.sadd("set_list",1,2,4,56,7,7)
+2
+>>> r.sscan("set_list")
+(0, [b'1', b'2', b'4', b'7', b'56'])
+
+scard获取元素个数
+
+sdiff两个存在的集合做比较，差集，在左边不在右边
+>>> r.sadd("s1",[1,2,3,4,5])
+1
+>>> r.sdiff("set_list","s1")
+{b'7', b'4', b'2', b'1', b'56'}
+>>> r.sscan("s1")
+(0, [b'[1, 2, 3, 4, 5]'])
+>>> r.sadd("s1",1,2,3,4,5)
+5
+>>> r.sscan("s1")
+(0, [b'[1, 2, 3, 4, 5]', b'1', b'3', b'2', b'4', b'5'])
+>>> r.sdiff("set_list","s1")
+{b'7', b'56'}
+
+
+>>> r.sdiffstore("s2","set_list","s1")
+2
+>>> r.sscan("s2")
+(0, [b'7', b'56'])
+>>> 
+把差集存入一个前面的集合
+
+交集
+>>> r.sinter("set_list","s1")
+{b'4', b'2', b'1'}
+
+
+判断是否是子集和子元素
+>>> r.sismember("s2","set_list",)
+False
+>>> r.sismember("set_list","s2",)
+False
+>>> r.sismember("set_list",1)
+True
+>>> r.smembers("s2")
+{b'7', b'56'}
+
+获取并集
+>>> r.sunion("s1","s2","set_list")
+{b'56', b'[1, 2, 3, 4, 5]', b'7', b'5', b'4', b'3', b'2', b'1'}
+
+集合默认是无序的
+
+元组的形式有序存储，按后面分数大小排序
+>>> r.zadd("z_1","zhang",1,"rain",10)
+2
+>>> r.zadd("z_1","jack",3,"eric",60)
+2     
+>>> r.zscan("z_1")
+(0, [(b'zhang', 1.0), (b'jack', 3.0), (b'rain', 10.0), (b'eric', 60.0)])
+
+按后面的排序，有序集合
+
+>>> r.zincrby("z_1","jack")
+4.0
+>>> r.zincrby("z_1","jack")
+5.0
+
+>>> r.zscan("z_1")
+(0, [(b'zhang', 1.0), (b'jack', 5.0), (b'rain', 10.0), (b'eric', 60.0)])
+
+>>> r.delete("z_1")
+1
+>>> r.zscan("z_1")
+(0, [])
+
+keys(pattern='*')模糊匹配
+expire(name,time)过期时间
+rename(src,dst)对redis的name重命名
+move(name,db)将redis的某个值移到某个db下
+randomkey()随机获取一个redis的name
+type(name)name的类型
+
+
+redis默认有16个数据库，不能自己创建
+为了保证数据不冲突可以切库
+
+redis连上了之后不能切了，代码已经写死db
+原生的命令行可以切换
+127.0.0.1:6379> keys *
+ 1) "name"
+ 2) "Name"
+ 3) "id"
+ 4) "s2"
+ 5) "count"
+ 6) "foo"
+ 7) "s1"
+ 8) "t"
+ 9) "uv_count"
+10) "name_list"
+11) "stu_info"
+12) "AGE"
+13) "set_list"
+127.0.0.1:6379> select 15
+OK
+127.0.0.1:6379[15]> select 20
+(error) ERR invalid DB index
+127.0.0.1:6379[15]> keys *
+(empty list or set)
+127.0.0.1:6379[15]> sadd z_1 1 2 3
+(integer) 3
+127.0.0.1:6379[15]> select 0
+OK
+
+
+实时广播，错过了就没有了。像腾讯qq跳出的广告
+
+发布和订阅
+
+

@@ -1,0 +1,10 @@
+安装好pip后
+[root@test setuptools-1.4.2]# pip --version
+pip 9.0.1 from /usr/local/python3/lib/python3.3/site-packages/pip-9.0.1-py3.3.egg (python 3.3)
+
+pip install readline
+
+退出当前登录窗口后重新进入
+果然好了
+
+

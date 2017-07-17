@@ -1,0 +1,105 @@
+第七节课题
+添加默认网关
+默认网关：不匹配任何设定的路由规则
+默认网关就是最后一条网关
+[root@localhost ~]# route -n
+Kernel IP routing table
+Destination     Gateway         Genmask         Flags Metric Ref    Use Iface
+192.168.1.0     0.0.0.0         255.255.255.0   U     0      0        0 eth0
+169.254.0.0     0.0.0.0         255.255.0.0     U     1002   0        0 eth0
+0.0.0.0         192.168.1.1     0.0.0.0         UG    0      0        0 eth0
+从上往下依次寻找
+0.0.0.0表示任何去处
+默认网关配置
+[root@localhost ~]# cat /etc/sysconfig/network-scripts/ifcfg-eth0 
+DEVICE="eth0"
+HWADDR="00:0C:29:98:27:F7"
+IPV6INIT="yes"
+NM_CONTROLLED="yes"
+ONBOOT="yes"
+BOOTPROTO=static
+DNS1=192.168.1.1
+IPADDR=192.168.1.58
+NETMASK=255.255.255.0
+GATEWAY=192.168.1.1
+TYPE="Ethernet"
+UUID="5b650d99-4985-47d8-ade3-433c6b58753a"
+
+
+[root@localhost ~]# route del default gw 192.168.1.1
+[root@localhost ~]# route -n
+Kernel IP routing table
+Destination     Gateway         Genmask         Flags Metric Ref    Use Iface
+192.168.1.0     0.0.0.0         255.255.255.0   U     0      0        0 eth0
+169.254.0.0     0.0.0.0         255.255.0.0     U     1002   0        0 eth0
+[root@localhost ~]# ping 114.114.114.114
+connect: Network is unreachable
+[root@localhost ~]# ping 192.168.1.60
+PING 192.168.1.60 (192.168.1.60) 56(84) bytes of data.
+64 bytes from 192.168.1.60: icmp_seq=1 ttl=64 time=0.545 ms
+64 bytes from 192.168.1.60: icmp_seq=2 ttl=64 time=0.563 ms
+^C
+--- 192.168.1.60 ping statistics ---
+2 packets transmitted, 2 received, 0% packet loss, time 1666ms
+rtt min/avg/max/mdev = 0.545/0.554/0.563/0.009 ms
+[root@localhost ~]# route add default gw 192.168.1.1
+[root@localhost ~]# route -n
+Kernel IP routing table
+Destination     Gateway         Genmask         Flags Metric Ref    Use Iface
+192.168.1.0     0.0.0.0         255.255.255.0   U     0      0        0 eth0
+169.254.0.0     0.0.0.0         255.255.0.0     U     1002   0        0 eth0
+0.0.0.0         192.168.1.1     0.0.0.0         UG    0      0        0 eth0
+
+命令行添加是临时的，网卡重启或者机器重启会失效
+
+[root@localhost ~]# netstat -rn
+Kernel IP routing table
+Destination     Gateway         Genmask         Flags   MSS Window  irtt Iface
+192.168.1.0     0.0.0.0         255.255.255.0   U         0 0          0 eth0
+169.254.0.0     0.0.0.0         255.255.0.0     U         0 0          0 eth0
+0.0.0.0         192.168.1.1     0.0.0.0         UG        0 0          0 eth0
+
+可以在网卡的配置为文件里添加网关 cat /etc/sysconfig/network-scripts/ifcfg-eth0
+
+网络路由
+一般多个网段通信，希望建立一些优先路由，而不是通过默认网关
+跨网络是要有路由器的
+路由器一般有两块网卡
+1、添加一条去往192网段的路由，还要在对端添加路由 
+route add -net 192.168.1.0/24 netmask 255.255.255.0 gw 10.0.0.1
+2、在网关上添加一条去往192网段的路由，或者用防火墙加一条去往192网段的路由
+不是一个局域网才交给网关
+3、添加网卡route add -net 192.168.1.0/24 dev eth0
+（192.168.1.0/24 =192.168.1.0 netmask 255.255.255.0 ）
+使得重启后也生效
+4、在路由的配置文件中添加
+vi /etc/sysconfig/network-scripts/route-eth0默认没有这个文件
+添加192.168.1.0/24 via 192.168.1.1
+5、vi /etc/sysconfig/static-route默认不存在此文件
+any net 192.168.1.0/24 gw 192.168.1.1
+6、在rc.local中加上route add-net 192.168.1.0/24 gw 192.168.1.1
+开机可以生效，重启网络会失效
+
+添加主机路由
+/sbin/route add -host 192.168.2.13 dev eth2
+/sbin/route add -host 202.81.11.91 dev lo
+
+删除路由，上面的add改成del
+  
+
+在核心交换机上设置子vlan对应不同子网段，节点服务器之间可以通过交换机直接通信
+局域网的数据是最大的，性能要求最高，
+
+10.0.0.0/24  netmask255.255.255.0
+10.0.0.1-10.0.0.254  10.0.0.255是广播地址
+把子网掩码从24位变成23位、22位……
+看起来不是一个段，实际上是一个段，可以通信，因为子网掩码变了
+优点：部署简单，实施方便。DHCP段加上以上的地址段，如果想要更安全可以绑定mac地址
+缺点：容易引起广播风暴或arp攻击问题。
+不采购设备也可以用linux自己做路由
+
+增加3层交换机或路由设备
+优点：可以进行vlan划分，隔离不同网段间的广播风暴，还可以控制所有地址段之间到的访问
+网络内出现攻击问题只会造成局部影响，不会影响整个网络。这是比较标准规范的扩容网段的方案
+安全性能都有保证
+缺点：对于运维人员来说，增加技术难度，部署复杂，可能需要聘请网络工程师

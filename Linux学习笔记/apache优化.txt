@@ -1,0 +1,227 @@
+apache优化
+apache自带轮循日志
+[root@test ~]# find / -name "rotatelogs"
+/usr/sbin/rotatelogs
+但是oldboy老师发现切割会丢日志
+
+1下载cronlog-1.6.2
+wget ftp://ftp.netbsd.org/pub/pkgsrc/distfiles/cronolog-1.6.2.tar.gz
+ tar zxf cronolog-1.6.2.tar.gz
+cd cronolog-1.6.2
+ ./configure
+ make && make install
+
+在vhost.conf中添加如下行
+CustomLog "|/usr/local/sbin/cronolog /var/log/httpd/access_www_%w.log" combined
+（/usr/local/sbin/cronolog管道命令）
+轮循日志路径写全路径
+ 这行需要注释掉#CustomLog logs/vhost-access_log common
+
+2错误页面优雅显示，支持url和文件
+在配置文件下添加如下行
+ErrorDocument 404 http://www.51cto.com
+打开一个不存在的页面，的确能重定向草52cto网站
+httpd.conf中也有示例
+#ErrorDocument 500 "The server made a boo boo."
+#ErrorDocument 404 /missing.html
+#ErrorDocument 404 "/cgi-bin/missing_handler.pl"
+#ErrorDocument 402 http://www.example.com/subscription_info.html
+
+
+3mod_deflate文件压缩功能
+先压缩再传输可以显著减少文件传输的大小。文本被gzip压缩：html php js css xml txt
+首页广告js没有被压缩，是因为需要统计信息
+节约带宽，同时提升用户体验
+vhost.conf添加如下行
+<ifmodule mod_deflate.c>
+DeflateCompressionLevel 9
+SetOutputFilter DEFLATE
+DeflateFilterNote Input instream
+DeflateFilterNote Output outstream
+DeflateFilterNote Ratio ratio
+#指定的MIME类型
+AddOutputFilterByType DEFLATE text/html text/plain text/xml
+AddOutputFilterByType DEFLATE application/javascript
+AddOutputFilterByType DEFLATE text/css
+</ifmodule>
+
+如果是DSO方式编译的
+模块安装在/usr/lib64/httpd/modules/mod_deflate.so中
+一般在apachectl -l|grep mod_deflate.c可以看到mod_deflate.c
+
+[root@test sbin]# apachectl -M|grep deflate
+ deflate_module (shared)
+[root@test sbin]# grep mod_deflate.so /etc/httpd/conf/httpd.conf
+LoadModule deflate_module modules/mod_deflate.so
+
+编译时没有加入模块可以以DSO的方式编译进去
+编译apache时--enable-so激活apache的DSO支持
+起初如果没有编译进模块，可以用apxs来增加
+去http安装目录httpd-2.4.25/modules/filters/ 
+[root@test httpd-2.4.25]# ll modules/filters/ |grep mod_deflate.c
+-rw-r--r--. 1 apache games  71235 Mar 19  2016 mod_deflate.c
+
+apxs -c -i -a mod_deflate.c
+编译进模块后查看
+[root@test lib64]# ll /usr/lib64/httpd/modules/mod_deflate.so
+-rwxr-xr-x. 1 root root 27056 Jan 13 01:10 /usr/lib64/httpd/modules/mod_deflate.so
+如果已有mod_deflate模块，再次进行编译，检查语法apachectl -t时会提示错误，应该在httpd.conf中
+注释掉mod_deflate模块，因为已经编译进去了
+
+三部曲缺一不可：
+检查语法apachectl -t
+优雅重启apachectl graceful
+检查端口lsof -i :80
+
+4mod_expires
+缓存
+
+不仅对主机，而且可以针对目录设置expires
+
+worker模式，提升并发数（2000-5000）
+./configure \
+--prefix=/usr/local/apache2.2.21
+--enbable-deflate \
+--enable-expires \
+--enable-headers \
+--enable-modules=most \
+--enable-so \
+--with-mpm=worker \
+--enable-rewrite \
+make 
+make install
+
+worker和prefork模式各有优缺点
+
+屏蔽apache版本等敏感信息
+修改http.conf，打开httpd-default.conf
+修改httpd-default.conf文件，ServerSignature Off以及ServerTokens Prod
+之后apachectl -t
+apachectl graceful使之生效
+
+不过还有server=Apahce字样，需要完全去掉重新编译
+彻底去掉banner，修改httpd.h
+Include/httpd.h
+Define SERVER_BASEVENDOR "Apache Group"
+Define SERVER_PRFDUCTVENDOR "Apache"
+Define SERVER_BASEVERSION "1.3.27"
+后重新编译Apache就能够完全去掉了
+提示：2.0后要测试下
+
+8apache 目录文件权限设置（目录属组root，目录755，文件属主root，文件权限644）
+在网站架构中，应把资源文件，包括用户上传的图片，附件等和程序分离，最好把上传程序也分离
+这样就可以从容授权了。
+先把文件和程序分离，才可以从容授权。
+
+chmod -R 777 /sitedir
+chown -R apache.apache /sitedir
+
+黑客植入代码，是因为apache权限可以修改文件
+
+图片服务器，上传服务器单独设置
+WEBSERVER权限设置成目录755,文件644
+WEBSERVER最容易被攻击，因为是直接展现在用户面前的，上传服务器和图片服务器因为入口都不一定能找到
+故安全性更大
+
+9开启httpd-mpm.conf模块
+worker模块的配置
+<IfModule mpm_worker_module>
+  StartServes  5
+  MaxClients 2000
+  ServerLimit 25
+  MinSpareThreads 50
+  MaxSpareThreads 200
+  ThreadLimit  200
+  ThreadsPerChild 100
+  MaxRequestsPerChild 0 
+</IfModule>
+注意:MaxClients <=ServerLimit * ThreadsPerChild
+apache2.0以后不用重新编译apache可以修改最大连接数
+restart不可以
+要先apachectl stop，然后apachectl start就可以了
+
+10apache防盗链功能
+<ifModule rewrite_module>
+RewriteEngine On
+RewriteCond %{HTTP_REFERER} !^http://etiantian.org/.*$ [NC]
+RewriteCond %{HTTP_REFERER} !^http://etiantian.org$ [NC]
+RewriteCond %{HTTP_REFERER} !^http://www.etiantian.org/.*$ [NC]
+RewriteCond %{HTTP_REFERER} !^http://www.etiantian.org$ [NC]
+RewriteRule .*\.(gif|jpg|swf)$ http://www.51cto.com [R,NC]
+#RewriteRule .*\.(gif|jpg|swf)$ http://www.etiantian.org/about/nolink.png [R,NC]
+</IfModule>
+
+老男孩博客：
+IDC流量暴涨问题
+
+11禁止目录索引
+<Directory /var/html> 
+  Options FollowSymLinks
+  AllowOverride None
+  Order allow,deny
+   Allow from all
+</Directory>
+或者
+<Directory /var/html> 
+  Options -Indexes FollowSymLinks
+  AllowOverride None
+  Order allow,deny
+   Allow from all
+</Directory>
+去默认站点目录属性去看
+
+12禁止用户覆盖（重载）
+<Directory "/usr/local/apache2/htdocs"> 
+  Options none
+  AllowOverride None
+  Order allow,deny
+   Allow from all
+</Directory>
+加快服务器速度，因为他不再为每个请求寻找每个目录访问控制文件.htaccess
+  AllowOverride None使开发人员不能修改配置文件
+开发人员有需求可以单独帮他放到主配置文件中
+
+13关闭CGI
+ScriptAlias /cgi-bin "/usr/local/apache2/cgi-bin"
+<Directory "/usr/local/apache2/cgi-bin"> 
+    AllowOverride None
+  Options none
+  Order allow,deny
+   Allow from all
+</Directory>
+不要用cgi，因为没有用，在配置文件中去掉
+
+14避免使用.htdaccess文件
+如果AllowOverride启用了.htaccess文件，则apache需要在每个目录中查找.htaccess文件，因此无论是否
+真正用到，启用.htaccess都会导致性能的下降。对每一次请求，都需要读一次.htaccess文件
+其次是安全考虑，这样会允许用户自己修改服务器的配置，可能导致某些意想不到的修改
+AccessFileName .htaccess
+建议设置成#AccessFileName .htaccess
+全部目录权限定义使用httpd.conf中的定义，不使用.htaccess
+
+15apache的安全模块
+（mod_evasive20防DDOS、mod_limitipconn（针对单点）配置、mod_security2防SQL注入等）
+makejail http://www.floc.net/makejail/
+是一个自动把建立jail所需要的程序放到jail内的软件，使用python编写，有debian和openbsd的版本
+mod_security http://www.modsecurity.org
+是apache的一个模块，有请求过滤，日志审计等功能，可以防止SQL Injection，跨站脚本攻击，是很不错的一个模块
+
+16正确途径取得源代码，勤打apache补丁
+17apache日志授予root700权限
+chown -R root.root logs
+chmod -R 700 logs
+不需要在日志目录上给apache用户读或者写许可
+18系统内核参数优化
+19禁止php解析指定站点的目录
+
+20使用tmpfs文件系统替代频繁访问的目录
+21尽可能减少HTTP请求数
+合并css，js以及Image maps和css sprites
+22使用CDN做网站加速 content delivery network
+网宿，蓝汛（cc，chinacache），快网
+23apache程序架构优化  php nginx等都适合
+程序页面服务器 图片附件服务器 上传服务器，三者的功能尽量分离
+分离的最好方式是分别使用独立的服务器（需程序支持）
+次选方案是在前端负载均衡器通过haproxy/nginx根据目录或拓展名请求后面对应的服务器
+还可以人为分布请求服务器
+

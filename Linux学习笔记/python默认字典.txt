@@ -1,0 +1,54 @@
+python默认字典
+import collections
+# dic = {'k1':[]}
+# dic['k1'].append('alex')
+
+dic = collections.defaultdict(list)
+dic['k1'].append('alex')
+print(dic)
+
+不用像注释那样valuekey后面接空
+
+
+可命名元组namedtuple
+元组不支持修改
+
+元组根据索引去访问，不支持通过其他方式去访问
+可命名元组需要自己去创建类
+
+
+双向队列
+deque
+双向队列没有规律
+append
+appendleft
+clear
+copy
+count	查看队列里的元素出现多少次
+extend	拓展
+extendleft
+index	取值所在索引位置
+insert	
+pop
+popleft
+remove
+reverse
+rotate	旋转，将结尾几个元素拿到前面
+
+
+queue.queue
+单向队列先进先出
+import queue，与双向队列导入的类不同
+
+qsize	队列元素个数
+empty	清空
+full	查看是否填满
+get
+get_nowait
+join
+put
+put_nowait
+task_done
+
+
+

@@ -1,0 +1,4 @@
+python在不同操作系统上使用小技巧
+
+windows下pip不能安装readline，因此装不好tab
+pip install时需要以管理员身份运行DOS窗口

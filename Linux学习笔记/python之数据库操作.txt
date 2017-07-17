@@ -1,0 +1,82 @@
+python之数据库操作
+
+
+create database s12day9 charset utf8;
+show databases;
+use s12day9;
+
+
+create table students
+(
+ id int not null auto_increment primary key,
+ name char(32) not null,
+ sex char(20) not null,
+ age tinyint unsigned not null,
+ tel char(13) null default "_"
+);
+
+desc students;
+
+
+show create table students;#创建表结构的语句
+
+InnoDB是支持多事务的，同时操作，可以回滚
+
+
+insert into students(name,sex,age,tel) values('alex','man',18,'151515
+insert into students(name,sex,age,tel) values('rain','female',22,'121212');
+select * from students;
+insert into students(name,sex,age,tel) values('oldboy','female',-22,'131313');
+insert into students(name,sex,age,tel) values('oldboy2','female',-50,'141414');
+select * from students;
+insert into students(name,sex,age,tel) values('oldboy3','female',40,'16161');
+select * from students;
+
+
+| students | CREATE TABLE `students` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` char(32) NOT NULL,
+  `sex` char(20) NOT NULL,
+  `age` tinyint(3) unsigned NOT NULL,
+  `tel` char(13) DEFAULT '_',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 |
+
+将MyISAM改成InnoDB
+alter table students type=InnoDB;
+show create table students;
+
+
+select * from students where age>15 and sex='man';
+select * from students where age like "1%";
+select name,sex from students where age like "1%";
+update students set age=26 where name='alex';
+update students set age=26;
+delete from students where name='rain';
+alter table students add column nal char(64);
+desc students;
+select * from students;
+
+
+pip3 install MySQL-python
+提示 error: Microsoft Visual C++ 14.0 is required. Get it with "Microsoft Visual C++ Build Tools": http://landinghub.visualstudio.com/visual-cpp-build-tools
+
+    ----------------------------------------
+Command ""c:\program files\python35\python.exe" -u -c "import setuptools, tokenize;__file__='C:\\Users\\cai\\AppData\\Local\\Temp\\pip-build-8e8jl3m4\\MySQL-python\\setup.py';f=getattr(tokenize, 'open', open)(__file__);code=f.read().replace('\r\n', '\n');f.close();exec(compile(code, __file__, 'exec'))" install --record C:\Users\cai\AppData\Local\Temp\pip-_avoeo03-record\install-record.txt --single-version-externally-managed --compile" failed with error code 1 in C:\Users\cai\AppData\Local\Temp\pip-build-8e8jl3m4\MySQL-python\
+
+去这个网址下载升级成Microsoft Visual C++ 14.0 
+http://landinghub.visualstudio.com/visual-cpp-build-tools
+
+又报错
+    cl.exe /c /nologo /Ox /W3 /GL /DNDEBUG /MD -Dversion_info=(1,2,5,'final',1) -D__version__=1.2.5 "-IC:\Program Files (x86)\MySQL\MySQL Connector C 6.0.2\include" "-Ic:\program files\python35\include" "-Ic:\program files\python35\include" /Tc_mysql.c /Fobuild\temp.win-amd64-3.5\Release\_mysql.obj /Zl
+    error: command 'cl.exe' failed: No such file or directory
+
+    ----------------------------------------
+Command ""c:\program files\python35\python.exe" -u -c "import setuptools, tokenize;__file__='C:\\Users\\cai\\AppData\\Local\\Temp\\pip-build-xdl3ibej\\MySQL-python\\setup.py';f=getattr(tokenize, 'open', open)(__file__);code=f.read().replace('\r\n', '\n');f.close();exec(compile(code, __file__, 'exec'))" install --record C:\Users\cai\AppData\Local\Temp\pip-xtkh7k6w-record\install-record.txt --single-version-externally-managed --compile" failed with error code 1 in C:\Users\cai\AppData\Local\Temp\pip-build-xdl3ibej\MySQL-python\
+
+安装mysql的python驱动
+
+mysql-python好像不支持python3
+安装在python2上
+直接安装去官网找python-mysql.exe安装在python2上
+

@@ -1,0 +1,179 @@
+httpd´ÅÅÌÂúÆóÒµÄ£Äâ
+[root@localhost ~]# yum install httpd -y
+Loaded plugins: fastestmirror, refresh-packagekit, security
+Loading mirror speeds from cached hostfile
+ * base: mirrors.tuna.tsinghua.edu.cn
+ * extras: mirrors.tuna.tsinghua.edu.cn
+ * updates: mirrors.tuna.tsinghua.edu.cn
+base                                                                   | 3.7 kB     00:00     
+base/primary_db                                                        | 4.7 MB     01:22     
+extras                                                                 | 3.4 kB     00:00     
+updates                                                                | 3.4 kB     00:00     
+updates/primary_db                                                     |  24 kB     00:00     
+Setting up Install Process
+Resolving Dependencies
+--> Running transaction check
+---> Package httpd.x86_64 0:2.2.15-26.el6.centos will be updated
+---> Package httpd.x86_64 0:2.2.15-59.el6.centos will be an update
+--> Processing Dependency: httpd-tools = 2.2.15-59.el6.centos for package: httpd-2.2.15-59.el6.centos.x86_64
+--> Running transaction check
+---> Package httpd-tools.x86_64 0:2.2.15-26.el6.centos will be updated
+---> Package httpd-tools.x86_64 0:2.2.15-59.el6.centos will be an update
+--> Processing Dependency: libssl.so.10(libssl.so.10)(64bit) for package: httpd-tools-2.2.15-59.el6.centos.x86_64
+--> Processing Dependency: libcrypto.so.10(libcrypto.so.10)(64bit) for package: httpd-tools-2.2.15-59.el6.centos.x86_64
+--> Running transaction check
+---> Package openssl.x86_64 0:1.0.0-27.el6 will be updated
+---> Package openssl.x86_64 0:1.0.1e-57.el6 will be an update
+--> Finished Dependency Resolution
+
+Dependencies Resolved
+
+==============================================================================================
+ Package               Arch             Version                          Repository      Size
+==============================================================================================
+Updating:
+ httpd                 x86_64           2.2.15-59.el6.centos             base           834 k
+Updating for dependencies:
+ httpd-tools           x86_64           2.2.15-59.el6.centos             base            79 k
+ openssl               x86_64           1.0.1e-57.el6                    base           1.5 M
+
+Transaction Summary
+==============================================================================================
+Upgrade       3 Package(s)
+
+Total download size: 2.4 M
+Downloading Packages:
+(1/3): httpd-2.2.15-59.el6.centos.x86_64.rpm                           | 834 kB     00:18     
+(2/3): httpd-tools-2.2.15-59.el6.centos.x86_64.rpm                     |  79 kB     00:03     
+(3/3): openssl-1.0.1e-57.el6.x86_64.rpm                                | 1.5 MB     00:32     
+----------------------------------------------------------------------------------------------
+Total                                                          45 kB/s | 2.4 MB     00:54     
+Running rpm_check_debug
+Running Transaction Test
+Transaction Test Succeeded
+Running Transaction
+  Updating   : openssl-1.0.1e-57.el6.x86_64                                               1/6 
+  Updating   : httpd-tools-2.2.15-59.el6.centos.x86_64                                    2/6 
+  Updating   : httpd-2.2.15-59.el6.centos.x86_64                                          3/6 
+  Cleanup    : httpd-2.2.15-26.el6.centos.x86_64                                          4/6 
+  Cleanup    : httpd-tools-2.2.15-26.el6.centos.x86_64                                    5/6 
+  Cleanup    : openssl-1.0.0-27.el6.x86_64                                                6/6 
+  Verifying  : httpd-tools-2.2.15-59.el6.centos.x86_64                                    1/6 
+  Verifying  : httpd-2.2.15-59.el6.centos.x86_64                                          2/6 
+  Verifying  : openssl-1.0.1e-57.el6.x86_64                                               3/6 
+  Verifying  : httpd-2.2.15-26.el6.centos.x86_64                                          4/6 
+  Verifying  : httpd-tools-2.2.15-26.el6.centos.x86_64                                    5/6 
+  Verifying  : openssl-1.0.0-27.el6.x86_64                                                6/6 
+
+Updated:
+  httpd.x86_64 0:2.2.15-59.el6.centos                                                         
+
+Dependency Updated:
+  httpd-tools.x86_64 0:2.2.15-59.el6.centos           openssl.x86_64 0:1.0.1e-57.el6          
+
+Complete!
+[root@localhost ~]# /etc/init.d/httpd start
+Starting httpd: httpd: Could not reliably determine the server's fully qualified domain name, using localhost.localdomain for ServerName
+                                                           [  OK  ]
+[root@localhost ~]# /etc/init.d/iptables stop
+iptables: Flushing firewall rules:                         [  OK  ]
+iptables: Setting chains to policy ACCEPT: filter          [  OK  ]
+iptables: Unloading modules:                               [  OK  ]
+[root@localhost ~]# lsof i :80
+lsof: status error on i: No such file or directory
+lsof: status error on :80: No such file or directory
+lsof 4.82
+ latest revision: ftp://lsof.itap.purdue.edu/pub/tools/unix/lsof/
+ latest FAQ: ftp://lsof.itap.purdue.edu/pub/tools/unix/lsof/FAQ
+ latest man page: ftp://lsof.itap.purdue.edu/pub/tools/unix/lsof/lsof_man
+ usage: [-?abhlnNoOPRtUvVX] [+|-c c] [+|-d s] [+D D] [+|-f[gG]] [+|-e s]
+ [-F [f]] [-g [s]] [-i [i]] [+|-L [l]] [+m [m]] [+|-M] [-o [o]] [-p s]
+[+|-r [t]] [-s [p:s]] [-S [t]] [-T [t]] [-u s] [+|-w] [-x [fl]] [-Z [Z]] [--] [names]
+Use the ``-h'' option to get more help information.
+[root@localhost ~]# lsof i:80
+lsof: status error on i:80: No such file or directory
+lsof 4.82
+ latest revision: ftp://lsof.itap.purdue.edu/pub/tools/unix/lsof/
+ latest FAQ: ftp://lsof.itap.purdue.edu/pub/tools/unix/lsof/FAQ
+ latest man page: ftp://lsof.itap.purdue.edu/pub/tools/unix/lsof/lsof_man
+ usage: [-?abhlnNoOPRtUvVX] [+|-c c] [+|-d s] [+D D] [+|-f[gG]] [+|-e s]
+ [-F [f]] [-g [s]] [-i [i]] [+|-L [l]] [+m [m]] [+|-M] [-o [o]] [-p s]
+[+|-r [t]] [-s [p:s]] [-S [t]] [-T [t]] [-u s] [+|-w] [-x [fl]] [-Z [Z]] [--] [names]
+Use the ``-h'' option to get more help information.
+[root@localhost ~]# lsof -i :80
+COMMAND  PID   USER   FD   TYPE DEVICE SIZE/OFF NODE NAME
+httpd   2209   root    4u  IPv6  16883      0t0  TCP *:http (LISTEN)
+httpd   2212 apache    4u  IPv6  16883      0t0  TCP *:http (LISTEN)
+httpd   2213 apache    4u  IPv6  16883      0t0  TCP *:http (LISTEN)
+httpd   2214 apache    4u  IPv6  16883      0t0  TCP *:http (LISTEN)
+httpd   2215 apache    4u  IPv6  16883      0t0  TCP *:http (LISTEN)
+httpd   2216 apache    4u  IPv6  16883      0t0  TCP *:http (LISTEN)
+httpd   2217 apache    4u  IPv6  16883      0t0  TCP *:http (LISTEN)
+httpd   2218 apache    4u  IPv6  16883      0t0  TCP *:http (LISTEN)
+httpd   2219 apache    4u  IPv6  16883      0t0  TCP *:http (LISTEN)
+[root@localhost ~]# netstat -lnt | grep 80
+tcp        0      0 :::80                       :::*                        LISTEN      
+[root@localhost ~]# dd if-/dev/zero of-/dev/sdc
+dd: unrecognized operand `if-/dev/zero'
+Try `dd --help' for more information.
+[root@localhost ~]# dd if-/dev/zero of-/dev/sdc bs-8k count=10
+dd: unrecognized operand `if-/dev/zero'
+Try `dd --help' for more information.
+[root@localhost ~]# dd if=/dev/zero of-/dev/sdc bs-8k count=10
+dd: unrecognized operand `of-/dev/sdc'
+Try `dd --help' for more information.
+[root@localhost ~]# dd if=/dev/zero of=/dev/sdc bs-8k count=10
+dd: unrecognized operand `bs-8k'
+Try `dd --help' for more information.
+[root@localhost ~]# dd if=/dev/zero of=/dev/sdc bs=8k count=10
+10+0 records in
+10+0 records out
+81920 bytes (82 kB) copied, 0.000196025 s, 418 MB/s
+[root@localhost ~]# ls -l /dev/sdc
+-rw-r--r--. 1 root root 81920 Apr  5 11:22 /dev/sdc
+[root@localhost ~]# nkfs -t ext3 /dev/sdc
+-bash: nkfs: command not found
+[root@localhost ~]# yum install -y nkfs
+Loaded plugins: fastestmirror, refresh-packagekit, security
+Loading mirror speeds from cached hostfile
+^C^C^C^C^C^C
+
+Exiting on user cancel
+^CcException KeyboardInterrupt in <module 'threading' from '/usr/lib64/python2.6/threading.pyc'> ignored
+[root@localhost ~]# mkfs -t ext3 /dev/sdc
+mke2fs 1.41.12 (17-May-2010)
+/dev/sdc is not a block special device.
+Proceed anyway? (y,n) y
+Filesystem label=
+OS type: Linux
+Block size=1024 (log=0)
+Fragment size=1024 (log=0)
+Stride=0 blocks, Stripe width=0 blocks
+16 inodes, 80 blocks
+4 blocks (5.00%) reserved for the super user
+First data block=1
+1 block group
+8192 blocks per group, 8192 fragments per group
+16 inodes per group
+
+Writing inode tables: done                            
+
+Filesystem too small for a journal
+Writing superblocks and filesystem accounting information: done
+
+This filesystem will be automatically checked every 29 mounts or
+180 days, whichever comes first.  Use tune2fs -c or -i to override.
+[root@localhost ~]# tune2fs -c -1 /dev/sdc
+tune2fs 1.41.12 (17-May-2010)
+Setting maximal mount count to -1
+[root@localhost ~]# mount -o loop /dev/sdc /app/log
+mount: mount point /app/log does not exist
+[root@localhost ~]# mkdir -p /app/log
+[root@localhost ~]# mount -o loop /dev/sdc /app/log
+[root@localhost ~]# df -h
+Filesystem            Size  Used Avail Use% Mounted on
+/dev/sda3              16G  2.4G   13G  16% /
+tmpfs                 112M     0  112M   0% /dev/shm
+/dev/sda1             291M   37M  240M  14% /boot
+/dev/sdc               73K   14K   55K  21% /app/log
+[root@localhost ~]# 

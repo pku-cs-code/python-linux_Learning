@@ -1,0 +1,17 @@
+python之反射的作用
+ 
+
+hasattr
+getattr
+setattr
+delattr
+
+
+
+if hasattr(self,'talk'):
+   func = getattr(self,'talk')#得到talk方法的内存地址
+   func()#3talk
+
+setattr(d,'n',10)   设置给实例
+
+__meta__可以创建类，更深层的类是由type定义的

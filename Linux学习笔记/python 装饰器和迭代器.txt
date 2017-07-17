@@ -1,0 +1,101 @@
+python 装饰器和迭代器
+
+上节课回顾
+
+单向队列和双向队列都是线程安全的
+处理进程占用的问题
+
+赋值拷贝0层，拷贝的id
+浅拷贝拷贝1层
+深拷贝拷贝2层
+
+内置函数
+库函数
+自定义函数
+	函数名 def
+	函数体
+	增强重用性
+	参数（形参与实参）、返回值
+
+迭代器
+只能往前不能后退
+很少往后退
+不要求事先准备好整个迭代过程的所有元素
+只会在迭代到某个元素才计算该元素
+在这之前或者之后，元素可以不存在
+适合遍历一个巨大的或者是无限大的集合，比如几个Ｇ的文件
+
+cat可在很短的时间cat完一个大的比如几百M的文本文件
+但vim加载要很短时间
+原因是cat是从前往后读的
+
+特点：
+1访问者不需要关心迭代器内部的结构，仅需通过next()方法不断去取下一个内容
+2不能随机访问元素，需从头到尾一次访问
+3访问到一半不能回退
+4便于循环比较大的数据集合，节省内存
+
+不能通过下标去访问
+python3
+print(names.__next__())
+python2
+print(names.next())
+只有这个方法
+
+python2的xreadline中可以迭代，python3取消了
+
+以后不要用
+f.read()
+f.readlines()
+因为节省内存可以快很多
+
+
+生成器generator
+一个函数调用时返回一个迭代器，这个函数就是生成器
+yield
+
+def cash_out(amount):
+	while amount > 0:
+		amount -= 1
+		#return 1
+		yield 1
+		print("cash out")
+
+def cash_out(amount):
+  while amount > 0:
+    amount -=100
+    yield 100
+    print("cash out")
+
+atm = cash_out(500)
+
+print(type(atm))
+
+生成器可以保存函数的中断状态
+
+在串行的函数中实现异步（同时可以干两件事）
+yield可以返回值，还可以接收值（接收通过send方法）
+
+
+不可以改变源码
+可以拓展
+
+装饰器（语法堂）
+@login
+def tv(name):
+    print("welcom [%s]to TV page  " % name)
+
+装饰器
+def login(func):
+    def inner(arg):
+        print("password user verificatiion...")
+        func(arg)#tv
+    #func()
+    #return None
+    return inner
+
+给装饰器加参数
+
+装饰器面试基本问题
+
+

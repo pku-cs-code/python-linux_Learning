@@ -1,0 +1,12 @@
+python之logging模块
+
+优先级上面包含下面的
+
+DEBUG
+INFO
+WARNING
+ERROR
+CRITICAL
+
+
+全局的loglevel要大于局部的

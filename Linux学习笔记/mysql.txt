@@ -1,0 +1,296 @@
+mysql
+
+[root@test ~]# groupadd mysql
+[root@test ~]# useradd -s /sbin/nologin -g mysql -M mysql
+-s /sbin/nologin不让其登录
+-g mysql属组
+-M不创建家目录
+
+./configure \
+--prefix=/usr/local/mysql \
+--with-unix-socket-path=/usr/local/mysql/tmp/mysql.sock \
+--localstatedir=/usr/local/mysql/data \
+--enable-assembler \
+--enable-thread-safe-client \
+--with-mysqld-user=mysql \
+--with-big-tables \
+--without-debug \
+--with-pthread \
+--enable-assembler \
+--with-extra-charsets=complex \
+--with-readline \
+--with-ssl \
+--with-embedded-server \
+--enable-local-infile \
+--with-plugins=partition,innobase \
+--with-plugin-PLUGIN \
+--with-mysqld-ldflags=-all-static \
+--with-client-ldflags=-all-static
+
+配置路径报错
+ No curses/termcap library found
+需要安装ncurses包解决yum -y install ncurses-devel
+然后编译make，编译时间很长，建议安装前将主机内存调大
+编译报错../depcomp: line 571: exec: g++: not found，是没有安装gcc-c++导致
+yum安装gcc-c++
+ make clean
+再重新编译
+再次报错../include/my_global.h:1110: error: redeclaration of C++ built-in type ‘bool’
+
+重新make clean然后./configure然后 编译
+然后安装 make install
+
+
+/bin/cp support-files/my-small.cnf /etc/mycnf
+[root@test ~]# ll /etc/my.cnf 
+-rw-r--r-- 1 root root 4699 Apr 14 09:37 /etc/my.cnf
+[root@test data]# mkdir -p /usr/local/mysql/data路径下面创建数据文件
+[root@test data]# chown -R mysql /usr/local/mysql授权目录可以访问
+[root@test data]# /usr/local/mysql/bin/my
+myisamchk                   mysql_client_test_embedded  mysql_install_db
+myisam_ftdump               mysql_config                mysql_secure_installation
+myisamlog                   mysql_convert_table_format  mysql_setpermission
+myisampack                  mysqld_multi                mysqlshow
+my_print_defaults           mysqld_safe                 mysqlslap
+mysql                       mysqldump                   mysqltest
+mysqlaccess                 mysqldumpslow               mysqltest_embedded
+mysqladmin                  mysql_find_rows             mysql_tzinfo_to_sql
+mysqlbinlog                 mysql_fix_extensions        mysql_upgrade
+mysqlbug                    mysql_fix_privilege_tables  mysql_waitpid
+mysqlcheck                  mysqlhotcopy                mysql_zap
+mysql_client_test           mysqlimport                 
+[root@test data]# /usr/local/mysql/bin/my
+myisamchk                   mysql_client_test_embedded  mysql_install_db
+myisam_ftdump               mysql_config                mysql_secure_installation
+myisamlog                   mysql_convert_table_format  mysql_setpermission
+myisampack                  mysqld_multi                mysqlshow
+my_print_defaults           mysqld_safe                 mysqlslap
+mysql                       mysqldump                   mysqltest
+mysqlaccess                 mysqldumpslow               mysqltest_embedded
+mysqladmin                  mysql_find_rows             mysql_tzinfo_to_sql
+mysqlbinlog                 mysql_fix_extensions        mysql_upgrade
+mysqlbug                    mysql_fix_privilege_tables  mysql_waitpid
+mysqlcheck                  mysqlhotcopy                mysql_zap
+mysql_client_test           mysqlimport                 
+[root@test data]# /usr/local/mysql/bin/mysql_install_db  --user=mysql初始化数据文件
+192.168.31.59上测试（/usr/local/mysql/bin/mysql_install_db  --user=mysql --datadir=/usr/local/mysql/data）
+WARNING: The host 'test' could not be looked up with resolveip.
+This probably means that your libc libraries are not 100 % compatible
+with this binary MySQL version. The MySQL daemon, mysqld, should work
+normally with the exception that host name resolving will not work.
+This means that you should use IP addresses instead of hostnames
+when specifying MySQL privileges !
+Installing MySQL system tables...
+140415  1:43:24 [Warning] '--skip-locking' is deprecated and will be removed in a future release. Please use '--skip-external-locking' instead.
+ERROR: 1004  Can't create file '/tmp/#sql5d3_1_0.frm' (errno: 13)
+140415  1:43:24 [ERROR] Aborting
+
+140415  1:43:24 [Note] /usr/local/mysql/libexec/mysqld: Shutdown complete
+
+
+Installation of system tables failed!  Examine the logs in
+/usr/local/mysql/data for more information.
+
+You can try to start the mysqld daemon with:
+
+    shell> /usr/local/mysql/libexec/mysqld --skip-grant &
+
+and use the command line tool /usr/local/mysql/bin/mysql
+to connect to the mysql database and look at the grant tables:
+
+    shell> /usr/local/mysql/bin/mysql -u root mysql
+    mysql> show tables
+
+Try 'mysqld --help' if you have problems with paths.  Using --log
+gives you a log in /usr/local/mysql/data that may be helpful.
+
+Please consult the MySQL manual section
+'Problems running mysql_install_db', and the manual section that
+describes problems on your OS.  Another information source are the
+MySQL email archives available at http://lists.mysql.com/.
+
+Please check all of the above before mailing us!  And remember, if
+you do mail us, you MUST use the /usr/local/mysql/bin/mysqlbug script!
+
+有报错ERROR: 1004  Can't create file '/tmp/#sql5d3_1_0.frm' (errno: 13)
+执行如下操作后解决权限问题就好了
+[root@test ~]# chown -R mysql.mysql /tmp或者chmod 777 /tmp
+如下
+[root@test mysql]# /usr/local/mysql/bin/mysql_install_db --user=mysql
+WARNING: The host 'test' could not be looked up with resolveip.
+This probably means that your libc libraries are not 100 % compatible
+with this binary MySQL version. The MySQL daemon, mysqld, should work
+normally with the exception that host name resolving will not work.
+This means that you should use IP addresses instead of hostnames
+when specifying MySQL privileges !
+Installing MySQL system tables...
+140415  2:00:28 [Warning] '--skip-locking' is deprecated and will be removed in a future release. Please use '--skip-external-locking' instead.
+OK
+Filling help tables...
+140415  2:00:28 [Warning] '--skip-locking' is deprecated and will be removed in a future release. Please use '--skip-external-locking' instead.
+OK
+
+To start mysqld at boot time you have to copy
+support-files/mysql.server to the right place for your system
+
+PLEASE REMEMBER TO SET A PASSWORD FOR THE MySQL root USER !
+To do so, start the server, then issue the following commands:
+
+/usr/local/mysql/bin/mysqladmin -u root password 'new-password'
+/usr/local/mysql/bin/mysqladmin -u root -h test password 'new-password'
+
+Alternatively you can run:
+/usr/local/mysql/bin/mysql_secure_installation
+
+which will also give you the option of removing the test
+databases and anonymous user created by default.  This is
+strongly recommended for production servers.
+
+See the manual for more instructions.
+
+You can start the MySQL daemon with:
+cd /usr/local/mysql ; /usr/local/mysql/bin/mysqld_safe &
+
+You can test the MySQL daemon with mysql-test-run.pl
+cd /usr/local/mysql/mysql-test ; perl mysql-test-run.pl
+
+Please report any problems with the /usr/local/mysql/bin/mysqlbug script!
+报错的前面行
+WARNING: The host 'test' could not be looked up with resolveip.
+是说不能解析test主机的ip，可以在127.0.0.1行后添加test主机名即可
+127.0.0.1        test mysql localhost.localdomain       localhost.localdomain   localhost4      localhost4.localdomain4 localhost 
+
+[root@test mysql]# vim /etc/hosts
+[root@test mysql]# /usr/local/mysql/bin/mysql_install_db --user=mysql
+Installing MySQL system tables...
+140415  2:06:47 [Warning] '--skip-locking' is deprecated and will be removed in a future release. Please use '--skip-external-locking' instead.
+OK
+Filling help tables...
+140415  2:06:47 [Warning] '--skip-locking' is deprecated and will be removed in a future release. Please use '--skip-external-locking' instead.
+OK
+
+To start mysqld at boot time you have to copy
+support-files/mysql.server to the right place for your system
+
+PLEASE REMEMBER TO SET A PASSWORD FOR THE MySQL root USER !
+To do so, start the server, then issue the following commands:
+
+/usr/local/mysql/bin/mysqladmin -u root password 'new-password'
+/usr/local/mysql/bin/mysqladmin -u root -h test password 'new-password'
+
+Alternatively you can run:
+/usr/local/mysql/bin/mysql_secure_installation
+
+which will also give you the option of removing the test
+databases and anonymous user created by default.  This is
+strongly recommended for production servers.
+
+See the manual for more instructions.
+
+You can start the MySQL daemon with:
+cd /usr/local/mysql ; /usr/local/mysql/bin/mysqld_safe &
+
+You can test the MySQL daemon with mysql-test-run.pl
+cd /usr/local/mysql/mysql-test ; perl mysql-test-run.pl
+
+Please report any problems with the /usr/local/mysql/bin/mysqlbug script!
+
+启动mysql
+/usr/local/mysql/bin/mysqld_safe &
+[1] 1729
+You have mail in /var/spool/mail/root
+[root@test mysql]# 140415 02:10:52 mysqld_safe Logging to '/usr/local/mysql/data/test.err'.
+140415 02:10:52 mysqld_safe Starting mysqld daemon with databases from /usr/local/mysql/data
+[root@test mysql]# netstat -lnt|grep 3306
+tcp        0      0 0.0.0.0:3306                0.0.0.0:*                   LISTEN  
+
+或者将启动脚本拷贝到mysql安装路径中
+[root@test mysql-5.1.72]# cp support-files/mysql.server /usr/local/mysql/bin/
+[root@test mysql-5.1.72]# chmod 700 /usr/local/mysql/bin/mysql.server 
+[root@test mysql-5.1.72]# /usr/local/mysql/bin/mysql
+mysql                       mysqld_safe                 mysql_setpermission
+mysqlaccess                 mysqldump                   mysqlshow
+mysqladmin                  mysqldumpslow               mysqlslap
+mysqlbinlog                 mysql_find_rows             mysqltest
+mysqlbug                    mysql_fix_extensions        mysqltest_embedded
+mysqlcheck                  mysql_fix_privilege_tables  mysql_tzinfo_to_sql
+mysql_client_test           mysqlhotcopy                mysql_upgrade
+mysql_client_test_embedded  mysqlimport                 mysql_waitpid
+mysql_config                mysql_install_db            mysql_zap
+mysql_convert_table_format  mysql_secure_installation   
+mysqld_multi                mysql.server                
+[root@test mysql-5.1.72]# /usr/local/mysql/bin/mysql.server start
+Starting MySQL SUCCESS! 
+[root@test mysql-5.1.72]# netstat -lnt |grep 3306
+tcp        0      0 0.0.0.0:3306                0.0.0.0:*                   LISTEN   
+
+或者
+[root@test mysql-5.1.72]# /usr/local/mysql/bin/mysqld_safe --user=mysql &
+[1] 2007
+[root@test mysql-5.1.72 ]# 140415 02:17:47 mysqld_safe Logging to '/usr/local/mysql/data/test.err'.
+140415 02:17:47 mysqld_safe Starting mysqld daemon with databases from /usr/local/mysql/data
+[root@test mysql-5.1.72]# netstat -lnt |grep 3306
+tcp        0      0 0.0.0.0:3306                0.0.0.0:*                   LISTEN 
+[root@test mysql-5.1.72]# ps -ef|grep mysql
+root      2007  1350  0 02:17 pts/0    00:00:00 /bin/sh /usr/local/mysql/bin/mysqld_safe --user=mysql
+mysql     2119  2007  0 02:17 pts/0    00:00:00 /usr/local/mysql/libexec/mysqld --basedir=/usr/local/mysql --datadir=/usr/local/mysql/data --user=mysql --log-error=/usr/local/mysql/data/test.err --pid-file=/usr/local/mysql/data/test.pid --socket=/usr/local/mysql/tmp/mysql.sock --port=3306
+root      2132  1350  0 02:18 pts/0    00:00:00 grep mysql
+
+查看错误日志，日志名是主机名.err
+[root@test mysql-5.1.72]# tail -10 /usr/local/mysql/data/test.err 
+
+140415 02:17:09 mysqld_safe mysqld from pid file /usr/local/mysql/data/test.pid ended
+140415 02:17:47 mysqld_safe Starting mysqld daemon with databases from /usr/local/mysql/data
+140415  2:17:47 [Warning] '--skip-locking' is deprecated and will be removed in a future release. Please use '--skip-external-locking' instead.
+140415  2:17:47  InnoDB: Initializing buffer pool, size = 8.0M
+140415  2:17:47  InnoDB: Completed initialization of buffer pool
+140415  2:17:47  InnoDB: Started; log sequence number 0 44233
+140415  2:17:47 [Note] Event Scheduler: Loaded 0 events
+140415  2:17:47 [Note] /usr/local/mysql/libexec/mysqld: ready for connections.
+Version: '5.1.72-log'  socket: '/usr/local/mysql/tmp/mysql.sock'  port: 3306  Source distribution
+
+
+配置mysql全局路径
+[root@test mysql-5.1.72]# which mysql
+/usr/bin/which: no mysql in (/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin:/usr/local/sersync/bin:/root/bin)
+[root@test mysql-5.1.72]# mysql
+-bash: mysql: command not found
+[root@test mysql-5.1.72]# echo $PATH
+/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin:/usr/local/sersync/bin:/root/bin
+[root@test mysql-5.1.72]# echo "export PATH=$PATH:/usr/local/mysql/bin">>/etc/profile
+[root@test mysql-5.1.72]# mysql
+-bash: mysql: command not found
+[root@test mysql-5.1.72]# source /etc/profile
+oldboy
+[root@test mysql-5.1.72]# mysql
+ERROR 1045 (28000): Access denied for user 'root'@'localhost' (using password: NO)
+[root@test mysql-5.1.72]# echo $PATH
+/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin:/usr/local/sersync/bin:/root/bin:/usr/local/mysql/bin
+
+也可将mysql命令的拷贝到全局路径下
+
+添加到/etc/init.d/启动目录
+[root@test mysql-5.1.72]# cp support-files/mysql.server /etc/init.d/mysqld
+You have mail in /var/spool/mail/root
+[root@test mysql-5.1.72]# chmod 700 /etc/init.d/mysqld 
+[root@test mysql-5.1.72]# ll /etc/init.d/mysqld 
+-rwx------ 1 root root 12533 Apr 15 02:26 /etc/init.d/mysqld
+验证过程
+[root@test mysql-5.1.72]# /etc/init.d/mysqld stop
+Shutting down MySQL.140415 02:27:29 mysqld_safe mysqld from pid file /usr/local/mysql/data/test.pid ended
+ SUCCESS! 
+[1]+  Done                    /usr/local/mysql/bin/mysqld_safe --user=mysql
+[root@test mysql-5.1.72]# netstat -lnt |grep 3306
+[root@test mysql-5.1.72]# /etc/init.d/mysqld start
+Starting MySQL. SUCCESS! 
+[root@test mysql-5.1.72]# netstat -lnt |grep 3306
+tcp        0      0 0.0.0.0:3306                0.0.0.0:*                   LISTEN     
+
+设置mysql开机自启动
+chkconfig添加
+[root@test mysql-5.1.72]# chkconfig --add mysqld
+[root@test mysql-5.1.72]# chkconfig mysqld on
+[root@test mysql-5.1.72]# chkconfig --list mysqld
+mysqld         	0:off	1:off	2:on	3:on	4:on	5:on	6:off
+
+或者 /etc/init.d/mysqld start放在rc.local中

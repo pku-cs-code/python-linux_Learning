@@ -1,0 +1,65 @@
+定时任务
+ssh、network、syslog、sysstat、crond
+默认每分钟检查一次
+程序文件：程序代码组成，但是没有在计算机内执行，当前没有执行
+守护进程或守护进程：计算机中正在执行的程序，守护进程就是一直运行的程序
+数据库或者代码程序每天晚上0点做一次全备
+at一次性执行，守护进程atd
+crontab  crond
+anacron开机后执行没有执行的定时任务，守护进程anacrond
+crontab -l:任务list  -e：编辑
+/var/spool/cron定时任务配置目录
+crontab -l==cat /var/spool/$USER
+crontab -e==vi /var/spool/$USER
+
+[oldboy@test ~]$ ll /var/spool/cron/
+ls: cannot open directory /var/spool/cron/: Permission denied
+[oldboy@test ~]$ crontab -e
+crontab: installing new crontab
+[oldboy@test ~]$ ls -l /usr/bin/crontab
+-rwsr-xr-x. 1 root root 51784 Aug 24  2016 /usr/bin/crontab
+setuid的用处2
+ 系统7段
+# .---------------- minute (0 - 59)
+# |  .------------- hour (0 - 23)
+# |  |  .---------- day of month (1 - 31)
+# |  |  |  .------- month (1 - 12) OR jan,feb,mar,apr ...
+# |  |  |  |  .---- day of week (0 - 6) (Sunday=0 or 7) OR sun,mon,tue,wed,thu,fri,sat
+# |  |  |  |  |
+# *  *  *  *  * user-name command to be executed
+分、时、日、月、周、用户、命令
+00 17-19 * * *每天17,18,19点执行
+00 17,18,19 * * *
+30 3-5,17-19 * * *3-5,17-19点每个半点检查
+*/10 * * * *每隔10分钟
+0-59/1 * * * * 分位上的*相当于00-59
+* 23,00-07/1 * * * 23点，0点到7点每分执行
+00 11 * 4 1-3每年的4月周一到上午11:00执行
+周和日可能冲突
+用户6段
+
+* * * * *   /bin/sh  /server/scripts/date.sh >dev/dull 2>&1
+脚本任务加 >dev/dull 2>&1
+/dev/null特殊的字符设备文件，表示空设备或黑洞设备
+0  标准输入
+1  标准输出，正常的输出
+2  标准错误
+
+2>$1把错误输出重定向位标准输出
+ >/dev/null 2>$1   可以写成>/dev/null 2>/dev/null
+不加会导致inode占满
+生产任务程序不要随意打印输出信息，因为输出会产生垃圾，尽量把DEBUG及命令输出的
+内容信息屏蔽掉
+定时任务最好写到脚本里执行：防止出现错误
+命令程序要用绝对路径、规范路径
+首先要在命令行操作成功，测试脚本运行后要copy防止落东西
+加注释
+有输出目的如echo "+" >>/opt/log.txt 2>&1就不用>dev/null
+
+/etc/sysctl.conf系统内核参数
+/etc/rc.local系统启动
+/etc/fstab系统开机挂载文件
+/var/log/sercure系统安全日志
+
+[root@test scripts]# useradd long -g sa -u 808 -M -s /sbin/nologin
+

@@ -1,0 +1,87 @@
+正则表达式
+用特殊的符号代表一些规则，以行为单位进行字符串的处理
+程序正则、系统正则
+
+^word以word开头的行
+word^以word结尾的
+.任意一个字符（其他含义：当前目录、隐藏的标识、让有一个系统配置文件生效、把脚本的变量带到当前的脚本）
+\将特殊符号的特殊意义去掉，
+*重复零个或多个前面的一个字符
+\{n,m\}连续n到m个的“前一个重复字符，\{n\}n个，\{n,\}至少n个，\{,m\}之多m个
+[]字符集合，[0-9]0-9任意一个数字g[ld]gl或gd，[^d]中括号^表示不包括
+.*匹配所有的
+^.* 以任意多个字符开头的
+[^word]不包含word的
+正则表达式适合三剑客的，但和python、perl是有区别的
+
+sed过滤
+sed -n '/oldboy/p' /etc/passwd, -n取消默认输出，-p打印，-d打印，-i修改文件内容
+sed 's#old#new#g' file替代，将old全局替换为new，g可以为1,2……表示将第一个或者第二个替换
+分隔符可以为/#@=……使用分隔符的原则是不要和替换和被替换中包含的内容重复
+sed -n  '2,5p' a打印2到5行
+[root@mode test]# sed -n  '5p' a打印第5行[root@mode test]# sed -n  '1~2p' a
+1
+3
+5
+7
+9
+跳过2行，即奇数行
+[root@mode test]# sed -n  '1~3p' a跳过3行
+[root@mode test]# seq 1 3 10隔3个打印出来1-10里的数
+
+[root@mode test]# stat /etiantian | sed 4p -n |cut -d "(" -f2 |cut -d / -f1
+0644
+[root@mode test]# stat /etiantian | sed 4p -n |cut -d "(" -f2 |cut -e 2-4
+cut: invalid option -- 'e'
+Try `cut --help' for more information.
+[root@mode test]# stat /etiantian | sed 4p -n |cut -d "(" -f2 |cut -e 2 4
+cut: invalid option -- 'e'
+Try `cut --help' for more information.
+[root@mode test]# stat /etiantian | sed 4p -n |cut -d "(" -f2 |cut -c 1-4
+0644
+
+[root@mode test]# stat /etiantian|head -4|tail -1 |cut -d "(" -f2 |cut -c 1-4
+0644
+
+[root@mode test]# stat /etiantian | sed 4p -n |awk -F  "(" '{print $2}'|awk -F "/" '{print $1}'0644
+
+[root@mode test]# stat -c %a /etiantian 
+644
+[root@mode test]# stat -c %A /etiantian 
+-rw-r--r--
+You have new mail in /var/spool/mail/root
+[root@mode test]# stat -c %B /etiantian 
+512
+[root@mode test]# stat -c %b /etiantian 
+0
+
+[root@mode test]# stat /etiantian | sed -n 4p | awk -F '[(/]' '{print $2}'
+0644
+
+当命令结果包含想要的内容的时候，要想到查看命令是否可以直接过滤
+取行sed，head配合tail，拓展awk，grep
+
+[root@mode test]# ifconfig |sed -n 2p |awk -F ":" ' {print $2}'|awk -F" " '{print $1}'
+192.168.1.60
+[root@mode test]# ifconfig eth0 | grep "inet addr"|awk -F '[ :]+' '{print $4}'
++号表示多个分隔符当一个处理
+
+[root@mode test]# ifconfig eth0 | awk -F '[ :]+' 'NR==2 {print $4}'
+192.168.1.60
+NR==2取第二行
+NR行
+NF列的个数
+$NF最后一列
+
+[root@mode test]# ifconfig eth0 | sed -n 2p | sed 's#^.*addr:##g' |sed 's#  Bca.*$##g'
+192.168.1.60
+[root@mode test]# ifconfig eth0 | sed -n 1p | sed 's#.*net ##g' |sed 's# 00.*$##g'
+ HWaddr
+
+sed：（）分组，可以匹配目标后放到括号里，然后替换的部分\1括号前的第一个括号内容
+[root@mode test]# ifconfig eth0|sed -n 's#^.*addr:\(.*\)  Bca.*$#\1#gp'
+192.168.1.60
+[root@mode test]# stat /etiantian | sed -n 's#^.*Access: (\(.*\)/-rw-r.*$#\1#gp'
+0644
+
+

@@ -1,0 +1,81 @@
+循环控制的多个控制命令对比实际案例
+
+break continue exit
+
+一般用于循环控制中，一般用于循环控制结构的走向
+
+[root@test scripts]# sh break.sh 
+0
+1
+2
+ok
+[root@test scripts]# vim break.sh
+[root@test scripts]# sh continue.sh 
+0
+1
+2
+4
+5
+ok
+[root@test scripts]# vim break.sh
+[root@test scripts]# sh exit.sh 
+0
+1
+2
+
+
+break n        n表示跳出循环的层数，如果省略n则表示跳出当前循环
+continue n   表示退出到第n层循环，如果省略n表示跳过本次循环，忽略本次循环的
+                   剩余代码，进入循环的下一次循环
+exit n           退出当前的shell程序，并返回n
+return          用于函数的返回值
+
+
+
+ifconfig eth0:1 192.168.32.15 netmask 255.255.240.0 up
+[root@test scripts]# cat ip-alias.sh 
+#!/bin/bash
+for((i=1;i<=14;i++))
+do
+  if [ $i -eq 10 ];then
+    continue
+  fi
+    ifconfig eth0:$i 192.168.32.$i netmask 255.255.240.0 up
+done
+
+
+定义函数
+函数名(){
+
+}
+
+
+function 函数名(){
+
+}
+return 是跳出当前函数
+exit是退出当前shell脚本
+
+[root@test scripts]# sh func.sh 
+I am zhangjian
+I am xingfujie
+[root@test scripts]# vim func.sh
+[root@test scripts]# chmod +x func.sh 
+[root@test scripts]# cat func.sh 
+#!/bin/bash
+zhangjian(){
+echo "I am zhangjian"
+
+}
+function xingfujie(){
+echo "I am xingfujie"
+
+}
+zhangjian
+xingfujie
+
+
+注意：
+调用函数时后面不要接括号
+函数在调用之前定义
+

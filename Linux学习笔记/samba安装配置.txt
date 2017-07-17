@@ -1,0 +1,108 @@
+samba安装配置
+
+Linux设置共享文件夹windows下访问
+
+yum install samba
+修改配置文件，home中security=user改为share即可不登录用户名密码共享
+mkdir  /home/zhangcai/share
+添加共享目录pulic
+设置权限可写
+在windows下文件资源管理器输入//192.168.31.60既可以访问share文件夹
+显示的是public目录，可以新建文件并写入
+
+[public]
+comment = Public Staff
+path = /home/zhangcai/share
+public = yes
+writable = yes
+only guest=yes
+
+[root@test ~]# cat /etc/samba/smb.conf
+[global]
+	workgroup = MYGROUP
+	server string = Samba Server Version %v
+	log file = /var/log/samba/log.%m
+	max log size = 50
+	security = share
+	passdb backend = tdbsam
+	load printers = yes
+	cups options = raw
+[homes]
+	comment = Home Directories
+	browseable = no
+	writable = yes
+;	valid users = %S
+;	valid users = MYDOMAIN\%S
+	
+[printers]
+	comment = All Printers
+	path = /var/spool/samba
+	browseable = no
+	guest ok = no
+	writable = no
+	printable = yes
+	
+[public]
+comment = Public Staff
+path = /home/zhangcai/share
+public = yes
+writable = yes
+only guest=yes
+
+windows下设置共享文件linux访问
+linux安装smbclient访问windows共享文件时，不能列出汉字
+可列出英文名
+ubuntu桌面可以列出中文名
+smbclient //192.168.31.247/test2
+
+linux下windows共享文件夹带汉字不能识别
+[root@test share]# smbclient //192.168.31.247/运维面试
+WARNING: The security=share option is deprecated
+Enter root's password: 
+Domain=[DESKTOP-HOLTCSQ] OS=[Windows 10 Enterprise 14393] Server=[Windows 10 Enterprise 6.3]
+tree connect failed: NT_STATUS_BAD_NETWORK_NAME
+
+采用挂载的方式
+因为windows是采用Everyone的形式，linux下挂载时用户名密码要写成share
+mount -t cifs -o username=share,password=share //192.168.31.247/test /mnt/
+
+应该这么挂载utf8，不是utf-8，否则会报错Can not access a needed shared library
+mount.cifs -o iocharset=utf8,codepage=cp936 //192.168.31.247/test /mnt/
+还是乱码
+mount.cifs -o iocharset=gb2312,codepage=936 //192.168.31.247/test /mnt/
+还是乱码
+mount.cifs -o iocharset=cp936 //192.168.31.247/test /mnt/
+还是乱码
+mount.cifs -o iocharset=utf8 //192.168.31.247/test /mnt/
+
+修改/etc/sysconfig/i18n文件重启
+locale查看本地编码
+
+[root@test mnt]# mount.cifs -o iocharset=utf-8,codepage=cp936 //192.168.31.247/test /mnt/
+Password: 
+mount error(79): Can not access a needed shared library
+Refer to the mount.cifs(8) manual page (e.g. man mount.cifs)
+[root@test mnt]# dmesg |grep CIFS
+CIFS: Unknown mount option codepage
+CIFS VFS: CIFS mount error: iocharset utf-8 not found
+CIFS: Unknown mount option codepage
+CIFS VFS: CIFS mount error: iocharset utf-8 not found
+CIFS: Unknown mount option codepage
+CIFS VFS: CIFS mount error: iocharset utf-8 not found
+
+modinfo cifs
+filename:       /lib/modules/2.6.32-696.3.1.el6.x86_64/kernel/fs/cifs/cifs.ko
+version:        1.68
+description:    VFS to access servers complying with the SNIA CIFS Specification e.g. Samba and Windows
+license:        GPL
+author:         Steve French <sfrench@us.ibm.com>
+srcversion:     D96AAA4CB0D7FBD3AB01DFE
+depends:        
+vermagic:       2.6.32-696.3.1.el6.x86_64 SMP mod_unload modversions 
+parm:           CIFSMaxBufSize:Network buffer size (not including header). Default: 16384 Range: 8192 to 130048 (int)
+parm:           cifs_min_rcv:Network buffers in pool. Default: 4 Range: 1 to 64 (int)
+parm:           cifs_min_small:Small network buffers in pool. Default: 30 Range: 2 to 256 (int)
+parm:           cifs_max_pending:Simultaneous requests to server. Default: 32767 Range: 2 to 32767. (int)
+parm:           enable_oplocks:Enable or disable oplocks (bool). Default:y/Y/1 (bool)
+
+

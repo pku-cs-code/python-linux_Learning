@@ -1,0 +1,244 @@
+操作命令考试
+列出当前目录下的文件夹，滤除文件
+drwxr-xr-x 2 root root 4096 Mar 31 20:38 9
+-rw-r--r-- 1 root root   48 Mar 31 20:48 a.log
+-rw-r--r-- 1 root root    0 Mar 31 20:51 b.log
+-rw-r--r-- 1 root root   64 Mar 31 20:50 c.log
+-rw-r--r-- 1 root root    1 Mar 31 20:56 d.log
+-rw-r--r-- 1 root root   52 Mar 31 20:57 e.log
+[root@centos5 tmp]# ls -l | grep ^d
+drwxr-xr-x 2 root root 4096 Mar 31 20:38 1
+drwxr-xr-x 2 root root 4096 Mar 31 20:38 10
+drwxr-xr-x 2 root root 4096 Mar 31 20:38 2
+drwxr-xr-x 2 root root 4096 Mar 31 20:38 3
+drwxr-xr-x 2 root root 4096 Mar 31 20:38 4
+drwxr-xr-x 2 root root 4096 Mar 31 20:38 5
+drwxr-xr-x 2 root root 4096 Mar 31 20:38 6
+drwxr-xr-x 2 root root 4096 Mar 31 20:38 7
+drwxr-xr-x 2 root root 4096 Mar 31 20:38 8
+drwxr-xr-x 2 root root 4096 Mar 31 20:38 9
+
+过滤文件
+[root@centos5 tmp]# ls -l | grep ^-
+-rw-r--r-- 1 root root    0 Mar 31 20:39 11
+-rw-r--r-- 1 root root    0 Mar 31 20:39 12
+-rw-r--r-- 1 root root    0 Mar 31 20:39 13
+-rw-r--r-- 1 root root    0 Mar 31 20:38 14
+-rw-r--r-- 1 root root    0 Mar 31 20:38 15
+-rw-r--r-- 1 root root    0 Mar 31 20:38 16
+-rw-r--r-- 1 root root    0 Mar 31 20:38 17
+-rw-r--r-- 1 root root    0 Mar 31 20:38 18
+-rw-r--r-- 1 root root    0 Mar 31 20:38 19
+-rw-r--r-- 1 root root    0 Mar 31 20:41 20
+
+ls -l 以 长格式显示，^以什么开头，[]里面的^表示非，在外面表示以什么开头
+ls -l以d开头的是文件夹，以-开头的是文件
+ls -F文件夹后面会显示/
+ls -lF | grep /过滤文件夹，grep /表示包含/的
+ls -lF | grep /$ ，$表示以什么结尾
+
+[root@centos5 tmp]# ls -lF | grep /$
+drwxr-xr-x 2 root root 4096 Mar 31 20:38 1/
+drwxr-xr-x 2 root root 4096 Mar 31 20:38 10/
+drwxr-xr-x 2 root root 4096 Mar 31 20:38 2/
+drwxr-xr-x 2 root root 4096 Mar 31 20:38 3/
+drwxr-xr-x 2 root root 4096 Mar 31 20:38 4/
+drwxr-xr-x 2 root root 4096 Mar 31 20:38 5/
+drwxr-xr-x 2 root root 4096 Mar 31 20:38 6/
+drwxr-xr-x 2 root root 4096 Mar 31 20:38 7/
+drwxr-xr-x 2 root root 4096 Mar 31 20:38 8/
+drwxr-xr-x 2 root root 4096 Mar 31 20:38 9/
+[root@centos5 tmp]# ls -lF | grep /
+drwxr-xr-x 2 root root 4096 Mar 31 20:38 1/
+drwxr-xr-x 2 root root 4096 Mar 31 20:38 10/
+drwxr-xr-x 2 root root 4096 Mar 31 20:38 2/
+drwxr-xr-x 2 root root 4096 Mar 31 20:38 3/
+drwxr-xr-x 2 root root 4096 Mar 31 20:38 4/
+drwxr-xr-x 2 root root 4096 Mar 31 20:38 5/
+drwxr-xr-x 2 root root 4096 Mar 31 20:38 6/
+drwxr-xr-x 2 root root 4096 Mar 31 20:38 7/
+drwxr-xr-x 2 root root 4096 Mar 31 20:38 8/
+drwxr-xr-x 2 root root 4096 Mar 31 20:38 9/
+
+ls -lp，-p会显示目录
+ls-lF，-F会显示所有文件
+
+[root@centos5 tmp]# find  /tmp -type d 
+f文件，d目录
+
+[root@centos5 tmp]# find /tmp/ -type d
+/tmp/
+/tmp/9
+/tmp/7
+/tmp/1
+/tmp/.X11-unix
+/tmp/2
+/tmp/3
+/tmp/4
+/tmp/8
+/tmp/10
+/tmp/.ICE-unix
+/tmp/5
+/tmp/6
+
+[root@centos5 tmp]# find . -type d
+.
+./9
+./7
+./1
+./.X11-unix
+./2
+./3
+./4
+./8
+./10
+./.ICE-unix
+./5
+./6
+
+-type c
+              File is of type c:
+
+              b      block (buffered) special
+
+              c      character (unbuffered) special
+
+              d      directory
+
+              p      named pipe (FIFO)
+
+              f      regular file
+
+              l      symbolic link; this is never true if the -L option or the
+                     -follow  option is in effect, unless the symbolic link is
+                     broken.  If you want to search for symbolic links when -L
+                     is in effect, use -xtype.
+
+              s      socket
+
+              D      door (Solaris)
+find可以查找子目录，ls只能显示当前目录
+-maxdepth代表查找的目录深度
+find . -maxdepth 1 -type d
+
+[root@centos5 tmp]# mkdir -p  a/b/c/d
+[root@centos5 tmp]# find . -maxdepth 1 -type d
+.
+./9
+./7
+./1
+./.X11-unix
+./2
+./a
+./3
+./4
+./8
+./10
+./.ICE-unix
+./5
+./6
+[root@centos5 tmp]# find . -maxdepth 2 -type d
+.
+./9
+./7
+./1
+./.X11-unix
+./2
+./a
+./a/b
+./3
+./4
+./8
+./10
+./.ICE-unix
+./5
+./6
+
+不包含“.”文件名的
+[root@centos5 tmp]# find . -maxdepth 2 -type d ! -name "."
+./9
+./7
+./1
+./.X11-unix
+./2
+./a
+./a/b
+./3
+./4
+./8
+./10
+./.ICE-unix
+./5
+./6
+
+[root@centos5 tmp]# tree -Ld 1 /tmp/
+/tmp/
+|-- 1
+|-- 10
+|-- 2
+|-- 3
+|-- 4
+|-- 5
+|-- 6
+|-- 7
+|-- 8
+|-- 9
+`-- a
+
+[root@centos5 tmp]# tree -Ld 1 /tmp/
+d是目录，L是深度
+
+[root@centos5 tmp]# ls -ld */
+drwxr-xr-x 2 root root 4096 Mar 31 20:38 1/
+drwxr-xr-x 2 root root 4096 Mar 31 20:38 10/
+drwxr-xr-x 2 root root 4096 Mar 31 20:38 2/
+drwxr-xr-x 2 root root 4096 Mar 31 20:38 3/
+drwxr-xr-x 2 root root 4096 Mar 31 20:38 4/
+drwxr-xr-x 2 root root 4096 Mar 31 20:38 5/
+drwxr-xr-x 2 root root 4096 Mar 31 20:38 6/
+drwxr-xr-x 2 root root 4096 Mar 31 20:38 7/
+drwxr-xr-x 2 root root 4096 Mar 31 20:38 8/
+drwxr-xr-x 2 root root 4096 Mar 31 20:38 9/
+drwxr-xr-x 3 root root 4096 Apr  4 19:13 a/
+
+[root@centos5 tmp]# ls -l | awk '/^d/'
+drwxr-xr-x 2 root root 4096 Mar 31 20:38 1
+drwxr-xr-x 2 root root 4096 Mar 31 20:38 10
+drwxr-xr-x 2 root root 4096 Mar 31 20:38 2
+drwxr-xr-x 2 root root 4096 Mar 31 20:38 3
+drwxr-xr-x 2 root root 4096 Mar 31 20:38 4
+drwxr-xr-x 2 root root 4096 Mar 31 20:38 5
+drwxr-xr-x 2 root root 4096 Mar 31 20:38 6
+drwxr-xr-x 2 root root 4096 Mar 31 20:38 7
+drwxr-xr-x 2 root root 4096 Mar 31 20:38 8
+drwxr-xr-x 2 root root 4096 Mar 31 20:38 9
+drwxr-xr-x 3 root root 4096 Apr  4 19:13 a
+^以什么开头
+
+[root@centos5 tmp]# ls -l | sed -n '/^d/p'
+drwxr-xr-x 2 root root 4096 Mar 31 20:38 1
+drwxr-xr-x 2 root root 4096 Mar 31 20:38 10
+drwxr-xr-x 2 root root 4096 Mar 31 20:38 2
+drwxr-xr-x 2 root root 4096 Mar 31 20:38 3
+drwxr-xr-x 2 root root 4096 Mar 31 20:38 4
+drwxr-xr-x 2 root root 4096 Mar 31 20:38 5
+drwxr-xr-x 2 root root 4096 Mar 31 20:38 6
+drwxr-xr-x 2 root root 4096 Mar 31 20:38 7
+drwxr-xr-x 2 root root 4096 Mar 31 20:38 8
+drwxr-xr-x 2 root root 4096 Mar 31 20:38 9
+drwxr-xr-x 3 root root 4096 Apr  4 19:13 a
+-n取消默认输出，p是打印
+
+[root@centos5 ~]# cd /tmp
+[root@centos5 tmp]# cd /root
+[root@centos5 ~]# cd -
+/tmp
+cd -是上次所在的目录，在环境变量env中有oldpwd和pwd的储存
+
+ls -lrt  /etc  r是倒序，t是按时间
+
+[root@centos5 /]# grep 1521 /etc/services --color=auto
+ncube-lm	1521/tcp			# nCube License Manager
+ncube-lm	1521/udp			# nCube License Manager
+[root@centos5 /]# grep 1521 /etc/services --color
+结果要过滤出的内容有颜色显示

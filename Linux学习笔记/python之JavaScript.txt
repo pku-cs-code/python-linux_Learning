@@ -1,0 +1,439 @@
+python之JavaScript
+Dom
+jQuery
+
+JavaScript和java没有关系，是一门语言
+通过浏览器引擎来解释代码
+前端的页面动起来
+
+js泛指JavaScript和Dom
+移除，修改
+
+jQuery调用jQuery可以简化调用JavaScript和Dom，封装
+
+js代码存在形式
+代码块
+文件
+
+alert弹窗
+
+head里面可以放js
+但是如果js出错那么html不会显示出来，用户体验不佳，可以先展示页面再执行js
+可以写在body里面的最底部
+
+声明变量
+	容易出错
+	name = "alex";全局变量
+	var age = 18;加var是局部变量
+
+单行注释//
+多行注释/* */
+
+用分号来分割，便于以后的压缩
+
+jQuery.js
+jQuery.min.js压缩成一行的
+
+js数据类型
+数字
+字符串
+数组
+
+有字典，但不是单独的数据类型，是数组伪造出来的
+
+console.log(age);调试打印信息
+
+float也是int类型的一种
+当赋值字符串时非整数可以应用
+parsFloat和parsInt
+
+var a1=1,a2=2;
+
+字符串类型
+var a1=1,a2=2;
+undefined
+a1
+1
+a2
+2
+var name="alxe";
+undefined
+name
+"alxe"
+var name="alxe  ";
+undefined
+name
+"alxe  "
+name.tr
+undefined
+name.trim
+function trim() { [native code] }
+name
+"alxe  "
+name.trim()
+"alxe"
+
+根据索引取值
+name.charAt(1)
+"l"
+name.charAt(2)
+"x"
+name.charAt(0)
+"a"
+
+var name="alex";
+name.substring(1,2);
+"l"
+name.substring(1,3);
+"le"
+name.indexOf('l');
+1
+name.length
+4
+
+
+布尔值Boolean
+var a=true;
+undefined
+Boolean(a);
+true
+
+数组，相当于python里的列表
+var li = [11,22,33]
+undefined
+li
+(3) [11, 22, 33]
+var li = Array(11,22,33);
+undefined
+li
+(3) [11, 22, 33]
+
+li.push(88);
+4
+li
+(4) [11, 22, 33, 88]
+li.unshift('oo');
+5
+li
+(5) ["oo", 11, 22, 33, 88]
+li.splice(1,0,'alx');//中间的0是固定的
+[]
+li
+(6) ["oo", "alx", 11, 22, 33, 88]
+
+li.pop()
+88
+li
+(5) ["oo", "alx", 11, 22, 33]
+i=li.shift()
+"oo"
+i
+"oo"
+li
+(4) ["alx", 11, 22, 33]
+
+li.splice(1,1);//下标1的后面拿几个元素，不是下标
+[11]
+li.splice(1,3);
+(2) [22, 33]
+li.splice(1,4);
+[]
+li.splice(1,5);
+[]
+li
+["alx"]
+
+li = [11,22,33]//切片
+(3) [11, 22, 33]
+li.slice(0,2)
+(2) [11, 22]
+li.slice(0,3)
+(3) [11, 22, 33]
+
+n = ['alex'];//拼接
+["alex"]
+m = li.concat(n);
+(4) [11, 22, 33, "alex"]
+
+li.reverse()//自身反转
+(3) [33, 22, 11]
+li
+(3) [33, 22, 11]
+
+li.join('-')//字符分割
+"33-22-11"
+li
+(3) [33, 22, 11]
+
+字典是对象。js和Python一样一切皆对象
+dic = {k1:'v1'}
+Object {k1: "v1"}
+dic
+Object {k1: "v1"}
+
+json序列化与反序列化
+
+s = JSON.stringify(dic);
+"{"k1":"v1"}"
+s
+"{"k1":"v1"}"
+JSON.parse(s);
+Object {k1: "v1"}
+s
+"{"k1":"v1"}"
+m = JSON.parse(s);
+Object {k1: "v1"}
+m
+Object {k1: "v1"}
+
+
+
+undefined
+
+null
+
+undefined
+var ss;
+undefined
+ss
+undefined
+name = 'alex';
+"alex"
+name = null
+null
+name
+"null"
+Boolean(null);
+false
+Boolean(undefined);
+false
+
+循环语句
+li = [11,22,33,44];
+(4) [11, 22, 33, 44]
+for(var item in li){
+console.log(item);
+}
+VM3211:2 0
+VM3211:2 1
+VM3211:2 2
+VM3211:2 3
+undefined
+var dic ={"k1":"v1",'k2':"v2"};
+undefined
+for(var item in dic){
+console.log(item);
+}
+VM3252:2 k1
+VM3252:2 k2
+undefined
+
+循环的是索引
+
+for(var i=0;i<100;i++){
+console.log(i);
+}
+
+for(var i=0;i<li.length;i++){
+console.log(i);
+}
+VM3334:2 0
+VM3334:2 1
+VM3334:2 2
+VM3334:2 3
+undefined
+for(var i=0;i<li.length;i++){
+console.log(li[i]);
+}
+VM3345:2 11
+VM3345:2 22
+VM3345:2 33
+VM3345:2 44
+undefined
+
+for(var index in li){console.log(index);}
+
+for(var i=0;i<li.length;i++){
+console.log(i,li[i]);
+}
+
+var dic = {'k1':123,'k2':567}
+不能用上面第二种方式，没有索引数字
+只有一种循环
+
+while(true){
+	continue;
+	break;
+}
+
+条件语句
+
+if(condition){
+
+}else if(condition){}
+else if(condition){}
+else{}
+
+js中有switch case
+var name = 123;
+
+if(name==123){
+
+}else if(name==456){}
+
+swith(name){
+	case 1:
+		console.log('11111');
+		break;
+	case 2:
+		console.log('22222');
+		break;
+	default:
+		console.log('default print');
+		
+}
+
+
+js异常
+
+try{
+
+}catch(e){
+
+}finally{
+
+}
+
+
+
+js函数
+普通函数
+function f1(arg){
+	console.log(arg);
+
+}
+
+匿名函数
+
+自执行函数
+	js类库应用
+
+	
+js也有面向对象
+	基于函数+原型(构造对象)
+	也有封装
+js原型
+
+
+DOM
+
+dom把整个html文档树对象化
+
+document	
+	1、查找元素
+	2,、获取元素
+	
+tags = document.getElementsByTagName('h1');
+(3) [h1, h1, h1]
+tags[0].innerText = '123';
+"123"
+tags[1].innerText = 'test';
+"test"
+	
+document.getElementById
+document.getElementsByClassName
+document.getElementsByTagName
+document.getElementsByName
+
+script 默认type是type="text/javascript"
+nid.innerText = "alex";
+form中用name.value形式得到value值
+
+事件
+选择器
+内容修改和获取
+
+innerText-标签中间的文本内容
+
+text.innerHTML标签中间所有内容
+
+特殊的获取值value
+input
+select
+textarea
+
+
+1、onfocus，onblur
+2、选择搜索框
+3、values
+
+标签的属性
+var nid = document.getElementById('container');
+undefined
+nid.id
+"container"
+nid.name = 'zhang'
+"zhang"
+nid.name
+"zhang"
+nid.class = '999';
+"999"
+nid.className = '999';
+"999"
+
+没有name属性，有class属性，有id属性
+nid.id = 'xxoo';
+"xxoo"
+nid.id
+"xxoo"
+nid.setAttribute('name','777')
+undefined
+nid.setAttribute('sb','777')
+undefined
+
+没有的属性可以自定义
+
+属性分两种
+一种默认带有
+一种是自定义的
+
+nid.style.font-size = 90px;
+nid.style.fontSize = '90px';需要把-去掉，-后的字母大写
+
+nid = document.getElementById('container');
+<div id=​"container" sb=​"xx" class=​"c1" style=​"font-size:​ 48px;​color:​ red;​">​
+        fdf
+    ​</div>​
+nid.className = 'c2';
+"c2"
+nid.setAttribute('class','ooo');
+undefined
+nid.style.fontSize = '90px';
+"90px"
+
+getAttribute
+setAttribute
+delAttribute
+
+nid.style.backgroundColor = 'blue';
+"blue"
+
+提交表单
+submit和onclick
+
+其他功能
+
+confirm可以确定是否点击确定
+onmouseover是鼠标放在上面
+
+window.location.reload()
+window.location.href
+"http://localhost:63342/s12/day13_20170706/s9.html"
+
+window.location.href='http://www.baidu.com';
+
+定时器
+setInterval每隔多长时间创建一个线程
+
+setTimedOut这个是一次执行多少秒，不像setInterval是循环的
+

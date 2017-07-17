@@ -1,0 +1,298 @@
+#!/bin/bash
+export PATH=$PATH:/bin:/sbin/:/usr/bin
+export LANG="zh_CN.GB18030"
+
+#require root to run this script
+if [[ "$(whoami)" != "root" ]];then
+echo "Please rum this script as root." >&2
+exit 1
+fi
+
+#define cmd var
+SERVICE=`which service`
+CHKCONFIG=`which chkconfig`
+
+#source function lib
+. /etc/init.d/functions
+
+#config Yum CentOS-Base.repo.
+ConfigYum(){
+   echo "Config Yum CentOS-Base.repo"
+   cd /etc/yum.repos.d
+   \cp CentOS-Base.repo CentOS-Base.repo.zhangcai.$(date +%F)
+   ping -c 1 baidu.com >/dev/null
+   [ ! $? -eq 0 ] &&echo $"Network not configured-exitting"&&exit 1
+   wget --quiet -o /dev/null http://mirrors.sohu.com/help/CentOS-Base-sohu.repo
+  \cp CentOS-Base-suhu.repo CentOS-Base.repo
+}
+
+#Install chinese packages
+#yum -y install fonts-chinese fonts-ISO08859-2 >/dev/null
+
+#install Init Packages
+installTool(){
+ echo "sysstat ntp net-snmp lrzsz rsync"
+ yum install -y sysstat ntp net-snmp lrzsz rsync>/dev/null 2>&1
+ #yum groupstall " Development tools"
+}
+#charset GB18030
+initI18n(){
+  echo "#set LANG="zh_cn gb18030""
+  \cp /etc/sysconfig/i18n /etc/sysconfig/i18n..$(date +%F)
+  sed -i 's#LANG="en_US.UTF-8"#LANG="zh_CN.GB18030"#g' /etc/sysconfig/i18n
+  source /etc/sysconfig/i18n
+  grep LANG /etc/sysconfig/i18n
+  sleep 1
+}
+
+#close iptables and selinux
+initFirewall(){
+  echo "#close selinux and iptables."
+  cp /etc/selinux/config /etc/selinux/config.$(date +"%Y-%m-%d_%H-%M-%S")
+  /etc/init.d/iptables stop
+  sed -i 's#SELINUX=able#SELINUX=disabled#g' /etc/selinux/config
+  setenforce 0
+  /etc/init.d/iptables status
+  grep "SELINUX=disabled" /etc/selinux/config
+  echo "Close selinux->OK and Iptables->OK"
+  sleep 1
+}
+
+#Init Auto Startup Service
+initService(){
+   echo "Close Nouseful Service"
+   export LANG="en_US.UTF-8"
+   for n in `chkconfig --list|grep 3:on|awk '{print $1}'`;do chkconfig --level 3 $n off;done
+   for n in crond network rsyslog sshd;do chkconfig --level 3 $n on;done
+   export LANG="zh_CN.GB18030"
+   echo "close unnecessary service->OK"
+   sleep 1
+}
+
+#ssh config
+initSsh(){
+  echo "#---sshConfig modify ssh default login port---"
+  \cp /etc/ssh/sshd_config /etc/ssh/sshd_config.$(date +"%Y-%m-%d_%H-%M-%S")
+  sed -i 's#Port 22%Port 52113%' /etc/ssh/sshd_config
+  sed -i 's#PermitRootLogin yes%PermitRootLogin no%' /etc/ssh/sshd_config
+  sed -i 's#PermitEmptyPasswords no%PermitEmptyPasswords%' /etc/ssh/sshd_config
+  sed -i 's#UseDNS yes%UseDNS no%' /etc/ssh/sshd_config
+  /etc/init.d/sshd reload && action "modify sshd default login port, permit root login:" /bin/true||\
+  action "modify sshd default login port, permit root login:" /bin/false
+}
+
+#adduser
+AddSAUsers(){
+  echo "----add SA users----"
+ datetmp=`date +"%Y-%m-%d_%H-%M-%S"` 
+  \cp /etc/sudoers /etc/sudoers.${datetmp}
+  saUserArr=(oldboy oldboy1 oldboy2)
+  groupadd -g 888 sa
+  for((i=0;i<${#saUserArr[@]};i++))
+    do
+       #adduser
+       useradd -g sa -u 88${i} $saUserArr[$i]
+       #passwd user
+      echo "${saUserArr[$i]}123"|passwd ${saUserArr[$i]} --stdin
+       #set sudo privileges
+       #[ $(grep "${saUserArr[$i]} All=(ALL) NOPASSED: ALL" /etc/sudoers|wc -l) -le 0 ] && echo "${saUserArr[$i] ALL=(ALL) NOPASSWD:ALL}">>/etc/sudoers
+     [ `grep "\%sa"|grep -v grep|wc -l` -ne 1 ]&&\
+     echo "%sa    ALL=(ALL)  NOPASSWD:ALL">>/etc/sudoers
+    done
+  /usr/sbin/visudo -c
+   [ $? -ne 0 ]&&/bin/cp /etc/sudoers.$(datetmp) /etc/sudoers&& echo $"Sudoers not configured-exitting"&&exit 1
+   action $"add user successfully->OK" /bin/true
+}
+
+syncSystemTime(){
+ if [ `grep pool.ntp.org /var/spool/cron/root|grep -v grep|wc -l` -lt 1 ];then
+  echo "*/5 * * * *  /usr/sbin/ntpdate cn.pool.ntp.org > /dev/null 2>&1">>/var/spool/cron/root
+ fi
+}
+
+#change the num of files open
+openFiles(){
+  echo "----change the num of files be open to 65535"
+  \cp /etc/security/limits.conf /etc/security/limits.conf.`date +%Y-%m-%d_%H-%M-%S`
+  sed -i '/#End of file/i\*\t\t-\tnofile\t\t65535' /etc/security/limits.conf
+  ulimit -HSn 65535
+  echo "change the num of files be open successfully.(The configure will work after reboot.)"
+  sleep 1
+}
+
+#optimize system kernel
+
+optimizeKernel(){
+ echo "----optimize kernel"
+ \cp /etc/sysctl.conf /etc/sysctl.conf.`date +"%Y-%m_%H-%M-%S"`
+cat >>/etc/sysctl.conf<<EOF
+net.ipv4.tcp_timestamps = 0
+net.ipv4.tcp_synack_retries = 2
+net.ipv4.tcp_syn_retries = 2
+net.ipv4.tcp_mem = 94500000 915000000 927000000
+net.ipv4.tcp_max_orphans = 3276800
+net.core.wmem_default = 8388608
+net.core.rmem_default = 8388608
+net.core.rmem_max = 16777216
+net.core.wmem_max = 16777216
+net.ipv4.tcp_rmem = 4096 87380 16777216
+net.ipv4.tcp_wmem = 4096 65535 16777216
+net.core.netdev_max_backlog = 32768
+net.core.somaxconn = 32768
+net.ipv4.tcp_syncookies = 1
+net.ipv4.tcp_tw_reuse = 1
+net.ipv4.tcp_tw_recycle = 1
+net.ipv4.tcp_fin_timeout=1
+net.ipv4.tcp_keepalive_time=600
+net.ipv4.tcp_max_syn_backlog = 65535
+net.ipv4.ip_local_port_range = 1024 65535
+EOF
+  /sbin/sysctl -p &&action $"kernel optimization:" /bin/true ||\
+  action $"kernel optimization:" /bin/false
+}
+
+#init sate setup
+init_safe(){
+  echo "----deny ctrl+alt+del reboot the system----"
+  cp /etc/inittab /etc/inittab.`date +"%Y-%m_%H-%M-%S"`
+  sed -i "s/ca::ctrlaltdel:\/sbin\/shutdown -t3 -r now/#ca::ctrlaltdel:\/sbin\/shutdown -t3 -r now" /etc/inittab
+  /sbin/init q
+  [ $? -eq 0 ]&&action $"deny ctrl+alt+del to reboot the system:" /bin/true||\
+   action $"deny ctrl+alt+del to reboot the system:" /bin/false
+}
+
+#init snmp
+init_snmp(){
+  echo "----initialize snmpd----"
+  cp /etc/snmp/snmpd.conf /etc/snmp/snmpd.conf.`date +"%Y-%m_%H-%M-%S"`
+  sed -i 's/#viewall/viewall/'  /etc/snmp/snmpd.conf
+  sed -i 's/#access MyROGroup/access MyROGroup' /etc/snmp/snmpd.conf
+  ${CHKCONFIG} snmpd on
+  ${Service} snmpd start
+  [ $? -eq 0 ]&&action "initialize snmpd successfully." /bin/true||\
+action "initialize snmpd failed." /bin/false
+}
+
+#disable IPV6
+disableIPV6(){
+  echo "----deny IPV6"
+  cp /etc/modprobe.conf /etc/modprobe.conf.`date +"%Y-%m_%H-%M-%S"`
+  echo "alias net-pf-10 off">>/etc/modprobe.conf
+  echo "alias ipv6 off">>/etc/modprobe.conf
+}
+
+AStr="set charset,close firewall,selinux,and unnecessary service"
+BStr="change hostname and setup ip"
+CStr="setup sshdconfig. modify default port 22->50178 and deny root login"
+DStr="add SA user and setup sudo privileges"
+EStr="sync system time"
+FStr="optimize system kernel"
+GStr="install system tools nagios client,puppet client,snmp"
+HStr="close ipv6"
+IStr="change the num of files system can open"
+JStr="install system tools"
+KStr="initialize on one click" 
+
+#-----------#
+echo "#####################################"
+echo "<================system initialization=============>"
+echo "A--${AStr}"
+echo "B--${BStr}"
+echo "C--${CStr}"
+echo "D--${DStr}"
+echo "E--${EStr}"
+echo "F--${FStr}"
+echo "G--${GStr}"
+echo "H--${HStr}"
+echo "I--${IStr}"
+echo "J--${JStr}"
+echo "K--${KStr}"
+echo "attention: one click setup will work after 20s"
+echo "#######################################"
+
+option="-1"
+read -n1 -t20 -p "choose one of A-B-C-D-E-F-G-H-I-J-K:::" option
+
+
+flag1=$(echo $option|egrep "\-1"|wc -l)
+flag2=$(echo $option|egrep "[A-Ka-k]"|wc -l)
+
+if [ $flag1 -eq 1 ];then
+   option="K"  
+elif [ $flag2 -ne 1 ];then
+   echo "Please input characters from A-->K."
+   exit 1
+fi
+
+echo -e "\nyour choice is:$option\n"
+echo "installation will start after 5s....."
+sleep 5
+case $option in
+A|a)
+    ConfigYum
+    initI18n
+    initFirewall
+    initService
+;;
+B|b)
+    if [ $# -ne 2 ];then
+     echo "$0 10.0.0.123"
+     exit 1
+    fi  
+    initHostNameIp $1 $2
+;;
+C|c)
+
+   initSsh
+;;
+D|d)
+AddSAUser
+;;
+E|e)
+syncSystemTime
+;;
+F|f)
+optimizeKernel
+;;
+G|g)
+  sh installNagiosAndPuppetClient.sh
+ init_snmp
+;;
+H|h)
+  disableIPV6
+;;
+I|i)
+  openFiles
+;;
+J|j)
+installTool
+;;
+K|k)
+#must be initialized
+installToll
+ConfigYum
+initI18n
+initService
+AddSAUser
+syncSystemTime
+initHostNameIp
+initSsh
+
+#optimization
+init_snmp
+sh installNagiosAndPuppetClent.sh
+  if [ $# -ne 2 ];then
+    echo "$0 10.0.0.123"
+    exit 1
+
+  fi
+ initHostNameIp $1 $2
+  optimizeKernel
+  openFiles
+  disableIPV6
+;;
+*)
+ echo "please input A-K,thank you"
+exit
+;;
+esac

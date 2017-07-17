@@ -1,0 +1,251 @@
+if条件句语法
+
+[root@test scripts]# sh if_01.sh  100 99
+yes,100>99
+[root@test scripts]# cat if_01.sh 
+#!/bin/bash
+a=$1
+b=$2
+if [ $a -gt $b ]
+  then 
+    echo "yes,$a>$b"
+fi
+if [ $a -le $b ]
+  then 
+    echo "yes,$a<=$b"
+fi
+
+[root@test scripts]# sh if_01.sh 
+please input two nums:2 4
+yes,2<=4
+[root@test scripts]# cat if_01.sh 
+#!/bin/bash
+#a=$1
+#b=$2
+read -p "please input two nums:"  a b
+if [ $a -gt $b ]
+  then 
+    echo "yes,$a>$b"
+fi
+if [ $a -le $b ]
+  then 
+    echo "yes,$a<=$b"
+fi
+
+[root@test server]# mv scripts script  
+[root@test server]# cd script/
+[root@test script]# sh  if_02.sh 
+if3.sh is created.
+[root@test script]# rm -fr ../scripts/
+[root@test script]# sh -x if_02.sh 
++ filepath=/server/scripts
++ '[' -e /server/scripts/if3.sh ']'
++ '[' '!' -e /server/scripts/if3.sh ']'
++ '[' '!' -d /server/scripts ']'
++ mkdir -p /server/scripts
++ '[' -d /server/scripts ']'
++ cd /server/scripts
++ touch if3.sh
++ echo 'if3.sh is created.'
+if3.sh is created.
+
+[root@test scripts]# cat  if_02.sh 
+#!/bin/bash
+filepath="/server/scripts"
+if [ -e "$filepath/if3.sh" ]
+   then
+   echo "$filepath/if3.sh exists."
+fi
+
+if [ ! -e "$filepath/if3.sh" ]
+   then
+    [ ! -d $filepath ] &&mkdir -p $filepath 
+    [ -d $filepath ]&&{
+          cd $filepath
+          touch if3.sh
+          echo "if3.sh is created."
+}
+fi
+#[ ! -d /server/backup ]&&mkdir -p /server/backup/
+#mysqldump -uroot -p233 -A -B > /server/backup/a.sql
+#[ ! -f /server/backip/a.sql ]&&mail -s "bak failed."  afdj@qq.com
+
+[root@test scripts]# cat judge_sys_mem.sh 
+#!/bin/bash
+cur_free=` free -m|awk  '/buffers\//  {print $NF}'`
+chars="current memory is ${cur_free}M"
+if [ $cur_free -lt 99999999900 ]
+   then
+    echo $chars
+    echo $chars |mail -s "$chars" 414220021@qq.com
+fi
+
+
+双多分支语句
+if
+   then
+   elif
+     then
+  else
+fi
+
+[root@test scripts]# cat whoisbigger.sh 
+#!/bin/bash
+read -p "please input two integers:" a b
+if [ $a -gt $b ]
+   then 
+      echo "$a is bigger than $b."
+   elif [ $a -eq $b ]
+      then
+        echo "$a is equal to $b."
+   else
+      echo "$a is less than $b."
+
+fi
+
+[root@test scripts]# sh  whoisbigger.sh 4 5
+4 is less than 5.
+[root@test scripts]# sh  whoisbigger.sh 4 5 9
+Usage: num1 num2
+[root@test scripts]# cat whoisbigger.sh  
+#!/bin/bash
+a=$1
+b=$2
+if [ $# -ne 2 ]
+  then 
+    echo "Usage: num1 num2"
+     exit 1
+
+fi
+#read -p "please input two integers:" a b
+if [ $a -gt $b ]
+   then 
+      echo "$a is bigger than $b."
+   elif [ $a -eq $b ]
+      then
+        echo "$a is equal to $b."
+   else
+      echo "$a is less than $b."
+
+fi
+
+判断字符串是否为数字
+1
+[ -n "`echo $a|sed 's/[0-9]//g'`" ]&&echo "first arg must be num"&&exit 1
+
+2变量的子串加正则表达式
+[root@test scripts]# num=oldboy521
+[root@test scripts]# [ -z "`echo "${num//[0-9]/}"`" ]&&echo 1||echo 0
+0
+
+3变量的子串替换加正则表达式
+[root@test scripts]# [ -n "$num" -a "$num"="${num//[^0-9]/}" ]&&echo 1||echo 0
+1
+4 expr来判断
+expr $1 +0 >/dev/null 2>&1
+[ $? -eq 0 ]&&echo int
+
+如果虚拟机起不来，可以运用fsck 做磁盘检查
+fsck -A
+
+监控mysql服务
+
+[root@test scripts]# sh -x check-db.sh
+++ awk -F '[ :]+' '{print $5}'
+++ grep 3306
+++ netstat -lnt
++ PORT=
++ '[' '' = 3306 ']'
++ /etc/init.d/mysqld start
+Starting MySQL. SUCCESS! 
+[root@test scripts]# sh check-db.sh
+db is running
+[root@test scripts]# cat check-db.sh
+#!/bin/bash
+PORT=` netstat -lnt|grep 3306|awk -F '[ :]+' '{print $5}'`
+if [ "$PORT" = "3306" ];then
+    echo "db is running"
+   else
+     /etc/init.d/mysqld start
+
+fi
+
+[root@test scripts]# netstat -lnt|grep 3306|wc -l
+1
+[root@test scripts]# cp check-db.sh check-db.sh.01
+[root@test scripts]# vim check-db.sh
+[root@test scripts]# sh -x check-db.sh
+++ wc -l
+++ grep 3306
+++ netstat -lnt
++ PORT=1
++ '[' 1 -eq 1 ']'
++ echo 'db is running'
+db is running
+
+[root@test scripts]# netstat -lntup|grep mysql|wc -l
+1
+脚本名称里不要包含mysql字样
+
+[root@test scripts]# cat check-db.sh
+#!/bin/bash
+#PORT=` netstat -lnt|grep 3306|awk -F '[ :]+' '{print $5}'`
+MYSQL=/etc/init.d/mysqld
+LogPath=/tmp/mysql.log
+mysqlProcessNum=` ps -ef|grep mysqld |grep -v grep|wc -l`
+PORT=` netstat -lnt|grep 3306|wc -l`
+#if [ $PORT -eq 1 -a $mysqlProcessNum -eq 2 ];then
+if [ $PORT -eq 1 ]&&[ $mysqlProcessNum -eq 2 ];then
+    echo "db is running"
+   else
+    $MYSQL  start > $LogPath
+     sleep 10
+     mysqlProcessNum=` ps -ef|grep mysqld |grep -v grep|wc -l`
+     PORT=` netstat -lnt|grep 3306|wc -l`
+     if [ $PORT -ne 1 ]&&[ $mysqlProcessNum -ne 2 ];then
+     while true
+      do
+        killall -9  mysqld >/dev/null 2>&1
+        [ $? -ne 0 ] && break
+        sleep 1
+     done     
+     $MYSQL start >>$LogPath && status="mysql is succesfully started."||status="failure"
+    mail -s "mysql started startup status is $status" 414220021@qq.com <$LogPath
+    fi
+fi
+
+3.模拟web服务器连接mysql服务器
+[root@test scripts]# mysql -uroot -p'123456' -S /usr/local/mysql/tmp/mysql.sock -e "select version();"
++-----------+
+| version() |
++-----------+
+| 5.1.62    |
++-----------+
+
+#[root@test tmp]#  killall   mysqld >/dev/null 2>&1
+#[root@test tmp]#  killall   mysqld                
+#mysqld: no process killed
+
+4通过特定主机连接mysql
+
+5通过php/java监控mysql
+
+总结：监控msyql
+1端口（本地）
+此处是本地监控，端口在，服务可能不正常，例如负载很高，cpu很高，连接数满了，
+另外端口可以远程监控
+2进程（本地）
+只能本地监控，进程在服务可能不正常，例如负载很高，cpu很高，连接数满了，
+另外也可以远程监控，通过ssh key，expect
+3模拟客户端连接看状态，远程连接判断（本地和远程）
+必须要有mysql客户端，要有数据库的账号和密码及连接数据库的主机授权
+4php/java通过URL的判断（推荐）
+test_mysql
+最接近用户访问，效果更好
+
+多条件
+[  ] && []   
+[   -a   ]
+[  ] || [  ]
+[   -o ]
+

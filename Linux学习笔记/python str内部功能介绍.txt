@@ -1,0 +1,146 @@
+python str内部功能介绍
+
+方法  静态方法、动态方法、类方法
+字段  静态字段、类字段、普通字段
+属性  普通属性
+
+dir  获取类提供的所有的成员
+>>> name = 'eric'
+>>> print(dir(name))
+['__add__', '__class__', '__contains__', '__delattr__', '__doc__', '__eq__', '__format__', '__ge__', '__getattribute__', '__getitem__', '__getnewargs__', '__getslice__', '__gt__', '__hash__', '__init__', '__le__', '__len__', '__lt__', '__mod__', '__mul__', '__ne__', '__new__', '__reduce__', '__reduce_ex__', '__repr__', '__rmod__', '__rmul__', '__setattr__', '__sizeof__', '__str__', '__subclasshook__', '_formatter_field_name_split', '_formatter_parser', 'capitalize', 'center', 'count', 'decode', 'encode', 'endswith', 'expandtabs', 'find', 'format', 'index', 'isalnum', 'isalpha', 'isdigit', 'islower', 'isspace', 'istitle', 'isupper', 'join', 'ljust', 'lower', 'lstrip', 'partition', 'replace', 'rfind', 'rindex', 'rjust', 'rpartition', 'rsplit', 'rstrip', 'split', 'splitlines', 'startswith', 'strip', 'swapcase', 'title', 'translate', 'upper', 'zfill']
+
+vars 获取成员及成员的值
+
+contains等价于in
+
+__format__字符串格式化
+__getattribute__反射会用到
+__getitem__
+
+capitalize 首字母大写
+casefold  大写全部变小写
+center     居中 示例:result = name.center(20,'*')
+count     子序列出现的次数  result = name.count('k',0,6)
+encode   编 码   result = name.encode()
+enswiths 以字符或字符串结尾   result = name.endswith('e',0,3)
+expandtabs  一个tab转换成7个空格（默认7个）
+find        找字符串索引所在的位置  result = name.find('e')
+index     不存在的会报错，find不会报错会返回-1
+format  字符串格式化  result = name.format('sb','eric') 类似字符串拼接
+	name = 'alex {0} as {1}'
+	result = name.format('sb','eric')	
+	print(result)
+	动态参数也可以，字符串替换
+	name = 'alex {name} as {id}'
+	result = name.format(name='sb',id='eric')
+	print(result)
+format_map
+isalnum  判断是否是数字
+isalpha   判断是否是字母
+isdigit    判断是否是数字
+isidentifier  判断是否是关键字
+islower   是否全部是小写
+isnumeric  是否是数字（？）
+isprintable  是否可打印
+isspace  是否是空格
+istitile    是否是标题
+isupper  是否全部是大写
+join       拼接
+	li = ['s','b','a','l','e','x']
+	result = "_".join(li)
+	print(result)
+ljust	左边放多少，类似center
+rjust      右边放多少
+lower    字符串变小写
+lstrip     去掉左边的空格
+maketrans 跟translate结合用，做对应列表
+partition 字符串进行分割
+	name = 'alexissb'
+	result = name.partition('is')
+	print(result)
+replace  替换
+	name = 'alexissbaa'
+	result = name.replace('a','o',2)
+	print(result)
+rfind
+rindex
+rpartition
+rsplit    从右指定字符分割字符串
+rstrip
+split
+splitlines  字符串分割
+	name = """
+	ak
+	bb
+	cc"""
+	#result = name.splitlines()
+	result = name.split("\n")
+	print(result)
+startwith 以什么开头
+swapcase 大小写转换，大写转小写，小写转成大写
+title       字符串首字母转成大写
+translate 
+upper	大写
+zfill	左对齐，最左边可以有多少空格	
+
+
+常用
+split
+strip
+replace
+join
+
+
+list方法
+append  追加
+clear
+copy	深拷贝，遍历拷贝
+	浅拷贝，只拷贝一层
+count	某个元素出现的次数
+extend	合并两个列表（或元组）
+	li = list([1,2,3])
+	#li = list((1,2,3))
+	print(li)
+	li.extend([11,22])
+	print(li)
+	元组命名，后面要加逗号，约定俗成，以防出错
+	li.extend((11,22,))
+index	索引，或者说下标
+insert	默认往指定下标添加
+pop	移除某项，默认最后一项
+remove 删除某个值，默认从第一个删除
+reverse 反转
+sort	排序
+
+
+元组
+元组有的列表都会有，列表有的元组不一定有
+元组获取的是序列，不是指定的序列或元组
+
+有类不一定有方法实现
+
+count
+index
+
+
+字典
+
+dic = {'k1':'v1','k2':'v2'}
+dic = dict(k1='v1',k2='v2')
+
+clear	 清空所有元素
+copy	浅拷贝
+fromkeys 找keys设定值生成新字典
+	dic = {'k1':'v1','k2':'v2'}
+	new_dict = dic.fromkeys(['k1','k2','k3'],'v1')
+	#dic = dict(k1='v1',k2='v2')
+	print(new_dict)
+get	解决key不存在报错的问题，没有默认设置成None，可以在参数2中设置
+items	键值对
+pop	删除，字典是无序的，必须指定key
+	dic = {'k1':'v1','k2':'v2'}
+	dic.pop('k1')
+	print(dic)
+popitem 随机删除
+setdefault 设置值
+update	更新字典，可能新的序列生成了，原来的序列不变，新的可能当做返回值了

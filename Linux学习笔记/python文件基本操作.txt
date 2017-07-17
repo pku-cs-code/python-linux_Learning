@@ -1,0 +1,70 @@
+file_obj = file("文件路径"，"模式")
+file_obj = open（"文件路径"，"模式"）
+
+r  只读
+w  只用于写入
+a  用于追加
+w+ 写读（一般不用）
+
+obj.read()  一次性加载所有内容到内存
+obj.readlines()  一次性加载所有内容到内存，并根据行分割成字符串
+for line in obj:  每次只读一行
+	print line
+obj.write(‘内容’)
+obj.close()
+
+write是覆盖，会冲掉原来的内容
+
+python2可以用print f.read()，print f.readlines()，python3不可以
+print f.readlines()
+
+>>> f = open("test.log","r")
+>>> print f.readlines()
+['This is the first line\n', 'This is the 2nd line\n', 'This is the 3rd line\n', 'This is the 4th line\n']
+>>> f.close()
+>>> f = open("test.log","r")
+
+>>> for line in f:
+...     print line
+... 
+This is the first line
+
+This is the 2nd line
+
+This is the 3rd line
+
+This is the 4th line
+
+>>> f.close
+<built-in method close of file object at 0x7f41f4573c00>
+
+#加逗号可以防止空行
+
+>>> f = open("test.log","r")
+>>> for line in f:
+...     print line,
+... 
+This is the first line
+This is the 2nd line
+This is the 3rd line
+This is the 4th line
+
+
+>>> f = open("test.log","r")
+>>> for line in f:
+...     if "3" in line:
+...             print "this is the third line"
+...     else:
+...             print line ,
+... 
+This is the first line
+This is the 2nd line
+this is the third line
+This is the 4th line
+>>> f.close
+<built-in method close of file object at 0x7f41f4573c00>
+
+
+
+
+

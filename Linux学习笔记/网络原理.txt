@@ -1,0 +1,117 @@
+网络原理
+1、host 2、DNS缓存3、localDNS全球的根.有13台
+etiantian.org域名所在的服务器成为授权DNS，如果没有意味着没有配过
+
+
+[root@test ~]# sed -i 's#mode#test#g' /etc/sysconfig/network
+You have new mail in /var/spool/mail/root
+[root@test ~]# cat /etc/sysconfig/network 
+NETWORKING=yes
+HOSTNAME=test
+
+ABCDE类ip地址
+C类（局域网）
+192.168.
+10.0.0
+172.16.
+
+公网地址全球唯一
+MAC地址唯一
+NM_CONTROLLED图形管理
+子网掩码控制主机位255.255.255.0有254台主机
+linux把配置放在缓存中访问更快
+网关是上网的出口
+[root@test ~]# route -n查看路由
+Kernel IP routing table
+Destination     Gateway         Genmask         Flags Metric Ref    Use Iface
+192.168.1.0     0.0.0.0         255.255.255.0   U     0      0        0 eth0
+169.254.0.0     0.0.0.0         255.255.0.0     U     1002   0        0 eth0
+0.0.0.0         192.168.1.1     0.0.0.0         UG    0      0        0
+ping smp协议
+
+[root@test ~]# route del default gw 192.168.1.1
+[root@test ~]# ping g.cn
+connect: Network is unreachable
+[root@test ~]# route add default gw 192.168.1.1
+[root@test ~]# ping g.cn
+PING g.cn (203.208.39.210) 56(84) bytes of data.
+64 bytes from 203.208.39.210: icmp_seq=1 ttl=58 time=5.10 ms
+
+6.x网关配置在/etc/sysconfig/network-scripts/ifcfg-eth0中
+
+[root@test ~]# find /root -type f -name "*.txt" |xargs sed -i 's#www.etiantian#baidu.com#g'
+xargs将前面的输出内容加到后面命令的对象中
+[root@test ~]# find /root -type f -name "*.txt"  -exec sed -i 's#www.etiantian.org#www.baidu.com#g' {} \;
+
+保持默认权限文件755，目录644
+
+lnmp
+大公司
+页面服务器，解析php，java
+资源服务器，html解析：图片，附件
+
+[root@test ~]# date +%y-%m-%d
+17-04-08
+[root@test ~]# date +%Y-%m-%d
+2017-04-08
+[root@test ~]# date +%F
+2017-04-08
+[root@test ~]# date +%Y-%m-%d\ %H:%M:%S
+2017-04-08 10:16:49
+[root@test ~]# date +%T
+10:17:04
+[root@test ~]# date +%F\ %T
+2017-04-08 10:17:26
+[root@test ~]# cp /etc/hosts /etc/hosts.zhangcai.$(date +%F)
+You have new mail in /var/spool/mail/root
+[root@test ~]# ls /etc/hosts.zhangcai.2017-04-08 
+/etc/hosts.zhangcai.2017-04-08
+[root@test ~]# cp /etc/hosts /etc/hosts.zhangcai.`date +%F`
+cp: overwrite `/etc/hosts.zhangcai.2017-04-08'? yes
+[root@test ~]# ls /etc/hosts.zhangcai.2017-04-08 
+/etc/hosts.zhangcai.2017-04-08
+
+[root@test ~]# date -s "03/23/2014 11:56:00"
+Sun Mar 23 11:56:00 CST 2014
+[root@test ~]# date
+Sun Mar 23 11:56:01 CST 2014
+[root@test ~]# clock -w写入BOIS
+[root@test ~]# date +%F --date "-3day"
+2014-03-20
+[root@test ~]# date +%F --date "-3H"
+date: invalid date `-3H'
+[root@test ~]# date +%F --date "-3hour"
+2014-03-23
+[root@test ~]# date +%F\ %T --date "-3hour"
+2014-03-23 09:01:17
+[root@test ~]# date
+Sun Mar 23 12:01:19 CST 2014
+
+[root@test ~]# date +%F --date "+3day"
+2014-03-26
+
+-是之前，+是之后
+[root@test ~]# date +%F -d "+3day"
+2014-03-26
+-d 可以写成--date
+
+[root@test ~]# cat test3.txt 
+jjj
+kk
+
+jdf
+[root@test ~]# grep -v "^$" test3.txt 
+jjj
+kk
+jdf
+
+shutdown -h now立刻关机
+
+ctrl+a行首
+ctrl+e行尾
+ctrl+d登出
+ctrl+c取消
+ctrl+l清屏
+ctrl+u剪切光标之前的内容
+ctrl+k清楚光标之后的内容
+

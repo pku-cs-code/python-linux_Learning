@@ -1,0 +1,82 @@
+wordpress在nginx下的安装
+
+5以上的错误跟下边的服务有关系
+
+wget https://cn.wordpress.org/wordpress-4.7.4-zh_CN.zip
+unzip wordpress-4.7.4-zh_CN.zip 
+cp -ap wordpress/* /usr/local/nginx/html/blog/
+chown -R nginx.nginx blog/  #将博客的用户属组改为nginx，因为nginx是用户nginx启动的
+                                            #任何人登录博客相当于以nginx的身份运行程序
+                                            #不要把权限搞成777
+#安装完blog后，删除phpinfo.php，wp-admin/install.php等不安全文件
+#chown -R root.root blog 后用户不能往blog里放文件了
+#显示：4a08294aly1ffg87iv2lgj21kw11xgs2.jpg
+#无法将上传的文件移动至wp-content/uploads/2017/05。
+#只需控制上传目录就可以了。思想层面：默认所有站点目录权限755，文件644，对于用户上传的目录
+#我们设置为web用户 
+chown -R nginx.nginx blog/wp-content/uploads/
+find ./ -type f|xargs chmod 644
+find ./ -type d|xargs chmod 755
+#上传服务器和查看服务器分离，高性能和高安全
+
+mysql -uroot -p
+
+create database wordpress;
+show databases;
+use wordpress;
+show tables;
+grant create,select,insert,update,delete,drop on wordpress.* to 'wordpress'@'192.168.31.247' identified by '123456';
+
+#create针对库
+#select,insert,update,delete针对表内容
+#drop针对库和表
+#on wordpress.*  wordpress库所有表 *.*所有库所有表
+#to 'wordpress'@'192.168.31.247'  哪些数据可以访问数据库localhost可以改为可以访问数据库的ip，哪台机器可以访问数据库
+#可以写成192.168.31.%表示一个段
+
+flush privileges;
+select user,host from mysql.user;
+
+help grant; #查看grant用法
+show grants for wordpress@'192.168.31.247'; #查看用户权限
+help show grants;
+#发现把host改为192.168.31.247后在wordpress主机名保持为localhost时不好使
+grant create,select,insert,update,delete,drop on wordpress.* to 'wordpress'@'localhost' identified by '123456';
+flush privileges;
+select user,host from mysql.user;
+
+#wordpress提示
+#不错。您完成了安装过程中重要的一步，WordPress现在已经可以连接数据库了。如果您准备好了的话，现在就…
+#上面表示已经可以连接数据库，生成wp-config.php文件，这个文件是连接数据库用的
+
+mysql> use wordpress;
+Database changed
+mysql> show tables;
+Empty set (0.00 sec)
+#上面表示表是空的，需要点击wordpress的安装按钮
+#此时还没生成表，需要填写完管理员账号和密码点击生成即可生成表
+mysql> show tables;
++-----------------------+
+| Tables_in_wordpress   |
++-----------------------+
+| wp_commentmeta        |
+| wp_comments           |
+| wp_links              |
+| wp_options            |
+| wp_postmeta           |
+| wp_posts              |
+| wp_term_relationships |
+| wp_term_taxonomy      |
+| wp_termmeta           |
+| wp_terms              |
+| wp_usermeta           |
+| wp_users              |
++-----------------------+
+12 rows in set (0.00 sec)
+
+#查看用户
+
+select * from wp_users;
+
+
+

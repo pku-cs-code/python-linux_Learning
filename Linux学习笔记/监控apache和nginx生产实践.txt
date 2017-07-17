@@ -1,0 +1,103 @@
+监控apache和nginx生产实践
+nmap 嗅探端口
+
+1
+[root@test scripts]# cat  check-web.sh
+#!/bin/bash
+HttpPortNum=`nmap 192.168.31.60 -p 80|grep open|wc -l`
+if [ $HttpPortNum -eq 1 ];then
+   echo "httpd is running"
+   else
+   echo "httpd is not running."
+   /etc/init.d/httpd start
+fi
+[root@test scripts]# sh check-web.sh 
+httpd is running
+[root@test scripts]# /etc/init.d/httpd stop
+Stopping httpd:                                            [  OK  ]
+[root@test scripts]# sh check-web.sh 
+httpd is not running.
+Starting httpd:                                            [  OK  ]
+
+
+
+2
+[root@test scripts]# cat check-web-ps.sh 
+#!/bin/bash
+HttpProcessNum=`ps -ef|grep http|grep -v grep|wc -l`
+if [ $HttpProcessNum -gt 4 ];then
+   echo "httpd is running"
+   else
+   echo "httpd is not running."
+   /etc/init.d/httpd start
+fi
+
+
+[root@test scripts]# wget -T 10 -q http://192.168.31.60
+[root@test scripts]# echo $?
+0
+[root@test scripts]# pkill httpd
+[root@test scripts]# wget -T 10 -q http://192.168.31.60
+[root@test scripts]# echo $?
+4
+
+3
+[root@test scripts]# cat  check-web-wget.sh 
+#!/bin/bash
+wget -T 10 -q  --spider http://192.168.31.60 >/dev/null 2>&1
+#curl -s http://192.168.31.60 >/dev/null 2>&1
+if [ $? -eq 0 ];then
+   echo "httpd is running"
+   else
+   echo "httpd is not running."
+   /etc/init.d/httpd start
+fi
+
+
+4
+#通过状态码判断
+[root@test bbs]# curl -I -s http://192.168.31.60 |sed -n '1p'|grep 200
+HTTP/1.1 200 OK
+[root@test bbs]# curl -I -s http://192.168.31.60 |head -1|grep 200
+HTTP/1.1 200 OK
+[root@test bbs]# curl -I -s http://192.168.31.60 |head -1|cut -d  " " -f2
+200
+
+[root@test scripts]# sh check-web-curl.sh 
+httpd is running
+[root@test scripts]# /etc/init.d/httpd stop
+Stopping httpd:                                            [  OK  ]
+[root@test scripts]# sh check-web-curl.sh 
+httpd is not running.
+\Starting httpd:                                           [  OK  ]
+[root@test scripts]# sh check-web-curl.sh 
+httpd is running
+[root@test scripts]# cat check-web-curl.sh 
+#!/bin/bash
+HttpCode=`curl -I -s http://192.168.31.60 |head -1|cut -d  " " -f2`
+#curl -I -s http://192.168.31.60 |sed -n '1p'|grep 200
+# curl -I -s http://192.168.31.60 |head -1|grep 200
+if [ "$HttpCode" = "200" ];then
+   echo "httpd is running"
+   else
+   echo "httpd is not running."
+   /etc/init.d/httpd start
+fi
+
+echo -e "\n"|telnet www.baidu.com 80|grep Connected|wc -l
+
+nmap除了扫描一个端口，还可以扫描整个网段
+
+[root@test scripts]# nc -w 5 www.baidu.com 80&&echo ok||echo no
+ok
+[root@test scripts]# nc -w 5 www.baidu.codm 80&&echo ok||echo no
+nc: getaddrinfo: Name or service not known
+no
+
+
+监控memcache服务
+
+
+最佳的手段是模拟用户
+
+

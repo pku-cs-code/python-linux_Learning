@@ -1,0 +1,8 @@
+1、ifcfg-eth0中的DNS和UUID
+vmware克隆，避免物理地址冲突，/etc/udev/rules.d/里找70-persistent-net.rules里包含eth0的行去掉，将下面行中的eth1改成eth0，
+再在/etc/sysconfig/network-scripts/ifcfg-eth0中的haaddr改成原eth1对应的物理地址，然后重启
+
+系统日志服务5是syslog，6是rsyslog
+时间同步命令不一样了 6是/usr/sbin/ntpdate time.nist.gov，5是/sbin/ntpdate time.nist.gov
+环境变量PATH也不一样了，6包括的更多。多了/sbin:/usr/sbin:，而5没有
+5默认安装sendmail，6没有

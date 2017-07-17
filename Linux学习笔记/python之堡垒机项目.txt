@@ -1,0 +1,30 @@
+python之堡垒机项目
+
+ldap权限同一认证
+所有的登录动作都通过堡垒机授权
+
+SSO single sign on单点登录
+
+审计管理
+
+
+pip3 install sqlalchemy_utils
+pip3 install pyyaml
+pip3 install modules
+
+ORM好处：语句重用，避免更换数据库带来的不便（这种情况比较少见）
+使得sql操作可复用
+
+使用外键，减少数据的冗余
+backref双向的，映射上了
+back_populates单向的，需要在两个表都写，且映射名一致
+
+Django的ORM写的更好，不用自己写backref和back_populates，不需要借助第三方插件更新修改的数据
+Uber用的sqlalchemy
+
+可以用sqlalchemy自己写一个外部框架
+写一个框架不难，写一个高效的外部框架难
+
+
+
+

@@ -1,0 +1,45 @@
+python之twisted异步网络框架
+
+基于epoll来实现的
+
+邮件、ftp、dns
+
+学习成本高
+代码写了十几年了
+
+事件驱动的网络模块
+
+package  application
+package	 consh
+module	 copyright
+package   internet
+package   logger
+package   mail
+package    manhole
+package    names
+package	   news
+package    pair
+package     persisted
+module    plugin
+package  positioning
+……
+
+事件驱动分两个部分：
+第一，注册事件
+第二，触发事件
+
+其它有语言：事件、委托
+函数列表、事件列表
+
+c#完全经历24个个事件后返回
+
+1、Basehandler写自己的类继承
+2、必须写execute
+3、类注册到event_list
+4、执行一个指定的run方法
+
+
+
+
+
+

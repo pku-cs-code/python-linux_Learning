@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <div id="container" sb="xx" class="c1" style="font-size: 48px;color: red;">
+        fdf
+    </div>
+        <a href="http://www.baidu.com" onclick=" return AddElement();">添加</a>
+    <!--//先执行自定义,return true执行，return false不执行-->
+    <script>
+        function AddElement(){
+            //创建标签
+            //var nid = document.getElementById('container');
+            //var tag = "<input type='text'>"
+            //nid.innerHTML = tag;
+            //alert('123');
+
+            //container.insertAdjacentHTML('beforeend',tag);
+
+            var createOBJ = document.createElement('a');
+            createOBJ.href = 'http://www.baidu.com';
+            createOBJ.innerText = 'python edu';
+
+            var nid = document.getElementById('container');
+            //nid.innerHTML = createOBJ;
+            nid.appendChild(createOBJ);
+            console.log(createOBJ);
+            return false;
+        }
+    </script>
+</body>
+</html>

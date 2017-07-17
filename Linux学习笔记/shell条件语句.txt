@@ -1,0 +1,50 @@
+shell条件语句
+
+格式1  test<测试表达式>
+格式2  [<测试表达式>]
+格式3 [[<测试表达式>]]
+
+&& || > <可以用在[[]]中，但不能用于[]中
+
+[root@test scripts]# touch file
+[root@test scripts]# test -f file &&echo 1||echo 0
+1
+[root@test scripts]# test  ! -f file &&echo 1||echo 0
+0
+
+[ ]测试
+[root@test scripts]# rm -f file
+[root@test scripts]# test -f file &&echo 1||echo 0
+0
+[root@test scripts]# [ -f file ]&&echo 1||echo 0
+0
+
+
+[[  ]] 测试
+[root@test scripts]# [[ ! -f file && -d folder ]]&&echo 1||echo 0
+0
+[root@test scripts]# [ ! -f file && -d folder . ]&&echo 1||echo 0
+-bash: [: missing `]'
+0
+[root@test scripts]# touch file;mkdir folder
+[root@test scripts]# [ -f file -a -d folder ]&&echo 1||echo 0
+1
+[root@test scripts]# rm -fr file 
+[root@test scripts]# [ -f file -a -d folder ]&&echo 1||echo 0 #-a and
+0 
+[root@test scripts]# [ -f file -o -d folder ]&&echo 1||echo 0 #-o or
+1
+
+-f 文件存在且为普通文件为真
+-d 所文件存在且为目录文件则真
+-s 若文件存在且不为空（文件大小非0）则真 size
+-e 若文件存在则真，区别-f  exist
+-r 若文件存在且可读为真
+-w 若文件存在且可写为真
+-x 若文件存在且可执行为真 executable
+-L 若文件存在且为链接文件则真
+f1 -nt f2 若文件f1比文件f2新则真 newer than
+f1 -ot f2 若文件f1比文件f2旧则真 older than
+
+
+

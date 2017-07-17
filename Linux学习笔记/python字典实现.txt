@@ -1,0 +1,17 @@
+dic={
+"省":{
+"市":['县']
+}
+}
+
+dic.keys()
+dic["省"].keys()
+dic["省"]["市"]
+dic["省"].keys()
+
+>>> dic.keys()
+dict_keys(['省'])
+>>> dic["省"].keys()
+dict_keys(['市'])
+>>> dic["省"]["市"]
+['县']

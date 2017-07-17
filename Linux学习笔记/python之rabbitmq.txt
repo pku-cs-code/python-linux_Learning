@@ -1,0 +1,122 @@
+python之rabbitmq
+
+pip3 install rabbitmq
+
+pip3 install pika  #API模块
+
+安装服务端
+yum install rabbitmq -y
+ 
+ 
+
+消息持久化
+实现第三方语言消息持久化
+之前讲的是python线程中实现安全的数据共享，rabbitMQ可以共享进程间数据
+
+
+
+如果server死了，数据就会丢，需要声明durable
+一旦声明queue就改不了，如果想要持久化可以停掉，然后重新定义别的
+
+channel.queque_declare(queue='hello'，durable=True)
+
+redis进程之间数据的共享，广播
+redis不是queue，是NonSQL，取多少次都在
+
+消息取了就没了可以用queue
+
+rabbitmq是比较著名的queue
+
+如果recv端有多个，消息则会按注册地顺序依次传给recv端，这是简单的负载均衡
+
+在AMQP基础上完整的、可复用的企业消息系统，遵循Mozilla Public License开源协议
+
+MQ：message queque
+消息队列是一种应用程序对应用程序的通信方法。应用程序通过读写出入队列的消息（针对应用程序的数据）来通信，直接调用通常是用于诸如远程过程调用的技术。排队指的的应用程序通过队列来通信。队列的使用出去了接收和发送应用程序同时执行的要求
+
+安装参考
+https://sensuapp.org/docs/latest/installation/install-rabbitmq-on-rhel-centos.html#install-erlang
+
+
+Remote Procedure call(RPC)
+
+
+prefetch =1参数在客户端设置可以让不同配置的机器根据处理数据的快慢来接收服务端的请求
+
+fanout所有都广播
+
+一个exchange可以绑定多个queue
+exchange类型是fanout的话，代表所有绑定到这个exchange上的都会收到消息
+
+direct通过routingkey和exchange决定的那个唯一的queue可以接收消息
+所有订阅这个queue的都可以收到消息
+
+topic所有符合routingkey的routingkey所bind的queue可以接收消息
+可以更细致地接收消息
+headers通过headers来决定把消息发给哪些queue（新出的）
+
+广播方fanout不用声明queue
+消息是实时的，没有收则失效
+
+
+D:\PycharmProjects\s12\day10_20170626>python3 rabbitMQ_direct_pub.py
+[x] Sent 'info':'Hello World!'
+
+D:\PycharmProjects\s12\day10_20170626>python3 rabbitMQ_direct_pub.py warning hey
+[x] Sent 'warning':'hey'
+
+D:\PycharmProjects\s12\day10_20170626>python3 rabbitMQ_direct_pub.py error test
+[x] Sent 'error':'test'
+
+D:\PycharmProjects\s12\day10_20170626>python3 rabbitMQ_direct_pub.py error test
+
+
+D:\PycharmProjects\s12\day10_20170626>python3 rabbitMQ_direct_sub.py info warning
+[*] Waiting for logs. To exit press CTRL+C.
+[x] 'info':b'Hello World!'
+[x] 'warning':b'hey'
+
+D:\PycharmProjects\s12\day10_20170626>python3 rabbitMQ_direct_sub.py info error
+[*] Waiting for logs. To exit press CTRL+C.
+[x] 'info':b'Hello World!'
+[x] 'error':b'test'
+
+
+D:\PycharmProjects\s12\day10_20170626>python3 rabbitMQ_topic_pub.py test.info testinfo
+[x] Sent 'test.info':'testinfo'
+
+D:\PycharmProjects\s12\day10_20170626>python3 rabbitMQ_topic_pub.py test.info testinfo
+[x] Sent 'test.info':'testinfo'
+
+D:\PycharmProjects\s12\day10_20170626>python3 rabbitMQ_topic_pub.py test.mysql.error mysqldown
+[x] Sent 'test.mysql.error':'mysqldown'
+
+D:\PycharmProjects\s12\day10_20170626>python3 rabbitMQ_topic_pub.py error.apache apachedown
+[x] Sent 'error.apache':'apachedown'
+
+
+D:\PycharmProjects\s12\day10_20170626>python3 rabbitMQ_topic_sub.py  *.info  *.apache
+[*] Waiting for logs. To exit press CTRLC.
+[x] 'test.info':b'testinfo'
+[x] 'error.apache':b'apachedown'
+
+
+D:\PycharmProjects\s12\day10_20170626>python3 rabbitMQ_topic_sub.py *.info *.mysql.error
+[*] Waiting for logs. To exit press CTRLC.
+[x] 'test.info':b't'
+[x] 'test.info':b'testinfo'
+[x] 'test.info':b'testinfo'
+[x] 'test.info':b'testinfo'
+[x] 'test.info':b'testinfo'
+[x] 'test.info':b'testinfo'
+[x] 'test.mysql.error':b'mysqldown'
+
+topic比direct更细致
+
+
+
+rpc协议
+
+
+
+

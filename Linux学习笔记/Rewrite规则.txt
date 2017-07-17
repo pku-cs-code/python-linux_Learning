@@ -1,0 +1,167 @@
+x3 discuz伪静态配置
+管理中心->全局->SEO设置
+勾选设置伪静态的业务，然后保存
+点击查看当前Rewrite规则，就会生成下面的Rewrite规则
+
+Rewrite规则
+Apache Web Server(独立主机用户)
+<IfModule mod_rewrite.c>
+	RewriteEngine On
+	RewriteCond %{QUERY_STRING} ^(.*)$
+	RewriteRule ^(.*)/topic-(.+)\.html$ $1/portal.php?mod=topic&topic=$2&%1
+	RewriteCond %{QUERY_STRING} ^(.*)$
+	RewriteRule ^(.*)/article-([0-9]+)-([0-9]+)\.html$ $1/portal.php?mod=view&aid=$2&page=$3&%1
+	RewriteCond %{QUERY_STRING} ^(.*)$
+	RewriteRule ^(.*)/forum-(\w+)-([0-9]+)\.html$ $1/forum.php?mod=forumdisplay&fid=$2&page=$3&%1
+	RewriteCond %{QUERY_STRING} ^(.*)$
+	RewriteRule ^(.*)/thread-([0-9]+)-([0-9]+)-([0-9]+)\.html$ $1/forum.php?mod=viewthread&tid=$2&extra=page\%3D$4&page=$3&%1
+	RewriteCond %{QUERY_STRING} ^(.*)$
+	RewriteRule ^(.*)/group-([0-9]+)-([0-9]+)\.html$ $1/forum.php?mod=group&fid=$2&page=$3&%1
+	RewriteCond %{QUERY_STRING} ^(.*)$
+	RewriteRule ^(.*)/space-(username|uid)-(.+)\.html$ $1/home.php?mod=space&$2=$3&%1
+	RewriteCond %{QUERY_STRING} ^(.*)$
+	RewriteRule ^(.*)/blog-([0-9]+)-([0-9]+)\.html$ $1/home.php?mod=space&uid=$2&do=blog&id=$3&%1
+	RewriteCond %{QUERY_STRING} ^(.*)$
+	RewriteRule ^(.*)/(fid|tid)-([0-9]+)\.html$ $1/index.php?action=$2&value=$3&%1
+	RewriteCond %{QUERY_STRING} ^(.*)$
+	RewriteRule ^(.*)/([a-z]+[a-z0-9_]*)-([a-z0-9_\-]+)\.html$ $1/plugin.php?id=$2:$3&%1
+</IfModule>
+Apache Web Server(虚拟主机用户)
+# 将 RewriteEngine 模式打开
+RewriteEngine On
+
+# 修改以下语句中的 /discuz 为您的论坛目录地址，如果程序放在根目录中，请将 /discuz 修改为 /
+RewriteBase /discuz
+
+# Rewrite 系统规则请勿修改
+RewriteCond %{QUERY_STRING} ^(.*)$
+RewriteRule ^topic-(.+)\.html$ portal.php?mod=topic&topic=$1&%1
+RewriteCond %{QUERY_STRING} ^(.*)$
+RewriteRule ^article-([0-9]+)-([0-9]+)\.html$ portal.php?mod=view&aid=$1&page=$2&%1
+RewriteCond %{QUERY_STRING} ^(.*)$
+RewriteRule ^forum-(\w+)-([0-9]+)\.html$ forum.php?mod=forumdisplay&fid=$1&page=$2&%1
+RewriteCond %{QUERY_STRING} ^(.*)$
+RewriteRule ^thread-([0-9]+)-([0-9]+)-([0-9]+)\.html$ forum.php?mod=viewthread&tid=$1&extra=page\%3D$3&page=$2&%1
+RewriteCond %{QUERY_STRING} ^(.*)$
+RewriteRule ^group-([0-9]+)-([0-9]+)\.html$ forum.php?mod=group&fid=$1&page=$2&%1
+RewriteCond %{QUERY_STRING} ^(.*)$
+RewriteRule ^space-(username|uid)-(.+)\.html$ home.php?mod=space&$1=$2&%1
+RewriteCond %{QUERY_STRING} ^(.*)$
+RewriteRule ^blog-([0-9]+)-([0-9]+)\.html$ home.php?mod=space&uid=$1&do=blog&id=$2&%1
+RewriteCond %{QUERY_STRING} ^(.*)$
+RewriteRule ^archiver/(fid|tid)-([0-9]+)\.html$ archiver/index.php?action=$1&value=$2&%1
+RewriteCond %{QUERY_STRING} ^(.*)$
+RewriteRule ^([a-z]+[a-z0-9_]*)-([a-z0-9_\-]+)\.html$ plugin.php?id=$1:$2&%1
+
+IIS Web Server(独立主机用户)
+[ISAPI_Rewrite]
+
+# 3600 = 1 hour
+CacheClockRate 3600
+
+RepeatLimit 32
+
+# Protect httpd.ini and httpd.parse.errors files
+# from accessing through HTTP
+RewriteRule ^(.*)/topic-(.+)\.html(\?(.*))*$ $1/portal\.php\?mod=topic&topic=$2&$4
+RewriteRule ^(.*)/article-([0-9]+)-([0-9]+)\.html(\?(.*))*$ $1/portal\.php\?mod=view&aid=$2&page=$3&$5
+RewriteRule ^(.*)/forum-(\w+)-([0-9]+)\.html(\?(.*))*$ $1/forum\.php\?mod=forumdisplay&fid=$2&page=$3&$5
+RewriteRule ^(.*)/thread-([0-9]+)-([0-9]+)-([0-9]+)\.html(\?(.*))*$ $1/forum\.php\?mod=viewthread&tid=$2&extra=page\%3D$4&page=$3&$6
+RewriteRule ^(.*)/group-([0-9]+)-([0-9]+)\.html(\?(.*))*$ $1/forum\.php\?mod=group&fid=$2&page=$3&$5
+RewriteRule ^(.*)/space-(username|uid)-(.+)\.html(\?(.*))*$ $1/home\.php\?mod=space&$2=$3&$5
+RewriteRule ^(.*)/blog-([0-9]+)-([0-9]+)\.html(\?(.*))*$ $1/home\.php\?mod=space&uid=$2&do=blog&id=$3&$5
+RewriteRule ^(.*)/(fid|tid)-([0-9]+)\.html(\?(.*))*$ $1/index\.php\?action=$2&value=$3&$5
+RewriteRule ^(.*)/([a-z]+[a-z0-9_]*)-([a-z0-9_\-]+)\.html(\?(.*))*$ $1/plugin\.php\?id=$2:$3&$5
+
+IIS7 Web Server(独立主机用户)
+<rewrite>
+	<rules>
+		<rule name="portal_topic">
+			<match url="^(.*/)*topic-(.+).html\?*(.*)$" />
+			<action type="Rewrite" url="{R:1}/portal.php\?mod=topic&amp;topic={R:2}&amp;{R:3}" />
+		</rule>
+		<rule name="portal_article">
+			<match url="^(.*/)*article-([0-9]+)-([0-9]+).html\?*(.*)$" />
+			<action type="Rewrite" url="{R:1}/portal.php\?mod=view&amp;aid={R:2}&amp;page={R:3}&amp;{R:4}" />
+		</rule>
+		<rule name="forum_forumdisplay">
+			<match url="^(.*/)*forum-(\w+)-([0-9]+).html\?*(.*)$" />
+			<action type="Rewrite" url="{R:1}/forum.php\?mod=forumdisplay&amp;fid={R:2}&amp;page={R:3}&amp;{R:4}" />
+		</rule>
+		<rule name="forum_viewthread">
+			<match url="^(.*/)*thread-([0-9]+)-([0-9]+)-([0-9]+).html\?*(.*)$" />
+			<action type="Rewrite" url="{R:1}/forum.php\?mod=viewthread&amp;tid={R:2}&amp;extra=page%3D{R:4}&amp;page={R:3}&amp;{R:5}" />
+		</rule>
+		<rule name="group_group">
+			<match url="^(.*/)*group-([0-9]+)-([0-9]+).html\?*(.*)$" />
+			<action type="Rewrite" url="{R:1}/forum.php\?mod=group&amp;fid={R:2}&amp;page={R:3}&amp;{R:4}" />
+		</rule>
+		<rule name="home_space">
+			<match url="^(.*/)*space-(username|uid)-(.+).html\?*(.*)$" />
+			<action type="Rewrite" url="{R:1}/home.php\?mod=space&amp;{R:2}={R:3}&amp;{R:4}" />
+		</rule>
+		<rule name="home_blog">
+			<match url="^(.*/)*blog-([0-9]+)-([0-9]+).html\?*(.*)$" />
+			<action type="Rewrite" url="{R:1}/home.php\?mod=space&amp;uid={R:2}&amp;do=blog&amp;id={R:3}&amp;{R:4}" />
+		</rule>
+		<rule name="forum_archiver">
+			<match url="^(.*/)*(fid|tid)-([0-9]+).html\?*(.*)$" />
+			<action type="Rewrite" url="{R:1}/index.php\?action={R:2}&amp;value={R:3}&amp;{R:4}" />
+		</rule>
+		<rule name="plugin">
+			<match url="^(.*/)*([a-z]+[a-z0-9_]*)-([a-z0-9_\-]+).html\?*(.*)$" />
+			<action type="Rewrite" url="{R:1}/plugin.php\?id={R:2}:{R:3}&amp;{R:4}" />
+		</rule>
+	</rules>
+</rewrite>
+Zeus Web Server
+match URL into $ with ^(.*)/topic-(.+)\.html\?*(.*)$
+if matched then
+	set URL = $1/portal.php?mod=topic&topic=$2&$3
+endif
+match URL into $ with ^(.*)/article-([0-9]+)-([0-9]+)\.html\?*(.*)$
+if matched then
+	set URL = $1/portal.php?mod=view&aid=$2&page=$3&$4
+endif
+match URL into $ with ^(.*)/forum-(\w+)-([0-9]+)\.html\?*(.*)$
+if matched then
+	set URL = $1/forum.php?mod=forumdisplay&fid=$2&page=$3&$4
+endif
+match URL into $ with ^(.*)/thread-([0-9]+)-([0-9]+)-([0-9]+)\.html\?*(.*)$
+if matched then
+	set URL = $1/forum.php?mod=viewthread&tid=$2&extra=page\%3D$4&page=$3&$5
+endif
+match URL into $ with ^(.*)/group-([0-9]+)-([0-9]+)\.html\?*(.*)$
+if matched then
+	set URL = $1/forum.php?mod=group&fid=$2&page=$3&$4
+endif
+match URL into $ with ^(.*)/space-(username|uid)-(.+)\.html\?*(.*)$
+if matched then
+	set URL = $1/home.php?mod=space&$2=$3&$4
+endif
+match URL into $ with ^(.*)/blog-([0-9]+)-([0-9]+)\.html\?*(.*)$
+if matched then
+	set URL = $1/home.php?mod=space&uid=$2&do=blog&id=$3&$4
+endif
+match URL into $ with ^(.*)/(fid|tid)-([0-9]+)\.html\?*(.*)$
+if matched then
+	set URL = $1/index.php?action=$2&value=$3&$4
+endif
+match URL into $ with ^(.*)/([a-z]+[a-z0-9_]*)-([a-z0-9_\-]+)\.html\?*(.*)$
+if matched then
+	set URL = $1/plugin.php?id=$2:$3&$4
+endif
+
+Nginx Web Server
+rewrite ^([^\.]*)/topic-(.+)\.html$ $1/portal.php?mod=topic&topic=$2 last;
+rewrite ^([^\.]*)/article-([0-9]+)-([0-9]+)\.html$ $1/portal.php?mod=view&aid=$2&page=$3 last;
+rewrite ^([^\.]*)/forum-(\w+)-([0-9]+)\.html$ $1/forum.php?mod=forumdisplay&fid=$2&page=$3 last;
+rewrite ^([^\.]*)/thread-([0-9]+)-([0-9]+)-([0-9]+)\.html$ $1/forum.php?mod=viewthread&tid=$2&extra=page%3D$4&page=$3 last;
+rewrite ^([^\.]*)/group-([0-9]+)-([0-9]+)\.html$ $1/forum.php?mod=group&fid=$2&page=$3 last;
+rewrite ^([^\.]*)/space-(username|uid)-(.+)\.html$ $1/home.php?mod=space&$2=$3 last;
+rewrite ^([^\.]*)/blog-([0-9]+)-([0-9]+)\.html$ $1/home.php?mod=space&uid=$2&do=blog&id=$3 last;
+rewrite ^([^\.]*)/(fid|tid)-([0-9]+)\.html$ $1/index.php?action=$2&value=$3 last;
+rewrite ^([^\.]*)/([a-z]+[a-z0-9_]*)-([a-z0-9_\-]+)\.html$ $1/plugin.php?id=$2:$3 last;
+if (!-e $request_filename) {
+	return 404;
+}

@@ -1,0 +1,135 @@
+
+建立自己的博客
+wget https://cn.wordpress.org/wordpress-4.7.4-zh_CN.zip
+
+[root@test tools]# cd wordpress
+[root@test wordpress]# ll
+total 188
+-rw-r--r--  1 root root   418 Sep 25  2013 index.php
+-rw-r--r--  1 root root 19935 Jan  3 02:51 license.txt
+-rw-r--r--  1 root root  6956 Apr 23 21:24 readme.html
+-rw-r--r--  1 root root  5447 Sep 28  2016 wp-activate.php
+drwxr-xr-x  9 root root  4096 Apr 23 21:24 wp-admin
+-rw-r--r--  1 root root   364 Dec 19  2015 wp-blog-header.php
+-rw-r--r--  1 root root  1627 Aug 29  2016 wp-comments-post.php
+-rw-r--r--  1 root root  2930 Apr 23 21:24 wp-config-sample.php
+drwxr-xr-x  5 root root  4096 Apr 23 21:24 wp-content
+-rw-r--r--  1 root root  3286 May 25  2015 wp-cron.php
+drwxr-xr-x 18 root root 12288 Apr 23 21:24 wp-includes
+-rw-r--r--  1 root root  2422 Nov 21 10:46 wp-links-opml.php
+-rw-r--r--  1 root root  3301 Oct 25  2016 wp-load.php
+-rw-r--r--  1 root root 33939 Nov 21 10:46 wp-login.php
+-rw-r--r--  1 root root  8048 Jan 11 13:15 wp-mail.php
+-rw-r--r--  1 root root 16255 Apr  7 02:23 wp-settings.php
+-rw-r--r--  1 root root 29896 Oct 19  2016 wp-signup.php
+-rw-r--r--  1 root root  4513 Oct 15  2016 wp-trackback.php
+-rw-r--r--  1 root root  3065 Sep  1  2016 xmlrpc.php
+[root@test wordpress]# mv ./*  /var/www/html/
+mv: overwrite `/var/www/html/index.php'? ^C
+[root@test wordpress]# cat index.php 
+<?php
+/**
+ * Front to the WordPress application. This file doesn't do anything, but loads
+ * wp-blog-header.php which does and tells WordPress to load the theme.
+ *
+ * @package WordPress
+ */
+
+/**
+ * Tells WordPress to load the WordPress theme and output it.
+ *
+ * @var bool
+ */
+define('WP_USE_THEMES', true);
+
+/** Loads the WordPress Environment and Template */
+require( dirname( __FILE__ ) . '/wp-blog-header.php' );
+[root@test wordpress]# mv ./*  /var/www/html/
+[root@test wordpress]# mysql -uroot -p
+Enter password: 
+Welcome to the MySQL monitor.  Commands end with ; or \g.
+Your MySQL connection id is 11
+Server version: 5.1.62 Source distribution
+
+Copyright (c) 2000, 2011, Oracle and/or its affiliates. All rights reserved.
+
+Oracle is a registered trademark of Oracle Corporation and/or its
+affiliates. Other names may be trademarks of their respective
+owners.
+
+Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
+
+mysql> create database wordpress DEFAULT CHARACTER SET gbk COLLATE gbk_chinese_ci;
+Query OK, 1 row affected (0.00 sec)
+
+mysql> show databases;
++--------------------+
+| Database           |
++--------------------+
+| information_schema |
+| mysql              |
+| test               |
+| wordpress          |
++--------------------+
+4 rows in set (0.00 sec)
+
+mysql> 
+mysql> show databases like 'wordpress';
++----------------------+
+| Database (wordpress) |
++----------------------+
+| wordpress            |
++----------------------+
+1 row in set (0.00 sec)
+
+创建数据库后要创建用户管理这个数据库
+mysql> grant select,insert,delete,update,create on wordpress.* to wordpress@localhost identified by '123456';
+Query OK, 0 rows affected (0.00 sec)
+create权限等我们创建完博客后再收回来
+用户和主机共同构成数据库的权限，有时候web服务器和mysql服务器不在一台主机上，主机可以是ip
+mysql> flush privileges;
+Query OK, 0 rows affected (0.00 sec)
+刷新权限
+查看mysql用户
+mysql> select user,host from mysql.user;
++-----------+-----------+
+| user      | host      |
++-----------+-----------+
+| root      | 127.0.0.1 |
+| root      | localhost |
+| wordpress | localhost |
++-----------+-----------+
+3 rows in set (0.00 sec)
+
+撤销create权限，因为生产环境中一般不会用到，同时也是为了保证安全
+mysql> revoke create on wordpress.* from wordpress@'localhost';
+Query OK, 0 rows affected (0.00 sec)
+
+查看grant，revoke用法
+ help grant;
+help revoke;
+
+查看权限
+mysql> show grants for wordpress@localhost;
++------------------------------------------------------------------------------------------------------------------+
+| Grants for wordpress@localhost                                                                                   |
++------------------------------------------------------------------------------------------------------------------+
+| GRANT USAGE ON *.* TO 'wordpress'@'localhost' IDENTIFIED BY PASSWORD '*6BB4837EB74329105EE4568DDA7DC67ED2CA2AD9' |
+| GRANT SELECT, INSERT, UPDATE, DELETE ON `wordpress`.* TO 'wordpress'@'localhost'                                 |
++------------------------------------------------------------------------------------------------------------------+
+2 rows in set (0.00 sec)
+
+在前面mv ./*  /var/www/html/时我们忘记了将拷贝过去的文件授权给用户了
+chown -R apache.apache /var/www/html/
+
+WordPress开始页面我们根据提示输入数据库用户、密码等可以创建wp-config.php文件
+（cp wp-config-sample.php wp-config.php在新建的文件中填入数据库用户密码等即可）
+
+设置站点目录账户名和密码后按照显示数据库报错，原因是我们在前面取消了数据库wordpress用户的creat权限
+添加后再安装就好了
+
+比较安全地维持站点目录，可以将/var/www/html授权给root.root，在此目录的权限改成755
+chmod -R 755 /var/www/html
+mkdir /var/www/html/wp-content/uploads
+chown -R apache.apache wp-content/uploads/授权上传文件目录，如果是集群uploads可能要放在公共存储上
+好还可以禁止上传*.php *.sh *.bat等文件

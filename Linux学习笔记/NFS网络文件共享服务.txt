@@ -1,0 +1,446 @@
+NFS网络文件共享服务
+Network File System
+通过网络让不同的机器系统之间可以彼此共享文件或目录
+NFS客户端（一般为应用服务器）可以通过挂载的方式将NFS服务器端共享的数据文件目录挂载到NFS客户端本地系统中
+NFS系统在工作场景一般用来存储视频、图片、附件等静态资源文件（对于用户上传的文件都放到NFS共享里，附件、头像），中小公司应用频率高
+大公司用MFS、GFS、FASTFS
+多台服务器共享一个东西用NFS
+
+将服务端目录挂载到本地端目录，一个server端目录可以挂载到多个客户端目录上，
+
+公共服务器
+中小企业一般不会买存储，大公司业务发展很快，可能临时买存储顶一下，并发继续加大
+可能存储拓展就相对很费劲，且价格成几何级数的增加。淘宝就替换了很多硬件
+设备集群软件，用lvs+haproxy替换了netscaler，用fastfs，TFS替换了netapp，emc存储
+
+NFS通过网络进行数据传输，在传输数据时使用的端口是随机选择的，是通过RPC协议/服务来实现的
+Remote Procedure Call，例如百度就使用RPC
+NFS功能多，对应的程序多，所以对应的端口无法固定
+0-65535
+1024以下是系统服务，NFS是系统服务
+调用RPC找到NFS的端口，RPC记录每个NFS功能所对应的端口号，且将NFS客户端
+请求时将对应的端口和功能对应的信息传递给请求数据的NFS客户端。RPC服务就类似NFS客户端和服务端的中介
+NFS服务端启动服务时会随机取用数个端口，并主动向RPC服务注册取用的相关端口信息，
+这样就知道了每个端口对应的NFS功能，然后RPC服务使用固定的端口111监听NFS客户端的提交的请求，
+并将正确的NFS端口应答给NFS客户端。
+
+工作中要先启动RPC，后启动NFS，NFS客户端不需要NFS服务，只需要RPC服务
+RPC服务在5.8下面是portmap服务，6.4下是rpcbind服务
+
+cat /etc/redhat-release 
+CentOS release 5.11 (Final)
+[root@c5 ~]# uname -n看机器名
+c5.8-nfs-client
+[root@c5 ~]#  uname -r看内核版本
+2.6.18-419.el5
+[root@c5 ~]# uname -m看架构位数
+x86_64
+[root@c5 ~]# uname -a看所有的
+Linux c5.8-nfs-client 2.6.18-419.el5 #1 SMP Fri Feb 24 22:47:42 UTC 2017 x86_64 x86_64 x86_64 GNU/Linux
+
+nfs-utils  NFS主程序，rpc.nfsd、rpc.mountd等
+portmap CentOS5.x下面的RPC主程序，CentOS6.x为rpcbind
+在启动任何一个RPC服务之前需要做好端口映射工作
+
+[root@c5 ~]# rpm -qa nfs-utils portmap
+nfs-utils-1.0.9-71.el5_11
+portmap-4.0-65.2.2.1
+[root@c5 ~]# rpm -qa nfs-utils portmap rpcbind
+nfs-utils-1.0.9-71.el5_11
+portmap-4.0-65.2.2.1
+
+6.4
+[root@test ~]# rpm -qa nfs-utils portmap rpcbind
+rpcbind-0.2.0-12.el6.x86_64
+nfs-utils-1.2.3-70.el6_8.2.x86_64
+
+如果没有安装可以使用如下命令安装yum install -y nfs-utils  rpcbind
+
+[root@c5 ~]# /etc/init.d/portmap status 检查portmap工作状态
+portmap is stopped
+[root@c5 ~]# chkconfig --list | grep 3:on
+crond          	0:off	1:off	2:on	3:on	4:on	5:on	6:off
+network        	0:off	1:off	2:on	3:on	4:on	5:on	6:off
+sshd           	0:off	1:off	2:on	3:on	4:on	5:on	6:off
+syslog         	0:off	1:off	2:on	3:on	4:on	5:on	6:off
+[root@c5 ~]# /etc/init.d/portmap start
+Starting portmap:                                          [  OK  ]
+[root@c5 ~]# /etc/init.d/portmap status
+portmap (pid 2416) is running...
+[root@c5 ~]# rpcinfo -p localhost
+   program vers proto   port
+    100000    2   tcp    111  portmapper
+    100000    2   udp    111  portmapper
+[root@c5 ~]# /etc/init.d/nfs status
+rpc.mountd is stopped
+nfsd is stopped
+rpc.rquotad is stopped
+[root@c5 ~]# /etc/init.d/nfs start启动nfs
+Starting NFS services:                                     [  OK  ]
+Starting NFS quotas:                                       [  OK  ]
+Starting NFS daemon:                                       [  OK  ]
+Starting NFS mountd:                                       [  OK  ]
+[root@c5 ~]# /etc/init.d/nfs status
+rpc.mountd (pid 2522) is running...
+nfsd (pid 2519 2518 2517 2516 2515 2514 2513 2512) is running...
+rpc.rquotad (pid 2484) is running...
+[root@c5 ~]# rpcinfo -p localhost 查看NFS服务向rpc注册的信息
+   program vers proto   port
+    100000    2   tcp    111  portmapper
+    100000    2   udp    111  portmapper
+    100011    1   udp    965  rquotad
+    100011    2   udp    965  rquotad
+    100011    1   tcp    968  rquotad
+    100011    2   tcp    968  rquotad
+    100003    2   udp   2049  nfs
+    100003    3   udp   2049  nfs
+    100003    4   udp   2049  nfs
+    100021    1   udp  50664  nlockmgr
+    100021    3   udp  50664  nlockmgr
+    100021    4   udp  50664  nlockmgr
+    100003    2   tcp   2049  nfs
+    100003    3   tcp   2049  nfs
+    100003    4   tcp   2049  nfs
+    100021    1   tcp  38823  nlockmgr
+    100021    3   tcp  38823  nlockmgr
+    100021    4   tcp  38823  nlockmgr
+    100005    1   udp   1002  mountd
+    100005    1   tcp   1005  mountd
+    100005    2   udp   1002  mountd
+    100005    2   tcp   1005  mountd
+    100005    3   udp   1002  mountd
+    100005    3   tcp   1005  mountd
+
+[root@c5 ~]# ps -ef |egrep "rpc|nfs"  egrep是多过滤
+rpc       2416     1  0 00:03 ?        00:00:00 portmap  rpc服务
+root      2484     1  0 00:04 ?        00:00:00 rpc.rquotad 磁盘配额
+root      2495     8  0 00:04 ?        00:00:00 [rpciod/0]
+root      2510     8  0 00:04 ?        00:00:00 [nfsd4]
+root      2512     1  0 00:04 ?        00:00:00 [nfsd]
+root      2513     1  0 00:04 ?        00:00:00 [nfsd]
+root      2514     1  0 00:04 ?        00:00:00 [nfsd]
+root      2515     1  0 00:04 ?        00:00:00 [nfsd]
+root      2516     1  0 00:04 ?        00:00:00 [nfsd]
+root      2517     1  0 00:04 ?        00:00:00 [nfsd]
+root      2518     1  0 00:04 ?        00:00:00 [nfsd]
+root      2519     1  0 00:04 ?        00:00:00 [nfsd]
+root      2522     1  0 00:04 ?        00:00:00 rpc.mountd权限管理
+root      2575  2333  0 00:10 pts/0    00:00:00 egrep rpc|nfs
+
+nfsd管理client端是否能够登入主机，其中还包括登入者的ID
+rpc.mountd管理NFS的文件系统
+
+配置nfs开机启动
+[root@c5 ~]# chkconfig nfs on 
+[root@c5 ~]# chkconfig portmap on 
+[root@c5 ~]# more /etc/init.d/nfs
+
+工作场景可以按照规范放到/etc/rc.local中
+
+#nfs startup by zhangcai at 20170412
+/etc/init.d/portmap start
+/etc/init.d/nfs start
+
+[root@c5 ~]# chkconfig --list | grep -E "nfs|portmap"
+nfs            	0:off	1:off	2:on	3:on	4:on	5:on	6:off
+nfslock        	0:off	1:off	2:off	3:off	4:on	5:on	6:off
+portmap        	0:off	1:off	2:on	3:on	4:on	5:on	6:off
+[root@c5 ~]# chkconfig --list nfs
+nfs            	0:off	1:off	2:on	3:on	4:on	5:on	6:off
+
+nfs配置文件
+[root@c5 ~]# ll /etc/exports 
+-rw-r--r-- 1 root root 0 Jan 13  2000 /etc/exports
+是存在的但是没有内容
+格式：NFS共享目录    客户端地址1（参数1，参数2...） 客户端地址2（参数1，参数2...） 
+客户端地址可以是一个ip地址，也可以是一个地址段
+[root@c5 ~]# man exports查看exports详细参数
+NFS共享目录: 要共享的实际目录，要用绝对路径
+NFS客户端地址：可访问共享目录的NFS客户端地址，可以为单独的IP地址或主机名、域名等
+也可以为整个网段地址，还可以用*来匹配所有客户端服务器访问。所谓的客户端一般来说是前端的业务服务器
+例如web服务，一般不针对个别用户
+参数集：对授权的客户端的访问权限设置
+10.0.0.0/24对整个网段，24等同于255.255.255.0为生产环境中最常见的配置
+10.0.0.*制定网段的另外写法，需要验证
+nfs.oldboy.cc生产环境中一般不常用
+*.oldboy.cc不常用
+
+配置例1：/data/bbs 10.0.0.0/24(rw,sync)
+配置例2：/home/ryan 10.0.0.0/24(rw,sync,all_squash,anonuid=2000,anongid=2000)
+配置例3：/home/oldboy 10.0.0.15(ro)只读共享，生产环境可能用于运维给开发 提供从某个测试服务器查看某个正式服务器数据的能力
+rw读写，sync表示数据同步到硬盘中
+
+[root@c5 ~]# vim /etc/exports 
+#shared bbs dir to 102.168.1.0/24
+/data/bbs 192.168.1.0/24(rw,sync)
+
+修改配置不立即生效，linux高效机制
+[root@c5 ~]# /etc/init.d/nfs reload平滑重启，已有用户感觉不到
+没提示就是最好的提示
+nfs reload意思 
+reload | force-reload)
+        /usr/sbin/exportfs -r
+
+[root@c5 ~]# showmount -e 192.168.1.65
+Export list for 192.168.1.65:
+/data/bbs 192.168.1.0/24
+-e制定
+如果不行，可以查看iptables，telnet
+
+[root@c5 ~]# telnet 192.168.1.65 111
+Trying 192.168.1.65...
+Connected to 192.168.1.65 (192.168.1.65).
+Escape character is '^]'.
+^]
+telnet> quit
+Connection closed.
+
+[root@c5 ~]# mount -t nfs 192.168.1.65:/data/bbs /mnt
+-t制定类型
+[root@c5 ~]# df -h
+Filesystem            Size  Used Avail Use% Mounted on
+/dev/sda3             5.3G  2.3G  2.8G  46% /
+/dev/sda1             190M   19M  163M  11% /boot
+tmpfs                 123M     0  123M   0% /dev/shm
+192.168.1.65:/data/bbs
+                      5.3G  2.3G  2.8G  46% /mnt
+
+[root@c5 ~]# cd /mnt/
+[root@c5 mnt]# touch test.txt
+touch: cannot touch `test.txt': Permission denied
+
+服务端
+[root@c5 bbs]# ls -ld /data/bbs
+drwxr-xr-x 2 root root 4096 Apr 12 00:56 /data/bbs
+
+客户端是nobody身份
+
+[root@c5 mnt]# grep nfsnobody /etc/passwd
+nfsnobody:x:65534:65534:Anonymous NFS User:/var/lib/nfs:/sbin/nologin
+
+服务端
+[root@c5 bbs]# chmod -R 757 /data/bbs/
+客户端[root@c5 mnt]# touch test.txt
+[root@c5 mnt]# ll
+total 0
+-rw-r--r-- 1 nfsnobody nfsnobody 0 Apr 12 01:02 test.txt
+服务端完整配置
+[root@c5 bbs]# cat /var/lib/nfs/etab 
+/data/bbs	192.168.1.0/24(rw,sync,wdelay,hide,nocrossmnt,secure,root_squash,no_all_squash,no_subtree_check,secure_locks,acl,mapping=identity,anonuid=65534,anongid=65534)
+[root@c5 bbs]# grep 65534 /etc/passwd
+nfsnobody:x:65534:65534:Anonymous NFS User:/var/lib/nfs:/sbin/nologin
+
+CentOS6.8
+
+[root@test ~]# cat /etc/redhat-release 
+CentOS release 6.8 (Final)
+You have mail in /var/spool/mail/root
+[root@test ~]# uname -r
+2.6.32-642.15.1.el6.x86_64
+[root@test ~]# uname -m
+x86_64
+[root@test ~]# uname -a
+Linux test 2.6.32-642.15.1.el6.x86_64 #1 SMP Fri Feb 24 14:31:22 UTC 2017 x86_64 x86_64 x86_64 GNU/Linux
+
+[root@test ~]# /etc/init.d/rpcbind stop
+Stopping rpcbind:                                          [  OK  ]
+[root@test ~]# rpcinfo -p localhost
+rpcinfo: can't contact portmapper: RPC: Remote system error - Connection refused
+
+[root@test ~]# /etc/init.d/rpcbind start
+Starting rpcbind:                                          [  OK  ]
+[root@test ~]# rpcinfo -p localhost
+   program vers proto   port  service
+    100000    4   tcp    111  portmapper
+    100000    3   tcp    111  portmapper
+    100000    2   tcp    111  portmapper
+    100000    4   udp    111  portmapper
+    100000    3   udp    111  portmapper
+    100000    2   udp    111  portmapper
+
+[root@test ~]# echo "#c6.4 nfs rpc by zhangcai" >> /etc/rc.local 
+[root@test ~]#  echo "/etc/init.d/rpcbind start" >> /etc/rc.local 
+[root@test ~]# tail -2 /etc/rc.local 
+#c6.4 nfs rpc by zhangcai
+/etc/init.d/rpcbind start
+[root@test ~]# ps -ef | grep -E "rpc|nfs"
+root      2082     2  0 21:24 ?        00:00:00 [rpciod/0]
+rpc       2281     1  0 21:26 ?        00:00:00 rpcbind
+root      2303  1224  0 21:28 pts/0    00:00:00 grep -E rpc|nfs
+
+启动nfs主服务，且加入开机自启动服务
+[root@test ~]# /etc/init.d/nfs status
+rpc.svcgssd is stopped
+rpc.mountd is stopped
+nfsd is stopped
+rpc.rquotad is stopped
+[root@test ~]# /etc/init.d/nfs start
+Starting NFS services:                                     [  OK  ]
+Starting NFS quotas:                                       [  OK  ]
+Starting NFS mountd:                                       [  OK  ]
+Starting NFS daemon:                                       [  OK  ]
+Starting RPC idmapd:                                       [  OK  ]
+[root@test ~]# rpcinfo -p localhost
+   program vers proto   port  service
+    100000    4   tcp    111  portmapper
+    100000    3   tcp    111  portmapper
+    100000    2   tcp    111  portmapper
+    100000    4   udp    111  portmapper
+    100000    3   udp    111  portmapper
+    100000    2   udp    111  portmapper
+    100011    1   udp    875  rquotad
+    100011    2   udp    875  rquotad
+    100011    1   tcp    875  rquotad
+    100011    2   tcp    875  rquotad
+    100005    1   udp  16021  mountd
+    100005    1   tcp  39488  mountd
+    100005    2   udp  36245  mountd
+    100005    2   tcp  32896  mountd
+    100005    3   udp  27047  mountd
+    100005    3   tcp  56781  mountd
+    100003    2   tcp   2049  nfs
+    100003    3   tcp   2049  nfs
+    100003    4   tcp   2049  nfs
+    100227    2   tcp   2049  nfs_acl
+    100227    3   tcp   2049  nfs_acl
+    100003    2   udp   2049  nfs
+    100003    3   udp   2049  nfs
+    100003    4   udp   2049  nfs
+    100227    2   udp   2049  nfs_acl
+    100227    3   udp   2049  nfs_acl
+    100021    1   udp  47107  nlockmgr
+    100021    3   udp  47107  nlockmgr
+    100021    4   udp  47107  nlockmgr
+    100021    1   tcp  23160  nlockmgr
+    100021    3   tcp  23160  nlockmgr
+    100021    4   tcp  23160  nlockmgr
+[root@test ~]#  echo "/etc/init.d/nfs start" >> /etc/rc.local 
+[root@test ~]# tail -3 /etc/rc.local 
+#c6.4 nfs rpc by zhangcai
+/etc/init.d/rpcbind start
+/etc/init.d/nfs start
+配置nfs配置文件
+[root@test ~]# echo "#shared /data/bbs by zhangcai" >> /etc/exports
+[root@test ~]# echo "/data/bbs 192.168.1.0/24(rw.sync)" >>/etc/exports 
+You have mail in /var/spool/mail/root
+[root@test ~]# tail -2 /etc/exports 
+#shared /data/bbs by zhangcai
+/data/bbs 192.168.1.0/24(rw.sync)
+[root@test ~]# exportfs -rv
+exportfs: /etc/exports:1: unknown keyword "rw.sync"
+
+[root@test ~]# echo "/data/bbs 192.168.1.0/24(rw,sync)" >>/etc/exports 
+[root@test ~]# vim /etc/exports 
+[root@test ~]# sed -i 's#rw.sync#rw,sync#g' /etc/exports 
+[root@test ~]# cat /etc/exports 
+#shared /data/bbs by zhangcai
+/data/bbs 192.168.1.0/24(rw,sync)
+/data/bbs 192.168.1.0/24(rw,sync)
+[root@test ~]# showmount -e localhost
+Export list for localhost:
+[root@test ~]# vim /etc/exports 
+[root@test ~]# /etc/init.d/nfs reload
+[root@test ~]# showmount -e localhost
+Export list for localhost:
+/data/bbs 192.168.1.0/24
+
+
+5.11中
+[root@c5 bbs]# cd /var/lib/nfs/
+[root@c5 nfs]# ll 
+total 36
+-rw-r--r-- 1 root    root     169 Apr 12 00:47 etab
+-rw-r--r-- 1 root    root       0 Apr 12 00:04 export-lock
+-rw-r--r-- 1 root    root      34 Apr 12 00:55 rmtab
+drwxr-xr-x 7 root    root       0 Apr 12 00:04 rpc_pipefs
+drwx------ 4 rpcuser rpcuser 4096 May  6  2015 statd
+-rw------- 1 root    root       0 May  6  2015 state
+drwxr-xr-x 2 root    root    4096 May  6  2015 v4recovery
+-rw-r--r-- 1 root    root       0 May  6  2015 xtab
+[root@c5 nfs]# cat rmtab 
+192.168.1.61:/data/bbs:0x00000001
+记录挂载的ip
+
+6.8不记录[root@test nfs]# cat rmtab 
+
+更改服务端配置时，如果客户端在连，更改服务端配置后，在客户端需要重启rpcbind
+并且umount卸载/mnt文件，然后挂载了再对文件进行操作
+
+配置参数：
+rw读写
+ro只读
+sync请求或写入数据时，数据同步写入到NFSServer的硬盘后再返回
+async先返回请求再将数据写入内存缓存中，提高性能但安全性有问题
+all_squash不管访问server共享目录的身份如何，权限都被压缩成匿名用户，同事UID和GID都会变成nobody和nfsnobody
+
+挂载的文件重启后会失效，不建议放在/etc/fstab中，防止服务端没起来本地客户机重启不了
+建议放在/etc/rc.local中
+
+
+课前实战
+[root@test data]# ls -ld /data/*share*
+drwxr-xr-x. 2 root root 4096 Mar 28 11:08 /data/r_shared
+drwxr-xr-x. 2 root root 4096 Mar 28 11:08 /data/w_shared
+[root@test data]# chown -R nfsnobody.nfsnobody /data/w_shared/
+You have mail in /var/spool/mail/root
+[root@test data]# ls -ld /data/*share*
+drwxr-xr-x. 2 root      root      4096 Mar 28 11:08 /data/r_shared
+drwxr-xr-x. 2 nfsnobody nfsnobody 4096 Mar 28 11:08 /data/w_shared
+
+挂载参数检查
+                      5.4G  1.8G  3.4G  35% /data/r_zhangcai
+[root@centos5 ~]# cat /proc/mounts 
+rootfs / rootfs rw 0 0
+/dev/root / ext3 rw,data=ordered 0 0
+/dev /dev tmpfs rw 0 0
+/proc /proc proc rw 0 0
+/sys /sys sysfs rw 0 0
+/proc/bus/usb /proc/bus/usb usbfs rw 0 0
+devpts /dev/pts devpts rw 0 0
+/dev/sda1 /boot ext3 rw,data=ordered 0 0
+tmpfs /dev/shm tmpfs rw 0 0
+none /proc/sys/fs/binfmt_misc binfmt_misc rw 0 0
+sunrpc /var/lib/nfs/rpc_pipefs rpc_pipefs rw 0 0
+192.168.1.60:/data/w_shared /data/w_zhangcai nfs rw,vers=3,rsize=65536,wsize=65536,hard,proto=tcp,timeo=600,retrans=2,sec=sys,addr=192.168.1.60 0 0
+192.168.1.60:/data/r_shared /data/r_zhangcai nfs rw,vers=3,rsize=65536,wsize=65536,hard,proto=tcp,timeo=600,retrans=2,sec=sys,addr=192.168.1.60 0 0
+
+
+服务端默认配置
+[root@test data]# cat /var/lib/nfs/
+etab         export-lock  .rmtab.lock  statd/       v4recovery/  .xtab.lock   
+.etab.lock   rmtab        rpc_pipefs/  state        xtab         
+[root@test data]# cat /var/lib/nfs/etab 
+/data/bbs	192.168.1.0/24(rw,sync,wdelay,hide,nocrossmnt,secure,root_squash,no_all_squash,no_subtree_check,secure_locks,acl,anonuid=65534,anongid=65534,sec=sys,rw,root_squash,no_all_squash)
+/data/r_shared	192.168.1.0/24(ro,sync,wdelay,hide,nocrossmnt,secure,root_squash,no_all_squash,no_subtree_check,secure_locks,acl,anonuid=65534,anongid=65534,sec=sys,ro,root_squash,no_all_squash)
+/data/w_shared	192.168.1.0/24(rw,sync,wdelay,hide,nocrossmnt,secure,root_squash,no_all_squash,no_subtree_check,secure_locks,acl,anonuid=65534,anongid=65534,sec=sys,rw,root_squash,no_all_squash)
+客户端默认配置
+drwxr-xr-x 2 nfsnobody nfsnobody 4096 Mar 28  2014 w_zhangcai
+[root@centos5 data]# grep mnt /proc/mounts 
+192.168.1.60:/data/bbs /mnt nfs rw,noatime,vers=3,rsize=65536,wsize=65536,hard,proto=tcp,timeo=600,retrans=2,sec=sys,addr=192.168.1.60 0 0
+
+设置开机启动挂载，但是建议放在/etc/rc.local中
+/etc/fstab
+192.168.1.60:/data/bbs     /mnt    nfs  defaults 0 0 
+
+[root@centos5 data]# grep mnt /proc/mounts 
+192.168.1.60:/data/bbs /mnt nfs rw,noatime,vers=3,rsize=65536,wsize=65536,hard,proto=tcp,timeo=600,retrans=2,sec=sys,addr=192.168.1.60 0 0
+root@centos5 data]# mount -a检查挂载是否正常
+
+如果用fstab做网络NFS系统的开机挂载配置，那么rpc服务就要用chkconfig设置，
+否则会导致“乌龙球”了，系统可能启动不起来，NFS挂载也不正常。
+
+对于本地文件系统，一般放在fstab里进行挂载，并且结尾的两列不要用1 1，要用0 0
+
+第五列0或者1设置是否需要dump，也就是备份，0表示不需要，1表示需要
+第六列设置在开机时是否进行fsck检查，0为不检查
+最后两列均为0防止机器起不来
+
+/etc/fstab比/etc/rc.local先加载
+
+/etc/fstab设置错误，输入root密码后mount -o rw,remount /
+然后cp /etc/fstab.bak /etc/fstab，然后重启
+
+客服端和服务端都要增加相应的用户
+服务端设置共享的目录属主为什么，客户端创建的文件属主也是服务端设置的目录属主
+
+

@@ -1,0 +1,15 @@
+测试网络及域名ip等命令
+
+
+traceroute
+
+nslookup
+yum install bind-utils
+
+dig www.baidu.com
+
+nslookup www.baidu.com 8.8.8.8
+ 
+dos命令
+C:\Users\cai>tracert -d -h 15 www.csdn.net
+

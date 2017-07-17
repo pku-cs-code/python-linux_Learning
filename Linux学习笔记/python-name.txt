@@ -1,0 +1,9 @@
+
+变量名设置
+1显式 通俗易通
+2.nums_of_alex_gf = 19
+3.NumsOfAlexGf = 2 驼峰语法
+4.nums-of-alex-gf = 22 不能使用
+5.5anme = 数字不能开头  na5me=
+6.!name 特殊字符不能有，！ ~ &……%￥$
+7.names of teacher = 不能有空格

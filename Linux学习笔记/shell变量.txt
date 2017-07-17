@@ -1,0 +1,111 @@
+shell变量
+
+环境变量：定义shell的运行环境，保证shell命令的正确执行，shell通过环境变量来确定
+登录用户名、命名路径、终端类型、登陆目录，所有的环境变量都是系统全局变量
+可用于所有子进程中，这包括编辑器、shell脚本和各类应用
+
+用户家目录.bash_profile文件或者/etc/bashrc，/etc/profile中
+传统上环境变量为大写
+环境变量在用户登录前就设定好了的
+
+[root@test ~]# echo $PS1
+[\u@\h \W]\$
+TMOUT=3600可以修改，退出前等待超时的秒数
+HISTFILESIZE=50历史文件能包含的最大行数
+HISTSIZE=50历史记录最大行数
+
+设置环境变量
+给变量赋值后或设置变量后export或者declare
+1 export var =value
+2 var=value；export var（var2……）
+3 declare -x var=value
+
+java环境配置实例 tomcat resin csvn hadoop
+常见放在/etc/profile
+
+env（printenv）或 set能显示默认的环境变量
+
+unset取消
+unset USER 临时生效
+想要永久生效需要写到配置文件中去
+
+定义本地变量
+只在用户当前的shell生存期中使用
+var=value
+var=‘value’
+var=“value”
+
+shell中变量名的要求，一般是字母、数字、下划线组成
+一般字母开头
+
+ a=192.168.1.2   
+ b='192.168.1.2'  #单引号，不会给里面做解析
+c="192.168.1.2"
+
+[root@test ~]# echo "a=$a"    
+a=192.168.1.2
+[root@test ~]# echo "b=$b"
+b=192.168.1.2
+[root@test ~]# echo "c=${c}"
+c=192.168.1.2
+
+
+[root@test ~]# a=192.168.1.2-$a
+[root@test ~]# b='192.168.1.2-$a'
+[root@test ~]# c="192.168.1.2-$a"
+
+[root@test ~]#  echo "a=$a" 
+a=192.168.1.2-192.168.1.2
+[root@test ~]# b='192.168.1.2-$a'
+[root@test ~]# echo "b=$b"
+b=192.168.1.2-$a
+[root@test ~]#  echo "c=${c}"
+c=192.168.1.2-192.168.1.2-192.168.1.2
+
+第一种a直接变量定义的变量内容，一般为连续的数字、字符串、路径名等 
+第二种b是通过单引号定义变量，输出变量时引号里是什么即使内容中有变量也
+会把变量名原样输出，适用于定义显示纯字符串
+第三种c通过双引号定义变量，特点是输出变量时引号里的变量会经过解析后输出
+该变量的内容，适合附带有变量的内容的定义
+习惯：数字不加引号，其他默认加双引号
+
+无引号：会将含有空格的字符串视为一个整体输出，如果内容中有命令、变量等，
+会先把变量命令解析出结果，然后在输出最终内容来，如果字符串中带有空格
+等特殊字符，则不能完整的输出，需要改加双引号，一般连续的字符串，数字，
+路径等可以不加任何引号，不过最好用双引号替代之
+
+[root@test ~]# echo `date`
+Tue May 16 14:31:33 CST 2017
+[root@test ~]# echo '`date`'
+`date`
+[root@test ~]# echo "`date`"
+Tue May 16 14:31:46 CST 2017
+
+特例：awk中恰好相反
+
+变量名规范：
+1变量命名要统一，使用全部大写字母
+2避免无含义字符或数字
+3全局变量和局部变量名
+   全局变量大写OLDBOY_HOME，使用时{}括起来或者“${OLDBOY_HOME}”
+   局部变量local方式声明，如local i
+参考系统脚本来写，多模仿/etc/init.d/functions
+
+把命令定义为变量
+[root@test ~]# cmd=`date`
+[root@test ~]# echo $cmd
+Tue May 16 14:42:58 CST 2017
+[root@test ~]# cmd=$(date +%F)
+[root@test ~]# echo $cmd
+2017-05-16
+
+[root@test ~]# tar zcf ${cmd}_olboy.tar.gz /etc/  #因为不能是识别是cmd还
+是cmd_oldboy
+打包一般切到目录去打包
+
+养成将所有字符串变量用双引号括起来使用的习惯
+如“$A" or “${A}”
+
+ 
+
+

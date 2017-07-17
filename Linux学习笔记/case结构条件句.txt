@@ -1,0 +1,185 @@
+case结构条件句
+
+case "字符串变量" in
+值1 指令
+;;
+值2 指令
+;;
+*     指令
+;;
+esac
+
+
+if和case比较
+
+
+
+[root@test scripts]# cat case-color.sh 
+#!/bin/bash
+RED_COLOR='\E[1;31m'
+GREEN_COLOR='\E[1;32m'
+YELLOW_COLOR='\E[1;33m'
+BLUE_COLOR='\E[1;34m'
+RES='\E[0m'
+read -p "please input the fruit you like:" ans
+case "$ans" in
+apple|APPLE|Apple)
+  echo -e "the fruit you like is ${RED_COLOR}"$ans."${RES}"
+;;
+banana|BANANA|Banana)
+  echo -e "the fruit you like is ${YELLOW_COLOR}"$ans."${RES}"
+;;
+pear|PEAR|Pear)
+  echo -e "the fruit you like is ${GREEN_COLOR}"$ans."${RES}"
+;;
+*)
+  echo -e "Here is not the fruit name you like-- ${BLUE_COLOR}"$ans."${RES}"
+  exit;
+;;
+esac
+
+
+
+[root@test scripts]# echo -e "\033[30m black traing \033[0m"
+ black traing 
+[root@test scripts]# echo -e "\033[31m black training \033[0m"
+ black training 
+[root@test scripts]# echo -e "\033[31m red training \033[0m"
+ red training 
+[root@test scripts]# echo -e "\033[32m green training \033[0m"
+ green training 
+[root@test scripts]# echo -e "\033[33m blue training \033[0m"
+ blue training 
+[root@test scripts]# echo -e "\033[30m black training \033[0m"
+ black training 
+[root@test scripts]# echo -e "\033[31m red training \033[0m"
+ red training 
+[root@test scripts]# echo -e "\033[32m green training \033[0m"
+ green training 
+[root@test scripts]# echo -e "\033[33m yellow training \033[0m"
+ yellow training 
+[root@test scripts]# echo -e "\033[34m blue training \033[0m"
+ blue training 
+[root@test scripts]# echo -e "\033[35m purple training \033[0m"
+ purple training 
+[root@test scripts]# echo -e "\033[36m tianlan training \033[0m"
+ tianlan training 
+[root@test scripts]# echo -e "\033[37m white training \033[0m"
+ white training 
+
+
+
+[root@test scripts]# cat color.sh 
+#!/bin/bash
+RED_COLOR='\E[1;31m'
+GREEN_COLOR='\E[1;32m'
+YELLOW_COLOR='\E[1;33m'
+BLUE_COLOR='\E[1;34m'
+PINK='\E[1;35m'
+RES='\E[0m'
+echo -e "${RED_COLOR}======red color======${RES}"
+echo -e "${YELLOW_COLOR}======yellow color======${RES}"
+echo -e "${BLUE_COLOR}======blue color======${RES}"
+echo -e "${GREEN_COLOR}======green color======${RES}"
+echo -e "${PINK}======pink color======${RES}"
+
+
+
+[root@test scripts]# cat echo-color.sh 
+SETCOLOR_SUCCESS="echo -en \\033[1;32m"
+SETCOLOR_FAILURE="echo -en \\033[1;31m"
+SETCOLOR_WARNNING="echo -en \\033[1;33m"
+SETCOLOR_NORMAL="echo -en \\033[1;39m"
+echo ----oldboy trainning----  &&  $SETCOLOR_SUCCESS
+echo ----oldboy trainning----  &&  $SETCOLOR_FAILURE
+echo ----oldboy trainning----  &&  $SETCOLOR_WARNNING
+echo ----oldboy trainning----  &&  $SETCOLOR_NORMAL
+
+
+[root@test scripts]# cat plus-color.sh 
+#!/bin/bash
+RED_COLOR='\E[1;31m'
+GREEN_COLOR='\E[1;32m'
+YELLOW_COLOR='\E[1;33m'
+BLUE_COLOR='\E[1;34m'
+RES='\E[0m'
+if [ $# != 2 ];then
+  echo "Usage:$0 content {red|green|yellow}"
+  exit 1
+fi
+case "$2" in
+red|RED|Red)
+  echo -e "${RED_COLOR}"$1"${RES}"
+;;
+yellow|YELLOW|Yellow)
+  echo -e "${YELLOW_COLOR}"$1"${RES}"
+;;
+green|GREEN|Green)
+  echo -e "${GREEN_COLOR}"$1"${RES}"
+;;
+*)
+  echo -e "${BLUE_COLOR}"$1"${RES}"
+  exit;
+;;
+esac
+
+
+
+[root@test scripts]# cat plus-color-func.sh
+#!/bin/bash
+new_chars(){
+RED_COLOR='\E[1;31m'
+GREEN_COLOR='\E[1;32m'
+YELLOW_COLOR='\E[1;33m'
+BLUE_COLOR='\E[1;34m'
+RES='\E[0m'
+if [ $# != 2 ];then
+  echo "Usage:$0 content {red|green|yellow}"
+  exit 1
+fi
+case "$2" in
+red|RED|Red)
+  echo -e "${RED_COLOR}"$1"${RES}"
+;;
+yellow|YELLOW|Yellow)
+  echo -e "${YELLOW_COLOR}"$1"${RES}"
+;;
+green|GREEN|Green)
+  echo -e "${GREEN_COLOR}"$1"${RES}"
+;;
+*)
+  echo -e "${BLUE_COLOR}"$1"${RES}"
+  exit;
+;;
+esac
+}
+new_chars yubing red
+new_chars xiaoge green
+new_chars "welcome." yellow
+
+另外还可以设置背景色
+
+[root@test scripts]# echo -en \\033[1\;33m
+[root@test scripts]# echo -en \\033[1\;34m
+[root@test scripts]# echo -en \\033[1\;35m
+[root@test scripts]# echo -en \\033[1\;36m
+[root@test scripts]# echo -en \\033[1\;37m
+[root@test scripts]# echo -en \\033[1\;38m
+[root@test scripts]# echo -en \\033[1\;39m
+[root@test scripts]# echo -en \\033[1\;40m
+[root@test scripts]# echo -en \\033[1\;41m
+[root@test scripts]# echo -en \\033[1\;42m
+[root@test scripts]# echo -en \\033[1\;43m
+[root@test scripts]# echo -en \\033[1\;44m
+[root@test scripts]# echo -en \\033[1\;45m
+[root@test scripts]# echo -en \\033[1\;46m
+[root@test scripts]# echo -en \\033[1\;47m
+[root@test scripts]# echo -en \\033[1\;48m
+[root@test scripts]# echo -en \\033[1\;49m
+[root@test scripts]# echo -en \\033[1\;50m
+[root@test scripts]# echo -en \\033[1\;51m
+[root@test scripts]# echo -en \\033[1\;52m
+[root@test scripts]# echo -en \\033[1\;53m
+
+40-49是设置背景色
+

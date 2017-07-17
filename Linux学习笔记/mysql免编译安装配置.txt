@@ -1,0 +1,51 @@
+mysql免编译安装配置
+1cmake方式
+http://oldboy.blog.51cto.com/2561410/1240412
+2免编译安装
+#大公司服务服务器和mysql服务器分离
+
+wget http://mirrors.sohu.com/mysql/MySQL-5.5/mysql-5.5.55-linux2.6-x86_64.tar.gz
+tar zxf mysql-5.5.55-linux2.6-x86_64.tar.gz
+groupadd mysql
+useradd -g mysql -M mysql
+mv mysql-5.5.55-linux2.6-x86_64 /application/mysql-5.5.55
+ln -s /application/mysql-5.5.55/ /application/mysql
+
+/application/mysql/scripts/mysql_install_db --basedir=/application/mysql --datadir=/application/mysql/data/ --user=mysql
+#报错
+/bin/mysqld: unknown option '--skip-locking'
+#是因为以前安装过mysql，存在/etc/my.cnf文件，需要删除，删除后初始化成功
+/bin/cp support-files/mysql.server /etc/init.d/mysqld 
+cp support-files/my-small.cnf /etc/my.cnf
+
+[root@localhost mysql]# /etc/init.d/mysqld start
+/etc/init.d/mysqld: line 244: my_print_defaults: command not found
+/etc/init.d/mysqld: line 264: cd: /usr/local/mysql: No such file or directory
+Starting MySQL ERROR! Couldn't find MySQL server (/usr/local/mysql/bin/mysqld_safe)
+
+vim /etc/init.d/mysqld 
+:g/\/usr\/local\//s///\/application\/mysql\/g
+[root@localhost mysql-5.5.55]# /etc/init.d/mysqld start
+Starting MySQL.Logging to '/application/mysql/data/localhost.localdomain.err'.
+.. SUCCESS! 
+
+#默认安装都是/usr/local
+$sed -i 's#/usr/local#/application/mysql#g' /application/mysql/bin/
+
+echo "export PATH=$PATH:/application/mysql/bin">>/etc/profile
+source /etc/profile
+mysql
+
+mysql> select version();
++-----------+
+| version() |
++-----------+
+| 5.5.55    |
++-----------+
+1 row in set (0.00 sec)
+
+/application/mysql/bin/mysqladmin -u root password '123456'
+
+mysql> drop database test;
+Query OK, 0 rows affected (0.00 sec)
+

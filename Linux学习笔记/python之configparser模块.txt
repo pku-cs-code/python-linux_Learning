@@ -1,0 +1,132 @@
+python之configparser模块
+
+configparser使用参考python官网
+https://docs.python.org/3/library/configparser.html
+
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+import configparser
+
+config = configparser.ConfigParser()
+config["DEFAULT"] = {'ServerAliveInternal':'45',
+                     'Compression':'yes',
+                     'CompressionLevel':'9'
+
+}
+config['bitbucket.org'] = {}
+config['bitbucket.org']['user'] = 'hg'
+config['topsecret.server.com'] = {}
+topsecret = config['topsecret.server.com']
+topsecret['Host Port'] = '50022'
+topsecret['ForwardX11'] = 'no'
+config['DEFAULT']['ForwardX11'] = 'yes'
+with open('example.ini','w') as configfile:
+    config.write(configfile)
+
+
+configparser 读
+>>> import configparser
+>>> config = configparser.ConfigParser()
+>>> config.sections()
+[]
+>>> config.read('example.ini')
+['example.ini']
+>>> config.sections()
+['bitbucket.org', 'topsecret.server.com']
+>>> 'bitbucket.org' in config
+True
+>>> 'bytebong.com' in config
+False
+>>> config['bitbucket.org'][User]
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+NameError: name 'User' is not defined
+>>> config['bitbucket.org']['User']
+'hg'
+>>> 'DEFAULT' in config
+True
+>>> config['DEFAULT']['Compression']
+'yes'
+>>> topsecret = config['topsecret.server.com']
+>>> topsecret['ForwardX11']
+'no'
+>>> topsecret['Host Port']
+'50022'
+>>> topsecret['host port']
+'50022'
+>>> for key in config['bitbucket.org']:print(key)
+...
+user
+compressionlevel
+serveraliveinternal
+compression
+forwardx11
+>>> config['bitbucket.org']['ForwardX11']
+'yes'
+>>> config.defaults
+<bound method RawConfigParser.defaults of <configparser.ConfigParser object at 0x0000025FB6B7CF60>>
+>>> config.defaults()
+OrderedDict([('compressionlevel', '9'), ('serveraliveinternal', '45'), ('compression', 'yes'), ('forwardx11', 'yes')])
+>>> topsecret.get('Port')
+>>> topsecret.get('Host Port')
+'50022'
+>>>
+>>>
+>>> topsecret.getboolean('ForwardX11')
+False
+>>> config['bitbucket.org'].getboolean('ForwardX11')
+True
+>>> config.getboolean('bitbucket.org','Compression')
+True
+>>> config.defaults()
+OrderedDict([('compressionlevel', '9'), ('serveraliveinternal', '45'), ('compression', 'yes'), ('forwardx11', 'yes')])
+>>>
+>>> config.options('bitbucket.org')
+['user', 'compressionlevel', 'serveraliveinternal', 'compression', 'forwardx11']
+>>> config.options('topsecret.org')
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+  File "C:\Program Files\Python35\lib\configparser.py", line 674, in options
+    raise NoSectionError(section) from None
+configparser.NoSectionError: No section: 'topsecret.org'
+>>> config.options('topsecret.org.com')
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+  File "C:\Program Files\Python35\lib\configparser.py", line 674, in options
+    raise NoSectionError(section) from None
+configparser.NoSectionError: No section: 'topsecret.org.com'
+>>> config.options('topsecret.server.com')
+['host port', 'forwardx11', 'compressionlevel', 'serveraliveinternal', 'compression']
+>>> config.options('DEFAULT')
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+  File "C:\Program Files\Python35\lib\configparser.py", line 674, in options
+    raise NoSectionError(section) from None
+configparser.NoSectionError: No section: 'DEFAULT'
+
+
+
+
+import configparser
+
+config = configparser.ConfigParser()
+config.read('example.ini')
+#改写
+# sec = config.remove_section('topsecret.server.com')
+# config.write(open('example2.cfg','w'))
+
+sec = config.has_section('alex')
+# sec = config.has_section('bitbucket.org')
+# print(sec)
+if sec == False:
+    config.add_section('alex')
+    config['alex']['age'] = '21'
+config.write(open('example2.ini','w'))
+
+# config.set('alex','age','22')
+# config.write(open('example2.ini','w'))
+
+# config.remove_option('alex','age')
+config.remove_section('alex')
+

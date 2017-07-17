@@ -1,0 +1,473 @@
+shell脚本应用
+
+[root@test ~]# echo $chars
+1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51 52 53 54 55 56 57 58 59 60 61 62 63 64 65 66 67 68 69 70 71 72 73 74 75 76 77 78 79 80 81 82 83 84 85 86 87 88 89 90 91 92 93 94 95 96 97 98 99 100
+[root@test ~]# echo ${#chars}
+291
+[root@test ~]# echo $chars|wc -m
+292
+[root@test ~]# echo $(expr length "$chars")
+291
+从输入键盘的角度，echo ${#chars}效率更高
+
+time
+
+[root@test ~]# time for i in  $(seq 1111);do count=${#chars};done
+
+real	0m0.022s
+user	0m0.020s
+sys	0m0.000s
+[root@test ~]# time for i in  $(seq 1111);do count=`echo $chars|wc -m`;done
+
+real	0m1.740s
+user	0m0.052s
+sys	0m0.117s
+[root@test ~]# time for i in  $(seq 1111);do count=`echo $(expr length "$chars")`;done
+
+real	0m1.545s
+user	0m0.044s
+sys	0m0.094s
+
+从时间的角度来看，第一种效率更高
+一般情况调用外部命令处理，与内置工作操作性能相差较大。在shell编程中，
+我们应该尽量用内置操作或函数完成。
+
+[root@test ~]# man bash
+
+变量的数值计算
+(())
+let 
+expr 
+bs
+$[]
+
+
+运算符
+! ~逻辑与位的取反
+== ！= 相等与不相等
+<<  >>向左或向右位移
+^位的异或
+| 位的或
+&&逻辑的and
+|| 逻辑的or
+？: 条件表达式
+= += -= *= = %= &= ^=赋值运算符
+
+
+(()) 这种方法很常见，且效率高。用于执行简单的整数计算
+应用方式$(())
+[root@test ~]# ((a=1+2**3-4%3))
+[root@test ~]# echo $a         
+8
+[root@test ~]# b=$((1+2**3-4%3))
+[root@test ~]# echo $b 
+8
+[root@test ~]# echo $((1+2**3-4%3))
+8
+[root@test ~]# echo $((a+=1))
+9
+[root@test ~]# echo $((a++))  #a++，a在前面先输出a的值，然后自增。++a先计算，然后输出a
+9
+[root@test ~]# echo $a
+10
+[root@test ~]# echo $((a++))
+10
+[root@test ~]# echo $a
+11
+[root@test ~]# echo $((a--))
+11
+[root@test ~]# echo $a
+10
+[root@test ~]# echo $((++a))
+11
+[root@test ~]# echo $a
+11
+
+[root@test ~]# echo $((3>2))
+1
+[root@test ~]# echo $((3>8))
+0
+[root@test ~]# echo $((100*(100+1)/2))
+5050
+[root@test ~]# echo $((1000*(100+1)/2))
+50500
+必须为整型
+[root@test ~]# echo $((1.1+2))
+-bash: 1.1+2: syntax error: invalid arithmetic operator (error token is ".1+2"
+[root@test ~]# echo $(($myvar+1))
+100
+[root@test ~]# echo $((  $myvar+1))
+100
+[root@test ~]# echo $((  $myvar +1))
+100
+[root@test ~]# echo $myvar
+99
+[root@test ~]# echo $((100/5))
+20
+[root@test ~]# echo $((100+5))
+105
+[root@test ~]# echo $((100*5))
+500
+[root@test ~]# echo $((100-5))
+95
+[root@test ~]# echo $((100**5))
+10000000000
+[root@test ~]# echo $((100%5))
+0
+[root@test scripts]# cat test.sh 
+#!/bin/bash
+a=6
+b=2
+echo "a-b=$(($a-$b))"
+echo "a+b=$(($a+$b))"
+echo "a*b=$(($a*$b))"
+echo "a/b=$(($a/$b))"
+echo "a**b=$(($a**$b))"
+echo "a%b=$(($a%$b))"
+[root@test scripts]# sh test.sh 
+a-b=4
+a+b=8
+a*b=12
+a/b=3
+a**b=36
+a%b=0
+[root@test scripts]# cat test.sh 
+#!/bin/bash
+a=$1
+b=$2
+echo "a-b=$(($a-$b))"
+echo "a+b=$(($a+$b))"
+echo "a*b=$(($a*$b))"
+echo "a/b=$(($a/$b))"
+echo "a**b=$(($a**$b))"
+echo "a%b=$(($a%$b))"
+[root@test scripts]# sh test.sh 6 2
+a-b=4
+a+b=8
+a*b=12
+a/b=3
+a**b=36
+a%b=0
+[root@test scripts]# sh test.sh 3 2
+a-b=1
+a+b=5
+a*b=6
+a/b=1
+a**b=9
+a%b=1
+[root@test scripts]# sh test.sh 9 2
+a-b=7
+a+b=11
+a*b=18
+a/b=4
+a**b=81
+a%b=1
+[root@test scripts]# cat test3.sh 
+echo $(($1$2$3))
+[root@test scripts]# sh test3.sh 3+2
+5
+[root@test scripts]# sh test3.sh 3*2
+6
+[root@test scripts]# sh test3.sh 3/2
+1
+[root@test scripts]# sh test3.sh 3**2
+9
+[root@test scripts]# sh test3.sh 3%2
+1
+
+
+let 和(())功能相同，但是效率不如(())高
+[root@test scripts]# i=2            
+[root@test scripts]# let i=i+8
+[root@test scripts]# echo $i
+10
+[root@test scripts]# let i=i+1.1
+-bash: let: i=i+1.1: syntax error: invalid arithmetic operator (error token is
+[root@test scripts]# i=i+8
+[root@test scripts]# echo $i
+i+8
+
+expr 用于整数和字符串。语法有些复杂。运算符左右都要有空格，至少一个空格
+[root@test scripts]# expr 2 + 2
+4
+[root@test scripts]# expr 2+2
+2+2
+[root@test scripts]# expr 2 + 2
+4
+[root@test scripts]# echo $(expr length "oldboy")
+6
+[root@test scripts]# expr 2 - 2
+0
+[root@test scripts]# expr 2 * 2
+expr: syntax error
+[root@test scripts]# expr 2 \* 2
+4
+[root@test scripts]# expr 2  +  2
+4
+[root@test scripts]# i=0
+[root@test scripts]# i=`expr $i + 1`
+[root@test scripts]# echo $i
+1
+[root@test scripts]# i=`expr $i + 1.2`
+expr: non-numeric argument
+[root@test scripts]# expr $[2+3]
+5
+[root@test scripts]# a=5
+[root@test scripts]# b=6
+[root@test scripts]# expr $[$a+$b]
+11
+[root@test scripts]# which ssh-copy-id
+/usr/bin/ssh-copy-id
+[root@test scripts]# less /usr/bin/ssh-copy-id
+    if expr "$1" : ".*\.pub" > /dev/null ; then
+
+#判断文件拓展名
+[root@test scripts]# expr "test.txt" : ".*\.pub"
+0
+[root@test scripts]# expr "test.pub" : ".*\.pub"  #不匹配返回字符串大小
+8
+[root@test scripts]# expr "test.pub" : ".*\.pub" &&echo 1 ||echo 0
+8
+1
+[root@test scripts]# expr "test.txt" : ".*\.pub" &&echo 1 ||echo 0
+0
+0
+#expr判断是否为整数
+read -p "please input:" a
+expr $a + 0 &>/dev/null
+[ $? -eq 0 ] && echo int ||echo chars
+[root@test scripts]# expr a + 0
+expr: non-numeric argument
+[root@test scripts]# echo $?
+2
+[root@test scripts]# expr 1 + 0
+1
+[root@test scripts]# echo $?
+0
+[root@test scripts]# cat char.sh 
+#!/bin/bash
+while true
+do
+read -p "please input:" a
+expr $a + 0 &>/dev/null
+[ $? -eq 0 ] && echo int ||echo chars
+done
+
+
+bc 支持小数计算
+[root@test scripts]# i=2
+[root@test scripts]# echo $i+1
+2+1
+[root@test scripts]# echo $i+1|bc
+3
+[root@test scripts]# echo $i+1.2|bc
+3.2
+[root@test scripts]# bc
+bc 1.06.95
+Copyright 1991-1994, 1997, 1998, 2000, 2004, 2006 Free Software Foundation, Inc.
+This is free software with ABSOLUTELY NO WARRANTY.
+For details type `warranty'. 
+1+2
+3
+2**4
+(standard_in) 2: syntax error
+2*4
+8
+6/3
+2
+[root@test scripts]# echo 5.4+5|bc
+10.4
+[root@test scripts]# echo 5.4  + 5|bc
+10.4
+[root@test scripts]# seq -s "+" 10|bc
+55
+[root@test scripts]# seq -s " " 10|bc
+(standard_in) 1: syntax error
+#正确表达式交给bc
+[root@test scripts]# echo "scale=1;5.23*3.13"|bc
+16.36
+[root@test scripts]# echo "scale=2;5.23*3.13"|bc
+16.36
+[root@test scripts]# echo "scale=3;5.23*3.13"|bc
+16.369
+[root@test scripts]# echo "5.23*3.13"|bc
+16.36
+#8转换成二进制
+[root@test scripts]# echo "obase=2;8"|bc
+1000
+[root@test scripts]# echo "obase=2;255"|bc
+11111111
+
+
+typeset也可以用来计算
+
+$[]
+[root@test scripts]#echo $[3+2]
+5
+
+打印杨辉三角
+
+read
+bash内置的
+-t 超时时间
+
+[root@test scripts]# read -p "plsease input a num:" var
+plsease input a num:oldboy
+[root@test scripts]# read -p "plsease input a num:"    
+plsease input a num:oldboy
+[root@test scripts]# read -p "plsease input a num:" va
+plsease input a num:old
+[root@test scripts]# echo $va
+old
+[root@test scripts]read -t 3 -p "plsease input a num:" vava
+plsease input a num:[root@test scripts]# 
+[root@test scripts]# read -t 10 -p "plsease input two nums:" a b
+plsease input two nums:1 2
+[root@test scripts]# echo $a $b
+1 2
+
+[root@test scripts]# cat test.sh  
+#!/bin/bash
+read -p "input first num:" a b
+#read -p "input sec num:" b
+
+echo "a-b=$(($a-$b))"
+echo "a+b=$(($a+$b))"
+echo "a*b=$(($a*$b))"
+echo "a/b=$(($a/$b))"
+echo "a**b=$(($a**$b))"
+echo "a%b=$(($a%$b))"
+
+[root@test scripts]# sh test.sh 
+input first num:5 7
+a-b=-2
+a+b=12
+a*b=35
+a/b=0
+a**b=78125
+a%b=5
+
+[root@test scripts]# sh test.sh 
+plsease input the first num: 2
+plsease input the second num: 5
+a-b=-3
+a+b=7
+a*b=10
+a/b=0
+a**b=32
+a%b=2
+[root@test scripts]# cat test.sh 
+#!/bin/bash
+#read -p "input first num:" a b
+#read -p "input sec num:" b
+echo -n "plsease input the first num: "
+read a
+echo -n "plsease input the second num: "
+read b
+echo "a-b=$(($a-$b))"
+echo "a+b=$(($a+$b))"
+echo "a*b=$(($a*$b))"
+echo "a/b=$(($a/$b))"
+echo "a**b=$(($a**$b))"
+echo "a%b=$(($a%$b))"
+
+[root@test scripts]# sh test.sh 
+plsease input the two nums: 2 5
+a-b=-3
+a+b=7
+a*b=10
+a/b=0
+a**b=32
+a%b=2
+[root@test scripts]# cat test.sh 
+#!/bin/bash
+#read -p "input first num:" a b
+#read -p "input sec num:" b
+echo -n "plsease input the two nums: "
+read a b
+#echo -n "plsease input the second num: "
+#read b
+echo "a-b=$(($a-$b))"
+echo "a+b=$(($a+$b))"
+echo "a*b=$(($a*$b))"
+echo "a/b=$(($a/$b))"
+echo "a**b=$(($a**$b))"
+echo "a%b=$(($a%$b))"
+
+#参数接3个发生的情况
+[root@test scripts]# sh test.sh 
+plsease input the two nums: 4 4 4 
+test.sh: line 8: 4-4 4: syntax error in expression (error token is "4")
+
+continue终止当前循环进入下一个循环
+break跳出循环跳出
+[root@test scripts]# cat test.sh 
+#!/bin/bash
+while true
+do
+read -p "input two nums:" a b
+#read -p "input sec num:" b
+#echo -n "plsease input the two nums: "
+#read a b
+expr $a + 0 >&/dev/null #2>&1
+[ $? -ne 0 ] &&continue  #if not 0,continue to read line
+expr $b + 0 >&/dev/null #2>&1
+[ $? -ne 0 ] &&continue||break  #if not 0,continue to read line.if 0 break to jump out
+done
+#expr $a + 0 >&/dev/null #2>&1
+#[ $? -ne 0 ] && read -t 10 -p "two nums:" a b
+#expr $b + 0 >&/dev/null #2>&1
+#[ $? -ne 0 ] && read -t 10 -p "two nums:" a b
+#if [ $? -ne 0 ]
+#then
+#   echo "two nums!!"
+#   exit 1
+#fi
+
+#echo -n "plsease input the second num: "
+#read b
+echo "a-b=$(($a-$b))"
+echo "a+b=$(($a+$b))"
+echo "a*b=$(($a*$b))"
+echo "a/b=$(($a/$b))"
+echo "a**b=$(($a**$b))"
+echo "a%b=$(($a%$b))"
+
+
+[root@test scripts]# sh test.sh 
+input two nums:kfjd k
+input two nums:kjf
+input two nums:jfkd
+input two nums:2 5
+a-b=-3
+a+b=7
+a*b=10
+a/b=0
+a**b=32
+a%b=2
+
+
+[root@test scripts]# cat argv.sh 
+#!/bin/bash
+a="$1"
+b="$2"
+Usage(){
+  echo "USAGE:sh $0 num1 num2"
+   exit 1
+}
+if [ $# -ne 2 ];
+   then
+    Usage
+fi
+expr $a + 0 >&/dev/null #2>&1
+[ $? -ne 0 ] &&Usage  #if not 0,continue to read line
+expr $b + 0 >&/dev/null #2>&1
+[ $? -ne 0 ] &&Usage #if not 0,continue to read line.if 0 break to jump out
+echo "a-b=$(($a-$b))"
+echo "a+b=$(($a+$b))"
+echo "a*b=$(($a*$b))"
+echo "a/b=$(($a/$b))"
+echo "a**b=$(($a**$b))"
+echo "a%b=$(($a%$b))"
+
+

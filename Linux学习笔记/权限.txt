@@ -1,0 +1,133 @@
+uid为0的用户就是超级用户
+超级用户0
+普通用户500-65535
+虚拟用户1-499，不能登录但是是系统不可缺少，有些也可以删除
+
+awk -F ":" '{ print $1" "$3 }' /etc/passwd | sort -rn -k2
+uid排序
+[root@mode zhangcai]# ls -l --full-time
+[root@mode zhangcai]# ls -l --time-style=long-iso
+
+第一组权限：属主权限owner
+第二组权限：组权限group
+第三组权限：用户及组之外的其他other
+除此还有特殊位t、s等
+[root@mode zhangcai]# ls -ld /tmp/
+drwxrwxrwt. 3 root root 4096 Apr  7 01:36 /tmp/
+
+[root@mode zhangcai]# ls -ld /usr/bin/passwd 
+-rwsr-xr-x. 1 root root 30768 Nov 24  2015 /usr/bin/passwd
+
+删除文件看所在上级目录的权限，目前本身是一个文件，其block中存储目录下各文件名
+
+可读r，可写w，可执行x（文件本身能执行）
+仅有可执行权限而没有读权限不能运行可执行文件，因为需要读取内容，但root用户可以
+
+目录的权限
+chmod o=w test.sh
+需要改目录权限为wx才可以删除目录下的文件
+r：具有浏览目录下面文件及目录的权限，打不能进入到目录里（无法cd dir）
+w：表示具有删除或修改目录内文件名的权限，需要x权限配合
+x：表示具有进入目录的权限，如cd dir
+
+比较：
+w：对文件而言，表示具有新增、修改文件内容的权限，删除和移动文件与文件本身属性无关
+      对目录而言，表示具有新增、删除、移动目录内文件的权限
+
+chmod -R表示递归，修改目录权限目录下文件属性也修改
+chmod u+r,g+r,o+r test相当于>>
++添加某个权限
+-去掉某个权限
+=覆盖某个权限
+chmod a+x为文件的属主、属组和其他用户添加执行权限
+chmod ugo+x
+
+系统root创建默认权限目录是755，文件是644
+改变系统默认权限：umask，控制默认权限
+系统文件默认最大权限为666，目录默认最大权限为777，减去umask的值即为默认权限
+以上原则对目录适用，但是对创建文件来说，如果umask有奇数位时，文件权限自减去后的值后奇数位再加1
+
+修改umask为033后
+ssh连接不上，是因为dmwappushservice关掉了
+
+userdel user后文件显示uid号和group号
+chattr +i test.sh, immutable不可变的，+a可以添加但不能删除append
+lsattr test.sh
+chattr -i test.sh
+s权限，执行passwd命令时拥有root的全休可以修改/etc/passwd
+chmod 4755 /etc/passwd  setuid
+chmod 2755 /etc/passwd setgid
+chmod 6755 /etc/passwd setuid+setgid
+粘贴位
+/tmp
+
+如果是5.8，/etc/sudoers权限为644时从user执行sudo su -时直接不让切
+[zhangcai@centos5 ~]$ sudo su -
+sudo: /etc/sudoers is mode 0644, should be 0440
+sudo: no valid sudoers sources found, quitting
+
+visudo修改后visudo -c检查语法
+对单个用户授权，还可以对用户组授权，这个系统组是已经存在的%sa，加%
+规则超过一行要用\换行
+规则：别名定义（必须，在规则比较多时使用）、授权规则（必须）
+复制已有的内容再去修改
+root    ALL=(ALL)       ALL
+root的位置是用户或组别名的位置
+第一个ALL是主机别名
+Runas_Alias OP = root
+小括号中的ALL就是Runas_Alias 永不别名的位置
+最后一个ALL是命令别名Cmnd_Alias（定义别名可以包含一堆命令）
+禁止的命令要放在允许的命令前面/sbin/*, ！/sbin/fdisk
+
+逛公园模式
+看电影模式
+
+远程sudo
+ssh 10.0.0.18  sudo ifconfig
+5.8是Defaulttty注释掉可以登录执行ifconfig，6.8不行，但加-t可以ssh 10.0.0.18 -t sudo ifconfig
+for user in chuji001 chuji002 chuji003 net001 senior001 manager001
+do
+useradd $user
+echo "1111" | passwd --stdin $user
+命令下的名称必须包含大写字母、下划线，不能包含小写字母。
+成员与成员之间必须以半角符号“，”，用户也必须存在
+路径要是全路径
+一行容不下要用\续行
+ALL=（ALL）括号中去掉表示默认可以切换到root用户，加（ALL）则表示可以切换到所有用户
+
+控制+监控
+sudo命令的日志审计，并不记录普通用户的普通操作，而是记录执行sudo命令的操作
+通过sudo和rsyslog配合实施对所有用户进行日志审计并记录集中管理，发送到中心日志服务器
+
+生产环境日志审计解决方案
+通过环境变量命令及rsyslog服务进行全部日志审计
+sudo日志审计，信息较少，效果不错
+在bash解释器程序里嵌入一个监视器，让所有被审计的用户使用修改过的增加了监视器的特殊bash
+齐治的堡垒机：商业产品
+如果没有则yum install sudo rsyslog -y安装
+5.8/etc/syslog.conf
+6.8/etc/rsyslog.conf
+
+[root@centos5 ~]# echo "local2.debug  /var/log/sudo.log" >>/etc/syslog.conf 
+让syslog里的日志信息记录到/var/log/sudo.log中
+[root@centos5 ~]# echo "Defaults     logfile=/var/log/sudo.log" >> /etc/sudoers
+让sudo的log记录到/var/log/sudo.log
+
+日志集中管理（了解）
+1)rsync+inotify或定时任务推走
+2)syslog服务来处理（不推荐）
+echo "10.0.0.164 logserver" >>/etc/hosts
+echo  "info @logserver" >> /etc/syslog.conf
+
+CentOS6.4配置日志审计
+[root@centos5 ~]# echo "local2.debug  /var/log/sudo.log" >>/etc/rsyslog.conf 
+让syslog里的日志信息记录到/var/log/sudo.log中
+rsyslog重启后才有/var/log/sudo.log
+[root@centos5 ~]# echo "Defaults     logfile=/var/log/sudo.log" >> /etc/sudoers
+让sudo的log记录到/var/log/sudo.log
+只通过第二条命令即可配置记录sudo日志，不要syslog也可以记录
+
+
+
+
+

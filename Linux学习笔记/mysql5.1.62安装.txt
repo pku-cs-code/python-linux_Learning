@@ -1,0 +1,93 @@
+mysql5.1.62安装
+在5.1.72基础上重新编译安装时需要进入安装时的包目录make uninstall，make clean，make distclean
+还要删除/usr/local/mysql/下的各种数据和配置文件才能干净地卸载
+[root@test ~]# groupadd mysql
+[root@test ~]# useradd -s /sbin/nologin -g mysql -M mysql
+-s /sbin/nologin不让其登录
+-g mysql属组
+-M不创建家目录
+
+./configure \
+--prefix=/usr/local/mysql \
+--with-unix-socket-path=/usr/local/mysql/tmp/mysql.sock \
+--localstatedir=/usr/local/mysql/data \
+--enable-assembler \
+--enable-thread-safe-client \
+--with-mysqld-user=mysql \
+--with-big-tables \
+--without-debug \
+--with-pthread \
+--enable-assembler \
+--with-extra-charsets=complex \
+--with-readline \
+--with-ssl \
+--with-embedded-server \
+--enable-local-infile \
+--with-plugins=partition,innobase \
+--with-plugin-PLUGIN \
+--with-mysqld-ldflags=-all-static \
+--with-client-ldflags=-all-static
+
+配置路径报错
+ No curses/termcap library found
+需要安装ncurses包解决yum -y install ncurses-devel
+然后编译make，编译时间很长，建议安装前将主机内存调大
+编译报错../depcomp: line 571: exec: g++: not found，是没有安装gcc-c++导致
+yum安装gcc-c++
+ make clean
+再重新编译
+再次报错../include/my_global.h:1110: error: redeclaration of C++ built-in type ‘bool’
+
+重新make clean然后./configure然后 编译
+然后安装 make install
+
+/bin/cp support-files/my-small.cnf /etc/mycnf
+
+[root@test data]# mkdir -p /usr/local/mysql/data路径下面创建数据文件
+[root@test data]# chown -R mysql /usr/local/mysql授权目录可以访问
+/usr/local/mysql/bin/mysql_install_db  --user=mysql --datadir=/usr/local/mysql/data初始化路径
+
+[root@test mysql-5.1.72]# cp support-files/mysql.server /usr/local/mysql/bin/
+[root@test mysql-5.1.72]# chmod 700 /usr/local/mysql/bin/mysql.server 
+
+[root@test mysql-5.1.72]# echo $PATH
+/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin:/usr/local/sersync/bin:/root/bin
+[root@test mysql-5.1.72]# echo "export PATH=$PATH:/usr/local/mysql/bin">>/etc/profile
+[root@test mysql-5.1.72]# mysql
+-bash: mysql: command not found
+[root@test mysql-5.1.72]# source /etc/profile
+
+添加到/etc/init.d/启动目录
+[root@test mysql-5.1.72]# cp support-files/mysql.server /etc/init.d/mysqld
+You have mail in /var/spool/mail/root
+[root@test mysql-5.1.72]# chmod 700 /etc/init.d/mysqld 
+[root@test mysql-5.1.72]# ll /etc/init.d/mysqld 
+-rwx------ 1 root root 12533 Apr 15 02:26 /etc/init.d/mysqld
+
+设置mysql开机自启动
+chkconfig添加
+[root@test mysql-5.1.72]# chkconfig --add mysqld
+[root@test mysql-5.1.72]# chkconfig mysqld on
+[root@test mysql-5.1.72]# chkconfig --list mysqld
+mysqld         	0:off	1:off	2:on	3:on	4:on	5:on	6:off
+
+或者 /etc/init.d/mysqld start放在rc.local中
+
+安全模式启动
+mysqld_safe --skip-grant-tables &
+
+[root@test mysql-5.1.62]# mysql
+Welcome to the MySQL monitor.  Commands end with ; or \g.
+Your MySQL connection id is 1
+Server version: 5.1.62 Source distribution
+
+Copyright (c) 2000, 2011, Oracle and/or its affiliates. All rights reserved.
+
+Oracle is a registered trademark of Oracle Corporation and/or its
+affiliates. Other names may be trademarks of their respective
+owners.
+
+Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
+mysql> use mysql;
+Database changed
+mysql> select host,user,password from user;

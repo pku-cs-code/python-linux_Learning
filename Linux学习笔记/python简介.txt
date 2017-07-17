@@ -1,0 +1,71 @@
+python
+1989
+2006出现在中国
+2008开始火
+
+语法很明朗
+能让你在计算机上做任何事情
+
+豆瓣 新浪 
+人人
+运维管理工具
+轻量级web开发
+
+软件工程师
+系统工程师
+
+软件开发
+  游戏、搜索（google用python）、嵌入式（简单的驱动程序用python写）
+  网站（Instagram）
+  c\s软件（client-server）
+系统管理
+  脚本（shell是工具，python是语言，但python可以写脚本）
+  运维自动化工具（像puppet（ruby（日本开发）是写的））
+
+python2.6 
+Ubuntu
+
+windows版
+pythonXY portable python
+
+python2 or python3
+python 2 is legacy(遗产)
+
+twisted（异步网络模块）不支持python3
+也慢慢在过渡到python3
+
+Python 2.6.6
+>>> print("helloworld")
+helloworld
+>>> print "helloworld"
+helloworld
+>>> 1/2
+0
+ 
+Python 3.5.3
+>>> print "helloworld"
+  File "<stdin>", line 1
+    print "helloworld"
+                     ^
+SyntaxError: Missing parentheses in call to 'print'
+>>> print ("helloworld")
+helloworld
+>>>
+>>> 1/2
+0.5
+
+parentheses括号
+
+python3
+(A,*REAST,B)=RANGE(5)
+
+raw_input没了，变成了input
+classs Foo写法不能用了，只能用class Foo(object)
+
+安装python
+配置环境变量
+加分号，然后添加python路径
+
+pycharm IDE
+
+ 

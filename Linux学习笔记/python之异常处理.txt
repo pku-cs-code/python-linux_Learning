@@ -1,0 +1,47 @@
+python之异常处理
+
+>>> a=[1,2,3]
+>>> type(a)
+<class 'list'>
+>>> if type(a) is list:print(a)
+...
+[1, 2, 3]
+
+>>> import tab
+>>> a=[1,2,3]
+>>> isinstance(a,list)
+
+class Foo(object):
+  pass
+obj = Foo()
+instance(obj,Foo)
+
+
+issubclass判断子类
+class Foo(object):
+  pass
+class Bar(Foo):
+  pass
+issubclass(Bar,Foo)
+
+异常基础
+try:
+	pass
+except Exception,ex:#，Expection是错误类型，ex异常错误信息
+	pass
+
+
+AssertionError断言错误
+EOFError
+DeprecationWarning
+ZeroDivisionError
+
+Expection错误抓不住
+
+indent error
+语法错误
+   （在代码解释的时候就出现错误，强错误类型）
+
+ctrl+c和ctrl+d抓用KeyboardInterrupt
+但ctrl+z抓不住
+

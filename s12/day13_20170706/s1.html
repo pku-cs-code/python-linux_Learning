@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        .c{
+
+        }
+    </style>
+
+</head>
+    <h1>Index</h1>
+    <h1>Index2</h1>
+    <h1>Index3</h1>
+
+<body>
+
+
+    <!--<script src="http://www.google.com"></script>-->
+
+    <script src="commons.js"></script>
+    <script>
+        /*
+        //里面的代码按照js的规则去解释
+        function f1(){
+        alert('f1');
+        }
+        f1();
+        f2();
+        */
+        //var age = 18;
+        //var age = "18.9";
+        //age = parseInt(age);
+        //age = parseFloat(age);
+        //var age = Number(18);
+        //console.log(age, typeof age);
+        //console.log(parseFloat(age));
+        //console.log(parseInt(age));
+        //Number("123");
+        //parseInt('124');
+
+//        var aa = 2;
+//        switch(aa){
+//            case 1:
+//                console.log('11111');
+//                break;
+//            case 2:
+//                console.log('22222');
+//                break;
+//            default:
+//                console.log('default output');
+//        }
+//
+//        function f1(arg){
+//	        console.log(arg);
+//        }
+//        var ret = f1(124);
+//        console.log(ret);
+
+        //匿名函数
+//        var f = function(arg){
+//            console.log(arg);
+//        }
+//        f(123);
+
+//        function f2(arg){
+//
+//        }
+//
+//        f2(123);
+//自执行函数
+
+//        (function(arg){console.log('zizhixing',arg);})('alex');
+
+        function Foo(name,age){
+            this.Name = name;
+            this.Age = age;
+            this.Func = function(arg){
+                return this.Name + arg;
+            }
+
+        }
+        var obj = new Foo('alex',18);
+        console.log(obj.Name,obj.Age);
+        var ret = obj.Func('sb');
+        console.log(ret);
+
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,271 @@
+day15内容
+
+作业  edit_row实例
+ 1、画表格
+ 2、全选反选取消
+ 3、标识：是否进入编辑模式
+	id='c1' class='edit'未进入编辑模式
+	id='c1' class='edit doing'进入编辑模式
+	$('#c1').hasClass('doing')
+4、当前行进入编辑模式
+	RowIntoEdit(tr)//tr是当前行的选择器
+	1、是否需要编辑
+	2、类型的对应
+		普通的内容--》  <input/>
+			<td>123</td>
+		   t = $(xxx).text()
+		   创建input标签，并将标签值设为t
+		   $(xxx).val(t)
+		选择  --》  <select>
+			select数据从哪拿
+		全局变量
+			STATUS_DICT = {
+			  1:'在线'，
+			  2:'下线',
+			}
+5、退出编辑模式
+	window.onkeydown  keyCode==17 ctrl键
+	
+
+	
+		   
+
+jQuery插件
+1、验证
+	a、获取内容，正则表达式
+	b、return false
+	
+	parsleyjs
+	jQuery Validate
+		$.validate('#form')
+		#不建议直接使用
+		
+2、UI
+	bxslider
+	
+	a、图片
+	b、现成的图标
+		css、使用样式
+		--以前是使用图片库，使用样式
+		--现在是css，字体文件，使用样式
+		
+		
+字体文件制定unicode
+		
+	c、css
+		字体文件
+		样式
+		大图片
+	Font Awesome
+	
+	
+	Bootstrap
+		bootstrap简介
+		 bootstrap3  响应式的（根据屏幕大小不一样显示不一样）
+		 *.map是用工具来完成的,做对应表用的
+		 *.eot *.svg *.ttf *.woff *.woff2 不同系统的字体文件，本质上是对应关系
+		 
+		 
+		 .add.after{content:'\u9987'}伪类 类似还有before等。不能被选中
+		 
+	伪类 xxx.afterr,before
+			利用其开发clearfix，解决子标签float问题
+		bootstrap伪类字体对应关系
+		返回顶部用伪类来实现
+		
+		bootstrap使用
+		a、下载导入
+		b、css放到head中
+		c、js body底部
+			先导入jQuery有要求，bootstrap对应有不同版本js
+		d、定义一些头部信息
+			<meta name="viewpoint" content="width=device-width,initial-scale=1">
+			设置或者禁用给设备双击可以放大缩小等
+			<meta name="renderer" content="webkit">
+			极速模式（webkit内核），兼容模式（IE内核）
+			
+			http://v3.bootcss.com/css/
+			响应式和不是响应式的
+			
+			col-md-4 col-md-offset-4 占空白
+			标签
+			bootstrap中有code样式
+			<code>xxx</code>
+			
+			模板中添加!important可以让样式优先级更高，比后面的样式更重要
+			
+			angola js不适合前期学，前端框架
+			
+				 
+	jQuery EasyUI
+	jQuery UI
+	
+		
+
+web框架
+	web请求流程
+	
+	wsgi  tornado有，twisted有，cgi有，tornado用epoll模型，异步非阻塞（并发高）。
+	web框架 Django/bottle/flask/web...不用自己写socket框架
+	
+
+	需求 安装Jinja2
+		pip install Jinja2
+		
+			<body>
+		<h1>{{ name }}</h1>
+		<hr/>
+		<ul>
+			{% for item in  user_list %}
+				<li>{{item}}</li>
+			{% endfor %}
+		</ul>
+			</body>
+
+	django的模板也是用的jinja2
+		路由系统
+		path1 func1
+		path2 func2
+		...
+		
+		模板引擎 模板渲染
+		
+		django用的自己的orm，可以使用原生的sql语句或者sqlalchemy取数据库数据
+
+	Django框架基础
+	
+	MCV MTV
+	modules
+	templates放所有html
+	views
+	定义url映射关系
+	
+	1、创建django程序
+		a、直接通过命令
+			django-admin startproject site
+			多个app共用一个配置文件
+			创建app
+			D:\PycharmProjects\mysite>python  manage.py startapp monitor
+			D:\PycharmProjects\mysite>python  manage.py startapp cmdb
+			D:\PycharmProjects\mysite>python  manage.py startapp openstack
+		project和app的关系，有和project名称同名的文件，里面是配置文件供app用，是jango的概念
+		b、通过pycharm的形式
+			--windows
+			mac上 option+R  startapp app01
+			
+			wsgi(web service gatawy interface)web服务网关接口
+			
+			templates放所有html
+			MTV
+			models
+			views
+			templates
+			
+			url
+		
+		
+		执行django程序
+		进入project，执行 python3 manage.py runserver 127.0.0.1:8000
+			
+		admin是配置后台的
+		admin提供快速地操作数据库的，可以直接配置
+		
+		models是表
+		单元测试也可以做，tests.py中
+		
+	3、django依赖数据库
+	配置settings
+	生成数据库表
+	
+	先生成配置，然后操作数据库。在migrations里
+	
+	生成表
+	D:\PycharmProjects\py35_django>python3 manage.py makemigrations生成配置维恩件
+	No changes detected
+	python3 manage.py migrate 根据配置文案创建数据库相关
+	
+
+	4、admin
+	python3 manage.py createsuperuser
+	用户名zhangcai
+	密码a1234567
+	
+	启动django
+		命令行
+		django点运行
+	输入http://localhost:8000/admin/登录
+		
+	5、路由系统
+	动态路由
+		按照顺序将第n个匹配的数据，交给函数的第n个参数，严格按照顺序模板的方法，
+		将匹配的参数，传给指定的参数
+	二级路由
+		第n个匹配的数据交给第n个匹配的路由
+			    url(r'^app02/', include('app02.urls')),
+
+	6、基本的数据库操作
+		ORM框架
+		 code first
+			自己写类 -->数据库表
+		  db first
+		  自己命令数据库表和字典 -->创建类
+		  
+		  使用类进行数据操作
+		a、创建类
+		b、配置
+		在全局settings.py中INSTALLED_APPS添加app01
+		INSTALLED_APPS = [
+			'django.contrib.admin',
+			'django.contrib.auth',
+			'django.contrib.contenttypes',
+			'django.contrib.sessions',
+			'django.contrib.messages',
+			'django.contrib.staticfiles',
+			'app01',
+		]
+				
+		
+		b、使用命令创建表
+		python3 manage.py makemigrations
+		python3 manage.py migrate 
+		
+		migrations中的0001_initial.py会自动生成数据库初始文件
+		>python3 manage.py makemigrations
+		Migrations for 'app01':
+		  app01\migrations\0001_initial.py
+			- Create model UserInfo
+			
+			D:\PycharmProjects\py35_django>python3 manage.py migrate
+		Operations to perform:
+		  Apply all migrations: admin, app01, auth, contenttypes, sessions
+		Running migrations:
+		  Applying app01.0001_initial... OK
+
+		c、默认表明
+		appname_classname
+		
+		d、views导入models
+		
+		settings.py中添加静态文件
+		STATICFILES_DIRS = (
+			os.path.join(BASE_DIR, 'static'),
+		)
+
+		将js源文件拷贝到static文件夹中，源地址
+		    <script src="/static/jquery-2.2.4.js"></script>
+
+		e、如果以post方式提交数据，需要操作settings.py csrf注释掉
+		
+	
+	
+		
+
+	
+		
+		
+		
+		
+	
+	
+
+

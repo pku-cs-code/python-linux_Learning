@@ -1,0 +1,4 @@
+ssh修改端口连接不断
+netstat -lntup | grep :52113
+netstat -an | grep -i est
+连接不会立即中断，所以在用xshell等客户端登录时更改ssh登录端口要保留一个连接，以免退出后登录不上去。

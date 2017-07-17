@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <div class="wrap">
+        <div class="catalog">
+            <div class="catalog-item" auto-to="function1">第一张</div>
+            <div class="catalog-item" auto-to="function2">第二张</div>
+            <div class="catalog-item" auto-to="function3">第三张</div>
+
+        </div>
+        <div class="content">
+            <div menu="function1" class="section">
+                <h1>第一章</h1>
+            </div>
+            <div menu="function2" class="section">
+                <h1>第二章</h1>
+            </div>
+            <div menu="function3" class="section">
+                <h1>第三章</h1>
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <script type="text/javascript" src="jquery-2.2.4.js"> </script>
+    <script type="text/javascript">
+        $(window).onscroll = function () {
+            var ws = $(window).scrollTop();
+            $('.content').children().each(function () {
+                var offs = $(this).offset();//离顶部和左边多少
+                var offTop = offs.top;
+                var total = offTop + $(this).height();
+                if(ws>offTop && total > ws){
+                    //alert('123');
+//                    var temp = $(this).text();
+//                    console.log(temp);
+
+                        //如果滑轮到底部，最后一个菜单增大
+                        //滑轮滚动的高度+window的高度 = 文档的高度
+                        if($(window).scrollTop+$(window).height() == $(document).height()){
+                            $('.catalog').children(':last').css("fontSize","48px").siblings().css("fontSize","12px");
+                        }else{
+                            var t = $(this).attr('menu');
+                        var target = 'div[auto-to="' + t + '"]';
+                        $('.catalog').children(target).css("fontSize","48px").siblings().css("fontSize","12px");
+                        }
+
+
+                    return;
+                }
+
+            })
+        };
+
+
+
+
+/*
+        $(function() {
+           Init();
+        });
+
+        function Init() {
+            $(window).scroll(function () {
+                var scrollTop = $(window).scrollTop();
+                if(scrollTop > 50){
+                    $('.catalog').addClass('fixed');
+                }else {
+                    $('.catalog').removeClass('fixed');
+                }
+                $('.content').children().each(function () {
+                    var offSet = $(this).offset();
+                    var offTop = offSet.top - scrollTop;
+                    var height = $(this).height();
+
+                    if(offTop<=0 && offTop > -height){
+
+                        var docHeight = $(document).height();
+                    }
+                })
+            })
+
+        }*/
+    </script>
+
+</body>
+</html>

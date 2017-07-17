@@ -1,0 +1,28 @@
+nginx伪静态技术实现
+动态代码网址http://blog.etiantian.org/wp-admin/post.php?post=4&action=edit
+1在wordpress后台-设置-固定链接-自定义结构输入下面的代码，最后保存更改即可
+/archives/%post_id%.html
+
+2在nginx配置文件的server容器中添加下面的代码
+#在location / 中添加如下内容
+ location / {
+        if (-f $request_filename/index.html){
+                rewrite (.*) $1/index.html break;
+        }
+        if (-f $request_filename/index.php){
+             rewrite (.*) $1/index.php;
+        }
+        if (!-f $request_filename){
+            rewrite (.*) /index.php;
+        }
+        }
+
+伪静态不能提升性能，但是能被搜索引擎收录，提高用户体验
+需要把blog/下多余的index.html删除
+http://blog.etiantian.org/archives/4.html
+
+去数据库查看内容
+use wordpress;
+show tables;
+select * from wp_posts\G;
+#4.html的4是wp_posts中的post id，不过浏览器显示地址是以我们设定的格式显示的

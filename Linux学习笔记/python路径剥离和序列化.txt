@@ -1,0 +1,47 @@
+python路径剥离
+
+import sys
+cur_path=sys.path
+print(cur_path)
+import os
+print(__file__)
+
+print(__file__)只会显示当前相对路径，比如sql_api.py或者db\sql_api.py
+
+d:\PycharmProjects\s12\20170613_day5\dj\backend\db>python sql_api.py
+['d:\\PycharmProjects\\s12\\20170613_day5\\dj\\backend\\db', 'C:\\Program Files\\Python35\\python35.zip', 'C:\\Program Files\\Python35\\DLLs', 'C:\\Program Files\\Python35\\lib', 'C:\\Program Files\\Python35', 'C:\\Program Files\\Python35\\lib\\site-packages']
+sql_api.py
+Traceback (most recent call last):
+  File "sql_api.py", line 10, in <module>
+    from config import settings
+ImportError: No module named 'config'
+
+d:\PycharmProjects\s12\20170613_day5\dj\backend\db>cd ..
+
+d:\PycharmProjects\s12\20170613_day5\dj\backend>python db\sql_api.py
+['d:\\PycharmProjects\\s12\\20170613_day5\\dj\\backend\\db', 'C:\\Program Files\\Python35\\python35.zip', 'C:\\Program Files\\Python35\\DLLs', 'C:\\Program Files\\Python35\\lib', 'C:\\Program Files\\Python35', 'C:\\Program Files\\Python35\\lib\\site-packages']
+db\sql_api.py
+Traceback (most recent call last):
+  File "db\sql_api.py", line 10, in <module>
+    from config import settings
+ImportError: No module named 'config'
+
+
+序列化和反序列化
+
+pickle只有python语言支持，pickle具有，是wb或者rb，pickle写入字符串显示是乱码的
+	可以序列化函数、类，支持几乎所有的python数据类型
+json支持很多语言，python3里面不是wb或者rb，支持简单的字典、数组等
+
+不同机器内存是不可以相互访问的
+
+loads是先读取磁盘并加载到内存
+load一步解决
+# data_from_atm = pickle.loads(f.read())
+data_from_atm = pickle.load(f)
+
+
+很多游戏后台都是用的python
+
+__init__.py都不需要写东西
+

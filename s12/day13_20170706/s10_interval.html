@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>welcomefdfssdfd</title>
+</head>
+<body>
+    <input type="button" onclick="StopInterval();" value="STOP"/>
+    <script>
+        //setInterval('caozuo','interval');
+        //setInterval('alert("123")',2000);
+        //obj1 = setInterval('Func()',1000);
+        obj1 = setTimedOut('Func();',1000);
+        //setTimeOut只执行一次
+
+        function StopInterval(){
+            //清除定时器
+            clearInterval(obj1);
+        }
+        function Func(){
+            var text = document.title;
+            var firstChar = text.charAt(0);
+            var subText = text.substring(1,text.length);
+            var newTitle = subText + firstChar;
+            document.title = newTitle;
+
+        }
+    </script>
+
+</body>
+</html>

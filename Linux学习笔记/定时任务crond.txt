@@ -1,0 +1,5 @@
+定时任务crond
+系统自身执行的工作、用户执行的工作
+/etc/cron.deny不允许使用crontab命令的用户
+/etc/cron.allow允许使用crontab命令的用户
+/var/spool/cron/所有用户crontab文件存放的目录，以用户命名

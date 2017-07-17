@@ -1,0 +1,21 @@
+文件描述符
+ulimit -n
+1024
+调整得更大一点，如65535
+echo '* - nofile 65535' >> /etc/sercurity/limits.conf
+检查tail -1 /etc/security/limits.conf 
+. /etc/security/limits.conf 或者source /etc/security/limits.conf
+ ulimit -n发现还是1024，所以上述两种操作都不行，直接退出了重新登录
+[root@mode-cai ~]# ulimit -n
+1024
+[root@mode-cai ~]# logout
+重新登录
+[root@mode-cai ~]# ulimit -n
+65535
+
+除了修改配置文件外也可以用命令修改
+#open files
+ulimit -HSn 65535
+#stack size
+ulimit -s 65535，但是重启会失效，可以将其放入开机启动文件里/etc/rc.local
+但是仅限于每次重启后、登录前执行一次

@@ -1,0 +1,87 @@
+discuz安装
+
+mysql> 
+mysql> create database bbs;
+Query OK, 1 row affected (0.00 sec)
+
+mysql> show databases;
++--------------------+
+| Database           |
++--------------------+
+| information_schema |
+| bbs                |
+| mysql              |
+| performance_schema |
++--------------------+
+4 rows in set (0.00 sec)
+
+mysql> show databases like 'bbs%';
++-----------------+
+| Database (bbs%) |
++-----------------+
+| bbs             |
++-----------------+
+1 row in set (0.00 sec)
+mysql> create user 'bbs'@'192.168.31.%' identified by '123456';
+Query OK, 0 rows affected (0.00 sec)
+mysql> show grants for 'bbs'@'192.168.31.%';
++---------------------------------------------------------------------------------------------------------------+
+| Grants for bbs@192.168.31.%                                                                                   |
++---------------------------------------------------------------------------------------------------------------+
+| GRANT USAGE ON *.* TO 'bbs'@'192.168.31.%' IDENTIFIED BY PASSWORD '*6BB4837EB74329105EE4568DDA7DC67ED2CA2AD9' |
++---------------------------------------------------------------------------------------------------------------+
+1 row in set (0.00 sec)
+
+#数据库是用户@主机唯一标志这个用户
+
+mysql> grant all on  bbs.* to 'bbs'@'192.168.31.%';
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> show grants for 'bbs'@'192.168.31.%';
++---------------------------------------------------------------------------------------------------------------+
+| Grants for bbs@192.168.31.%                                                                                   |
++---------------------------------------------------------------------------------------------------------------+
+| GRANT USAGE ON *.* TO 'bbs'@'192.168.31.%' IDENTIFIED BY PASSWORD '*6BB4837EB74329105EE4568DDA7DC67ED2CA2AD9' |
+| GRANT ALL PRIVILEGES ON `bbs`.* TO 'bbs'@'192.168.31.%'                                                       |
++---------------------------------------------------------------------------------------------------------------+
+2 rows in set (0.00 sec)
+
+wget http://download.comsenz.com/DiscuzX/3.2/Discuz_X3.2_SC_UTF8.zip
+unzip Discuz_X3.2_SC_UTF8.zip 
+cp -ap upload/* /usr/local/nginx/html/bbs/
+
+#在nginx_vhost.conf中bbsserver中添加index.php到第一个
+#打开discuz网址，点击安装，发现当前状态不可写，给bbs下的目录改变权限
+chown -R nginx.nginx uc_* data config
+#下一步选择 全新安装 Discuz! X (含 UCenter Server)
+
+数据库在58上安装，用63去连接
+
+点击管理中心
+按提示删除 install/index.php
+rm -f install/index.php 
+删除论坛版块
+自己新建论坛版块，然后再在子版块添加，刷新即可
+
+伪静态
+管理中心->全局->SEO设置
+查看当前的 Rewrite 规则URL，没什么内容
+再查看当前的 Rewrite 规则URL发现变化了
+把规则拷贝到ngin_vhost.conf中bbsserver中location / 下面
+Nginx Web Server
+rewrite ^([^\.]*)/topic-(.+)\.html$ $1/portal.php?mod=topic&topic=$2 last;
+rewrite ^([^\.]*)/article-([0-9]+)-([0-9]+)\.html$ $1/portal.php?mod=view&aid=$2&page=$3 last;
+rewrite ^([^\.]*)/forum-(\w+)-([0-9]+)\.html$ $1/forum.php?mod=forumdisplay&fid=$2&page=$3 last;
+rewrite ^([^\.]*)/thread-([0-9]+)-([0-9]+)-([0-9]+)\.html$ $1/forum.php?mod=viewthread&tid=$2&extra=page%3D$4&page=$3 last;
+rewrite ^([^\.]*)/group-([0-9]+)-([0-9]+)\.html$ $1/forum.php?mod=group&fid=$2&page=$3 last;
+rewrite ^([^\.]*)/space-(username|uid)-(.+)\.html$ $1/home.php?mod=space&$2=$3 last;
+rewrite ^([^\.]*)/blog-([0-9]+)-([0-9]+)\.html$ $1/home.php?mod=space&uid=$2&do=blog&id=$3 last;
+rewrite ^([^\.]*)/(fid|tid)-([0-9]+)\.html$ $1/index.php?action=$2&value=$3 last;
+rewrite ^([^\.]*)/([a-z]+[a-z0-9_]*)-([a-z0-9_\-]+)\.html$ $1/plugin.php?id=$2:$3 last;
+if (!-e $request_filename) {
+	return 404;
+}
+
+
+符合前面规则的去后面找php
+

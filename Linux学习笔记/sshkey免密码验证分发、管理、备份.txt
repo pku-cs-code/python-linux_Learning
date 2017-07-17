@@ -1,0 +1,185 @@
+sshkey免密码验证分发、管理、备份
+两个服务功能：
+一个是类似telnet的远程联机使用shell的功能
+一种是sftp server功能
+
+添加oldboy用户并设置密码
+[root@test ~]# chown -R oldboy /home/oldboy/
+[root@test ~]# userdel -r oldboy
+[root@test ~]# useradd oldboy
+[root@test ~]# tail -1 /etc/passwd
+oldboy:x:2009:2009::/home/oldboy:/bin/bash
+[root@test ~]# echo "123456" |passwd --stdin oldboy
+Changing password for user oldboy.
+passwd: all authentication tokens updated successfully.
+
+钥匙（密钥）和锁（公钥）只需要建立一次即可
+[root@test ~]# su - oldboy
+[oldboy@test ~]$ ssh-keygen -t dsa
+Generating public/private dsa key pair.
+Enter file in which to save the key (/home/oldboy/.ssh/id_dsa): 
+Created directory '/home/oldboy/.ssh'.
+Enter passphrase (empty for no passphrase): 
+Enter same passphrase again: 
+Your identification has been saved in /home/oldboy/.ssh/id_dsa.
+Your public key has been saved in /home/oldboy/.ssh/id_dsa.pub.
+The key fingerprint is:
+7b:13:d8:e6:a9:c7:00:1d:39:d6:d4:2e:ea:15:99:9c oldboy@test
+The key's randomart image is:
+
+ssh-copy-id -i id_dsa.pub oldboy@192.168.1.58
+ssh-copy-id只能拷贝公钥，不能拷贝私钥
+与远程主机连接后产生文件
+~/.ssh/known_hosts
+在公钥端，pubkey的名称变化了
+[oldboy@localhost .ssh]$ ll
+total 4
+-rw-------. 1 oldboy oldboy 601 Apr 20 07:22 authorized_keys
+默认的ssh key文件名是authorized_keys
+
+[oldboy@test .ssh]$ sudo cat  /etc/ssh/sshd_config | grep authorized_keys
+#AuthorizedKeysFile	.ssh/authorized_keys
+
+[root@test ~]# ssh 192.168.1.58
+^C
+[root@test ~]# ssh oldboy@192.168.1.58
+oldboy@192.168.1.58's password: 
+
+[root@test ~]# ssh oldboy@192.168.1.58 /sbin/ifconfig eth0
+oldboy@192.168.1.58's password: 
+
+[root@test ~]# logout
+[oldboy@test .ssh]$  ssh oldboy@192.168.1.58 /sbin/ifconfig eth0
+eth0      Link encap:Ethernet  HWaddr 00:0C:29:98:27:F7  
+          inet addr:192.168.1.58  Bcast:192.168.1.255  Mask:255.255.255.0
+          inet6 addr: fe80::20c:29ff:fe98:27f7/64 Scope:Link
+          UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1
+          RX packets:3396 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:413 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:1000 
+          RX bytes:318331 (310.8 KiB)  TX bytes:52011 (50.7 KiB)
+
+密钥本地root用户登录ssh主机也需要密码，除了本地oldboy用户才可以免密码登录
+[oldboy@test .ssh]$  ssh oldboy@192.168.1.58 free -m
+             total       used       free     shared    buffers     cached
+Mem:           223        201         21          0         13         74
+-/+ buffers/cache:        113        109
+Swap:         3999          0       3999
+
+远程分发
+[oldboy@test tmp]$ scp -P22 -r /home/oldboy/tmp oldboy@192.168.1.58:~
+b                                                 100%    0     0.0KB/s   00:00    
+d                                                 100%    0     0.0KB/s   00:00    
+a                                                 100%    0     0.0KB/s   00:00    
+c                                                 100%    0     0.0KB/s   00:00  
+
+rsync通过ssh隧道拷贝
+[oldboy@test tmp]$ rsync -avzP -e 'ssh -p 22' ../tmp oldboy@192.168.1.59:~
+sending incremental file list
+tmp/
+tmp/a
+           0 100%    0.00kB/s    0:00:00 (xfer#1, to-check=4/6)
+tmp/b
+           0 100%    0.00kB/s    0:00:00 (xfer#2, to-check=3/6)
+tmp/c
+           0 100%    0.00kB/s    0:00:00 (xfer#3, to-check=2/6)
+tmp/d
+           0 100%    0.00kB/s    0:00:00 (xfer#4, to-check=1/6)
+tmp/oldboy@192.168.1.58/
+
+sent 269 bytes  received 96 bytes  66.36 bytes/sec
+total size is 0  speedup is 0.00
+
+scp是整个拷贝，不论文件有没有变化
+而rsync是增量拷贝
+
+scp -p保持属性
+在服务端和客户端都setuid
+[root@localhost ~]# chmod 4755 /usr/bin/rsync
+
+oldboy@test ~]$ /usr/bin/rsync -avzP -e 'ssh -p 22' /etc/hosts oldboy@192.168.1.58:/etc/hosts.A
+sending incremental file list
+hosts
+         293 100%    0.00kB/s    0:00:00 (xfer#1, to-check=0/1)
+
+sent 165 bytes  received 31 bytes  35.64 bytes/sec
+total size is 293  speedup is 1.49
+
+分发服务服务器的权限很大
+取消分发中心服务器的外网ip，开启防火墙禁止ssh对外用户登录，并仅给一台后端无外网
+机器访问，并且这台后端的服务器依然没有外网ip且仅能通过vpn登录
+
+cfengine/puppet配置起来相对更复杂，也更难部署和维护
+oldboyengine
+expect,SecureCRT的批量管理功能+http服务
+sersync主从模式或lrsync服务
+
+sudo +sshkey+rsync
+
+生产中同步一般用rsync，不用ssh
+
+将机器的私钥scp拷贝给其他的机器，将本机机器的id_dsa.pub改名为authorized_keys
+则本地变成了锁端，拷贝给其他机器的私钥则充当了钥匙的角色
+只要钥匙和锁是对应的就可以免密码登录
+
+
+在各机器sudoers中加入如下行，使得执行rsync、tar、scp命令具有root权限
+NOPASSWD:/usr/bin/rsync,/bin/tar,/usr/bin/scp
+先把要拷贝的文件放在远程机器的家目录下
+ scp -P52113 -r -p ./tmp oldboy@192.168.1.60:~/
+然后rsync将远程机器家目录拷贝到/root下
+ssh -t -p 52113 oldboy@192.168.1.60 sudo rsync -avzP oldboy /root/
+
+备份脚本写入定时任务
+
+备份方法：
+rsync推荐
+sftp
+nfs机器较少
+scp
+
+密钥权限从600改为644提示需要密码
+公钥权限从644改为700、755都可以
+更改服务器端目录权限
+对密钥权限要求更严格
+ 
+ssh-copy-id -i .ssh/id_dsa.pub  test001@192.168.1.58
+
+#!/bin/bash
+for ip in `cat /server/scripts/iplist`
+  do 
+     echo "$ip----------"
+     ssh $ip $1
+done
+
+#!/bin/bash
+for ip in `cat /server/scripts/iplist`
+  do 
+     echo "$ip----------"
+     scp -r -p $1 $ip:$2
+done
+
+
+如果是任意目录拷贝到远端任意目录，可以以把用户的私钥拷到root用户下
+然后sudo提权，因为sudo对应的用户是本地root，
+sudo scp -P22 -r -p oldboy/ test001@192.168.1.58:~/
+ssh -t -p 22  test001@192.168.1.58 sudo rsync -avzP oldboy /root/
+
+还可以在远端机器chmod 4755 /usr/bin/rsync进行setuid提权，使执行rsync命令的
+用户具有root权限
+使用rsync隧道模式一步分发过去
+/usr/bin/rsync -avzP -e 'ssh -p 22' /etc/hosts oldboy@192.168.1.58:/etc/hosts.A
+
+分发控制管理
+secboy，适合1000台以上的服务器
+secureCRT对话窗口
+expect
+pupet
+cfengine
+rsync
+ryncs
+lsyncd（sersync）
+http
+
+
+

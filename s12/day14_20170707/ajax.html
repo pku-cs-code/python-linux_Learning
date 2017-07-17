@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <div></div>
+    <input id="n1" name="pp"/>
+    <input type="button" value="sub" onclick="SubmitData();"/>
+    <form action="" method="post">
+        <p><input type="text" name="user"/></p>
+        <p><input type="password" name="pwd"/></p>
+        <input type="submit"/>
+    </form>
+
+
+    <script type="text/javascript" src="jquery-2.2.4.js"> </script>
+    <script>
+        function SubmitData() {
+            var inpVal = $('#n1').val();
+            var inpName = $('#n1').attr('name');
+
+            $.ajax({
+                url:"http://127.0.0.1:8000/index/",
+                data:{'kk':123,inpName:inpVal},
+                type:'POST',
+                success:function (arg) {
+                    //arg服务器返回的值
+                    //请求成功后后自动调用
+                    //如果django返回ok，则这里arg是ok
+                    console.log(arg);
+
+            },
+                error:function () {
+
+                },
+            });//输送
+        }
+    </script>
+</body>
+</html>

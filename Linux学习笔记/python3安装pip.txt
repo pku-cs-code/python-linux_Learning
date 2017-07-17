@@ -1,0 +1,130 @@
+setuptools是pip的依赖
+wget --no-check-certificate https://pypi.python.org/packages/source/s/setuptools/setuptools-1.4.2.tar.gz
+tar -xvf setuptools-1.4.2.tar.gz 
+cd setuptools-1.4.2
+python3 setup.py install
+
+#然后查看python3的路径/usr/local/python3/bin/就能看到easy_install的文件了
+#说明setuptools在python3上安装成功
+
+echo "export PATH=$PATH:/usr/local/python3/bin">>/etc/profile
+cat /etc/profile
+echo $PATH
+source /etc/profile
+echo $PATH
+easy_install pip
+pip
+pip --help
+ll /usr/local/python3/bin/
+
+#可以使用pip了，在python3路径下也可以看到pip了
+[root@test setuptools-1.4.2]# pip --version
+pip 9.0.1 from /usr/local/python3/lib/python3.3/site-packages/pip-9.0.1-py3.3.egg (python 3.3)
+
+cd setuptools-1.4.2/
+
+python2 setup.py install
+cd /usr/lib
+ls
+cd python2.6/
+ls
+cd site-packages/
+easy_install pip
+pip -V
+ pip2 -V
+
+[root@test site-packages]# pip -V
+pip 9.0.1 from /usr/local/python3/lib/python3.3/site-packages/pip-9.0.1-py3.3.egg (python 3.3)
+[root@test site-packages]# pip2 -V
+pip 9.0.1 from /usr/lib/python2.6/site-packages/pip-9.0.1-py2.6.egg (python 2.6)
+[root@test site-packages]# pip3 -V
+pip 9.0.1 from /usr/local/python3/lib/python3.3/site-packages/pip-9.0.1-py3.3.egg (python 3.3)
+
+
+windows下安装python2和python3
+更改两个安装目录下python.exe的文件名
+pip可以用，但是好像不能同时用两个pip
+
+
+C:\Users\cai>pip2 -V
+Fatal error in launcher: Unable to create process using '"'
+
+C:\Users\cai>pip3 -V
+pip 9.0.1 from c:\program files\python35\lib\site-packages (python 3.5)
+
+C:\Users\cai>pip3.5 -V
+pip 9.0.1 from c:\program files\python35\lib\site-packages (python 3.5)
+
+C:\Users\cai>python -m pip install --upgrade pip
+Requirement already up-to-date: pip in c:\program files\python35\lib\site-packages
+
+C:\Users\cai>python2 -m pip install --upgrade pip
+Requirement already up-to-date: pip in c:\python27\lib\site-packages
+
+
+
+C:\Windows\system32>pip list
+DEPRECATION: The default format will switch to columns in the future. You can use --format=(legacy|columns) (or define a format=(legacy|columns) in your pip.conf under the [list] section) to disable this warning.
+certifi (2017.4.17)
+chardet (3.0.4)
+idna (2.5)
+pip (9.0.1)
+requests (2.18.1)
+setuptools (28.8.0)
+urllib3 (1.21.1)
+
+C:\Windows\system32>pip2 list
+Fatal error in launcher: Unable to create process using '"'
+
+
+C:\Windows\system32>python -m pip -V
+pip 9.0.1 from C:\Program Files\Python35\lib\site-packages (python 3.5)
+
+C:\Windows\system32>python2 -m pip -V
+pip 9.0.1 from C:\Python27\lib\site-packages (python 2.7)
+
+
+C:\Windows\system32>pip -V
+pip 9.0.1 from c:\program files\python35\lib\site-packages (python 3.5)
+
+C:\Windows\system32>pip2 -V
+pip 9.0.1 from c:\python27\lib\site-packages (python 2.7)
+
+
+
+在安装目录下分别设置python.exe python2.exe和python.exe python3.exe，
+此时pip2和pip3都能用了。但是输入python默认是python2了
+
+
+
+C:\Windows\system32>pip -V
+pip 9.0.1 from c:\program files\python35\lib\site-packages (python 3.5)
+
+C:\Windows\system32>pip2 -V
+pip 9.0.1 from c:\python27\lib\site-packages (python 2.7)
+
+C:\Windows\system32>python
+Python 2.7.13 (v2.7.13:a06454b1afa1, Dec 17 2016, 20:42:59) [MSC v.1500 32 bit (Intel)] on win32
+Type "help", "copyright", "credits" or "license" for more information.
+>>> exit()
+
+C:\Windows\system32>python2
+Python 2.7.13 (v2.7.13:a06454b1afa1, Dec 17 2016, 20:42:59) [MSC v.1500 32 bit (Intel)] on win32
+Type "help", "copyright", "credits" or "license" for more information.
+>>> exit
+Use exit() or Ctrl-Z plus Return to exit
+>>> exit()
+
+C:\Windows\system32>python3
+Python 3.5.3 (v3.5.3:1880cb95a742, Jan 16 2017, 16:02:32) [MSC v.1900 64 bit (AMD64)] on win32
+Type "help", "copyright", "credits" or "license" for more information.
+
+C:\Windows\system32>pip3 -V
+pip 9.0.1 from c:\program files\python35\lib\site-packages (python 3.5)
+
+
+如果删掉python2的python.exe，DOS下默认输入python可以变成python，但是pip的老问题又会出现
+所以还原python2的python.exe
+
+
+

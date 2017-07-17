@@ -1,0 +1,291 @@
+python之jQuery
+
+对JavaScript和Dom的封装
+
+https://code.jquery.com/
+
+压缩版是生产环境线上的
+非压缩版便于调试
+
+jQuery方法查询
+http://www.php100.com/manual/jquery/
+
+  $.就是jquer.
+  
+id选择器
+标签选择器
+类选择器
+
+//        $("#n1").text('124');
+//        $('div').text('xxx');//循环所有div使得内容都为xxx
+//        $('.c1').text('ooo');
+//        $('.c1,a,#n2').text('ok');
+//        $('#n3 div .c3 span a').text('kkk');//空格表示下面的所有子元素
+//         $('#n3 div .c3 span a').text('999');
+        $('.c4').text('99988');
+		
+筛选器
+
+jquery作业
+博客实例
+作业
+
+最后大作业
+
+全选、反选、取消
+
+
+1
+	1、查找
+
+	2、搜索
+
+	$('li:eq(0)')
+	$('li').eq(0)
+
+
+2操作
+	属性
+	css
+	文档处理
+	事件
+	AJAX
+	jQuery
+	其他
+	
+	
+3作业
+
+ style="height: 30px;line-height: 30px"
+ 高度30px,line-height设定内容在中间
+ padding: 8px;加边距
+ 
+ 获取属性
+ $('#c1').attr('alex','sb')
+[div#c1.hide, context: document, selector: "#c1"]
+$('#c1').attr('hh','sb')
+[div#c1.hide, context: document, selector: "#c1"]
+var i = $('#c1').attr('hh')
+undefined
+i
+"sb"
+
+第一次加属性可以加上去，第二次就不可以了
+attr：标签中所有属性都适用，除了checkbox，radio
+prop：专门用来适用于checkbox和radio的
+
+
+$('#c1').attr('checked','checked')
+[input#c1, context: document, selector: "#c1"]
+$('#c1').removeAttr('checked')
+[input#c1, context: document, selector: "#c1"]
+$('#c1').attr('checked','checked')
+[input#c1, context: document, selector: "#c1"]
+
+('#c1').prop('checked',true)
+[input#c1, context: document, selector: "#c1"]
+
+经反复验证
+ //$('table:checkbox').prop('checked',false);
+ //js2.2.4貌似不能用table:checkbox的形式
+
+ 全选、反选、取消
+ 
+jQuery封装了两种循环
+
+可以把下标和值一起拿到
+
+
+jquery实例：返回底部
+
+css
+$('#nid').addClass('cls');
+
+css用来修改style里面的内容
+
+$('#nid').css('color','red');
+
+scrollTop
+scrollleft
+
+获取滚动了多少
+$(window).scrollTop();
+50
+$(window).scrollTop();
+0
+$(window).scrollTop();
+325
+$(window).scrollTop();
+625
+
+设置滚轮滚动值
+$(window).scrollTop(80);
+[Window]
+
+$('#id1').scrollTop(0);
+
+offset离屏幕边距大小
+position离父标签边距大小
+
+height和width都是计算自身尺寸的
+
+包含外面的
+innerWidth
+innerHeight
+
+
+章节显示
+1、监听滑轮事件
+2、菜单和内容对应
+3、当内容离窗体顶部高度小于等于0时，加黑
+
+文档处理
+$('#nid').append('<a>xxx<a/>')  .prepend('')
+
+.appendto()
+
+$('#nid').empty()
+$('#nid').remove()
+
+.detach()会有一个返回值，删除了标签
+
+after
+before
+insertAfter
+inserBefore
+
+empty
+remove
+detach
+
+clone
+
+绑定事件
+
+jquery事件绑定
+事件
+blur([[data],fn])
+change([[data],fn])
+click([[data],fn])
+dblclick([[data],fn])
+error([[data],fn])
+focus([[data],fn])
+focusin([data],fn)
+focusout([data],fn)
+keydown([[data],fn])
+keypress([[data],fn])
+keyup([[data],fn])
+mousedown([[data],fn])
+mouseenter([[data],fn])
+mouseleave([[data],fn])
+mousemove([[data],fn])
+mouseout([[data],fn])
+mouseover([[data],fn])
+mouseup([[data],fn])
+resize([[data],fn])
+scroll([[data],fn])
+select([[data],fn])
+submit([[data],fn])
+unload([[data],fn])
+
+事件绑定
+1、
+$(document).ready(function () {
+
+
+});
+$(function () {});
+
+2、
+$('li').bind('click',function () {
+                var temp = $(this).text();
+                alert(temp);
+            })
+			
+ $('li').click(function () {
+                //为所有的li绑定一个事件
+                var temp = $(this).text();
+                alert(temp);
+            })
+			
+3、
+$('ul').delegate('li','click',function () {});
+undelegate
+
+拓展
+on,off，比较底层。所有绑定都是基于on和off的
+
+js支持链式编程
+
+为谁绑定事件$(this)就是谁
+
+
+AJAX
+ asynchronous异步
+
+ ajax不是jquery独有的东西
+ XMLHttpRequest封装用来操作ajax
+ 
+ 这是跨域的问题
+ 3ajax.html:1 XMLHttpRequest cannot load http://127.0.0.1:8000/index/. No 'Access-Control-Allow-Origin' header is present on the requested resource. Origin 'null' is therefore not allowed access.
+ 
+ 默认不允许跨域
+ 
+ ajax跨域;jsonp
+	发送格式以jsonp的格式发送+函数名
+	服务端返回的不是类似ok的 服务器response了，返回的是函数。函数名('ok')
+$.ajax({})
+$.get $.ajax({'type':'get'})
+$.post
+
+本域：请求，直接返回
+跨域：请求，指定函数名
+
+jQuery拓展方法
+插件机制拓展jquery方法
+$.each
+$.ajax
+
+使用之前先拓展
+jQuery.fn.extend({
+  check: function() {
+    return this.each(function() { this.checked = true; });
+  },
+  uncheck: function() {
+    return this.each(function() { this.checked = false; });
+  }
+});
+
+自执行函数
+(function(arg){
+jQuery.extend({
+  qinghua: function() {
+    return 'sb';
+  },
+  uncheck: function() {
+      return this.each(function() { this.checked = false; });
+  }
+});
+jQuery.fn.extend({
+     kkk: function() {
+    return 'dsb';
+    },});
+
+})(传的参数给arg，如jQuery);
+
+
+	
+	
+	
+	
+	
+	
+
+
+	
+	
+
+
+
+
+

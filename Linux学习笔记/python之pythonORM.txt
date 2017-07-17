@@ -1,0 +1,210 @@
+python之pythonORM
+
+python之pythonORM
+
+金融常用这两种数据库progressSql Oracle
+
+debug设置为false时alllowed_hosts需要设置
+installed_apps
+中间件是全局的
+
+TEMPLATES告诉django用什么引擎，可以用jinja2，甚至可以自己写
+需要时常修改DIRS
+        'DIRS': [os.path.join(BASE_DIR, 'templates')]
+如果添加，找到第一个后就不再往后找了
+
+DATABASES数据库引擎
+
+AUTH_PASSWORD_VALIDATORS密码验证
+
+TIME_ZONE需要改
+
+STATIC_URL django找静态文件都要去这里找
+
+create database s12day16 charset utf8;
+
+django.core.exceptions.ImproperlyConfigured: Error loading MySQLdb module: No module named 'MySQLdb'.
+Did you install mysqlclient or MySQL-python?
+
+python3中pip还不支持MySQL-python
+用python2
+pip2 install  MySQL-python
+Requirement already satisfied: MySQL-python in c:\python27\lib\site-packages
+
+django的ORM自增
+
+python manage.py makemigrations
+跟数据库对比，看有没有，如果有，看一致不一致，对不一致的地方处理
+migrate是直接同步
+
+python manage.py migrate
+生成表
+
+auth认证系统
+contenttypes
+sessions
+messages
+staticfiles静态文件相关
+
+
+生成了一张中间表
+
+mysql> desc app01_book_authors;
++-----------+---------+------+-----+---------+----------------+
+| Field     | Type    | Null | Key | Default | Extra          |
++-----------+---------+------+-----+---------+----------------+
+| id        | int(11) | NO   | PRI | NULL    | auto_increment |
+| book_id   | int(11) | NO   | MUL | NULL    |                |
+| author_id | int(11) | NO   | MUL | NULL    |                |
++-----------+---------+------+-----+---------+----------------+
+3 rows in set (0.08 sec)
+
+mysql> select * from app01_author;
++----+------------+-----------+-----------------+
+| id | first_name | last_name | email           |
++----+------------+-----------+-----------------+
+|  1 | alex       | li        | kk@qq.com       |
+|  2 | cai        | zhang     | zhangcai@qq.com |
++----+------------+-----------+-----------------+
+2 rows in set (0.00 sec)
+
+mysql> select * from app01_publisher;
++----+------------+---------+------+----------------+---------+----------------------+
+| id | name       | address | city | state_province | country | website              |
++----+------------+---------+------+----------------+---------+----------------------+
+|  1 | 机械工业   | 机工    | 北京 | 北京           | 中国    | http://www.baidu.com |
+|  2 | 复旦出版社 | 复旦    | 上海 | 上海           | 中国    | http://www.jd.com    |
++----+------------+---------+------+----------------+---------+----------------------+
+2 rows in set (0.05 sec)
+
+mysql> select * from app01_book;
++----+---------------+--------------+--------------+
+| id | name          | publish_date | publisher_id |
++----+---------------+--------------+--------------+
+|  1 | python教程    | 2017-07-14   |            1 |
+|  2 | linux运维     | 2017-07-14   |            2 |
+|  3 | linux内核深入 | 2017-07-14   |            2 |
++----+---------------+--------------+--------------+
+3 rows in set (0.05 sec)
+
+mysql> select * from app01_book_authors;
++----+---------+-----------+
+| id | book_id | author_id |
++----+---------+-----------+
+|  1 |       1 |         1 |
+|  2 |       2 |         2 |
+|  3 |       3 |         1 |
+|  4 |       3 |         2 |
++----+---------+-----------+
+4 rows in set (0.00 sec)
+
+
+
+第一步settings里Installedapped
+第二步settings里加数据库配置
+第三步models里的表结构
+第四步admin.py中设置可以管理
+第五步检查数据库情况，同步数据库python manage.py makemigrations		python manage.py migrate
+
+第六步创建django的superuser
+第七步登录admin手动添加数据
+
+null=True设置null可以为空，但需要python manage.py makemigrations		python manage.py migrate来更新数据库
+
+还需要设置blank=True才可以，这是设置的django admin。改完之后就不是黑体了
+
+db_column='sth'在db中另外设置名称真正在db中存储
+做索引一般要快，做了一个二叉树，搜索快
+默认会对主键做索引
+
+
+__unicode__在python3中是__str__
+
+
+default默认是多少
+
+help_text
+
+字段显示成什么样子
+
+validators自定义验证规则
+
+类名显示
+    class Meta:
+        verbose_name_plural = '作者'
+	
+python manage.py shell
+from app01 import models会自动配置django配置
+
+D:\PycharmProjects\s12day6>python manage.py shell
+Python 2.7.13 (v2.7.13:a06454b1afa1, Dec 17 2016, 20:42:59) [MSC v.1500 32 bit (Intel)] on win32
+Type "help", "copyright", "credits" or "license" for more information.
+(InteractiveConsole)
+>>> from app01 import models
+>>> dir(models)
+['Author', 'Book', 'Publisher', '__builtins__', '__doc__', '__file__', '__name__', '__package__', '__warningregistry__', 'models']
+>>> models.Author.objects.all()
+<QuerySet [<Author: <alex li>>, <Author: <cai zhang>>]>
+>>> models.Author.objects.last()
+<Author: <cai zhang>>
+>>> a1= models.Author.objects.last()
+>>> a1
+<Author: <cai zhang>>
+>>> a1.first_name
+u'cai'
+>>> a1.last_name
+u'zhang'
+>>> a1.last_name = 'z'
+>>> a1.save()
+
+>>> new_author = models.Author(first_name='jack',last_name='zz',email='kk@qq.com')
+>>> new_author
+<Author: <jack zz>>
+>>> new_author.id
+>>> new_author.save()
+>>> new_author.id
+3L
+>>> new_author = models.Author.objects.create(first_name='jack2',last_name='zz2',email='kk@qq.com')
+这种可以直接创建并save
+
+save是更新所有的，即使没改的也要更新一下，效率不高
+
+过滤
+>>> models.Author.objects.filter(last_name='zz')
+<QuerySet [<Author: <jack zz>>, <Author: <jack zz>>]>
+>>> models.Author.objects.filter(last_name='zz',first_name='jack')
+<QuerySet [<Author: <jack zz>>, <Author: <jack zz>>]>
+
+>>> models.Author.objects.filter(last_name__contains='z')
+<QuerySet [<Author: <cai z>>, <Author: <jack zz>>, <Author: <jack2 zz2>>, <Author: <jack zz>>]>
+
+>>> models.Author.objects.filter(last_name__icontains='z')
+<QuerySet [<Author: <cai z>>, <Author: <jack zz>>, <Author: <jack2 zz2>>, <Author: <jack zz>>]>
+忽略大小写
+
+>>> models.Author.objects.filter(id__range=[1,2])
+<QuerySet [<Author: <alex li>>, <Author: <cai z>>]>
+>>> models.Author.objects.filter(id__range=[1,3])
+<QuerySet [<Author: <alex li>>, <Author: <cai z>>, <Author: <jack zz>>]>
+
+
+update的修改效率高，因为只影响一个特定字段，不会引起竞态条件（不会冲突）
+>>> models.Author.objects.filter(last_name__icontains='z').update(last_name='zhang')
+4L
+
+
+连锁查询
+
+关联查询
+查书的作者
+>>> b1 = models.Book.objects.last()
+>>> b1.authors
+<django.db.models.fields.related_descriptors.ManyRelatedManager object at 0x03B931D0>
+>>> b1.authors.select_related()
+<QuerySet [<Author: <alex li>>, <Author: <cai zhang>>]>
+
+删除
+>>> b1.delete()
+(4L, {u'app01.Book_authors': 3L, u'app01.Book': 1L})
+
+

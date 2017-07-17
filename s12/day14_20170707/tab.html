@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        .tab-box .box-menu{
+            background-color: #dddddd;
+            border: 1px solid #dddddd;
+            height: 33px;line-height: 33px;
+        }
+        .box-menu a{
+            border-right: 1px solid #d69f9f;
+            padding: 8px;
+        }
+        .tab-box{
+            border: 1px solid #dddddd;
+        }
+        .hide{
+            display:none;
+        }
+        .current{
+            background-color: white;
+            color: black;
+            border-top:2px solid red;
+
+        }
+    </style>
+</head>
+<body>
+    <div class="tab-box">
+        <div class="box-menu">
+            <!--所有菜单-->
+            <a alex="c1" onclick="ChangeTab(this);" class='current'>菜单一</a>
+            <a alex="c2" onclick="ChangeTab(this);" >菜单二</a>
+            <a alex="c3" onclick="ChangeTab(this);" >菜单三</a>
+
+        </div>
+        <div class="box-body">
+            <!--所有内容-->
+            <div id="c1">内容一</div>
+            <div id="c2" class="hide">内容二</div>
+            <div id="c3" class="hide">内容三</div>
+
+        </div>
+        <script src="jquery-2.2.4.js"> </script>
+        <script>
+            function ChangeTab(ths){
+                //获取当前点击的标签
+                //获取当前标签的属性alex对应值
+                //值$('#xx')显示，其他星弟标签隐藏
+                $(ths).addClass('current').siblings().removeClass('current');
+
+                var contentID = $(ths).attr('alex');//获取到c1值，获取标签属性
+                var temp = '#' + contentID;
+                $(temp).removeClass('hide').siblings().addClass('hide');
+
+
+            }
+        </script>
+    </div>
+</body>
+</html>

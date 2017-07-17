@@ -1,0 +1,22 @@
+python安装
+
+查看python版本
+python -V
+
+安装gcc，下载python源码 https://www.python.ort/ftp/python/
+解压源码包并进入
+./configure
+make all
+make install
+
+查看版本
+/usr/local/bin/python2.7 -V
+
+修改python默认版本
+mv /usr/bin/python /usr/bin/python2.6
+ln -s /usr/bin/python /usr/bin/python2.6
+
+避免yum异常修改yum的python解释器
+vim /usr/bin/yum
+#!/usr/bin/python 改为 #!/usr/bin/python2.6
+

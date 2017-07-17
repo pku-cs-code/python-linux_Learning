@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <div style="border: 1px solid #ddd;width: 600px;position: absolute;">
+        <div id="title" style="background-color: black;height: 40px;color: white;">标题
+        </div>
+        <div style="height: 300px;">
+            内容
+        </div>
+    </div>
+    <script type="text/javascript" src="jquery-2.2.4.js"> </script>
+    <script>
+        $(function () {
+            //页面加载完成之后自动执行
+
+            $('#title').mouseover(function () {
+                $(this).css('cursor','move');
+            }).mousedown(function (e) {//e包含了很多内容，可以理解为封装了很多东西。相关事件的内容
+                //设置了e值后js会自动赋值
+                //.keydown(function(e){}) keydown里面也可以有e
+
+
+                var _event = e || window.event;//支持就有e，不支持用window.event
+                var ord_x = _event.clientX;//横坐标原始位置
+                var ord_y = _event.clientY;//纵坐标原始位置
+
+                var parent_left = $(this).parent().offset().left;
+                var parent_top = $(this).parent().offset().top;
+
+                $(this).bind('mousemove',function (e) {
+                    var _new_event = e || window.event;
+                    var new_x = _new_event.clientX;
+                    var new_y = _new_event.clientY;
+
+                    var x = parent_left + (new_x - ord_x);
+                    var y = parent_top + (new_y - ord_y);
+
+                    $(this).parent().css('left',x+'px');
+                    $(this).parent().css('top',y+'px')
+
+                }).mouseup(function () {
+                    $(this).unbind('mousemove');//解除mousemove
+
+                });
+
+
+
+            })
+
+        })
+    </script>
+
+
+</body>
+</html>

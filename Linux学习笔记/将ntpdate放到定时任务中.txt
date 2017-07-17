@@ -1,0 +1,6 @@
+将ntpdate放到定时任务中去
+echo '#time sync by by zhangcai at 20170403' >> /var/spool/cron/root
+[root@mode-cai ~]# echo '*/5 * * * * /usr/sbin/ntpdate time.nist.gov > /dev/dull 2>$1' >>/var/spool/cron/root
+每五分钟做一次同步
+
+自己配两台内网时间同步服务器ntpserver（要两台是防止一台出问题，负载均衡概念），这样有些机器不用能上网就能同步时间

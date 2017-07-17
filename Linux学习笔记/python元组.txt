@@ -1,0 +1,18 @@
+>>> t = (1,2,3,4)
+>>> dir(t)
+['__add__', '__class__', '__contains__', '__delattr__', '__dir__', '__doc__', '__eq__', '__format__', '__ge__', '__getattribute__', '__getitem__', '__getnewargs__', '__gt__', '__hash__', '__init__', '__iter__', '__le__', '__len__', '__lt__', '__mul__', '__ne__', '__new__', '__reduce__', '__reduce_ex__', '__repr__', '__rmul__', '__setattr__', '__sizeof__', '__str__', '__subclasshook__', 'count', 'index']
+
+元组能干的，列表都能干
+存在的意义，提示别人不要改
+元组可以切片，但不能插入
+
+列表和元组互换
+>>> type(t)
+<class 'tuple'>
+>>> list(t)
+[1, 2, 3, 4]
+>>> tuple(a)
+(1, 6, 2, 4, 3, 'a', 'b', 1, 2, 3, 4, 6, 'A', 'l', 'e', 'x', ' ', 'L', 'i')
+
+
+

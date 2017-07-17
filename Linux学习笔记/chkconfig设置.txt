@@ -1,0 +1,3 @@
+LANG=en
+for oldboy in `chkconfig --list| grep 3:on|awk '{print $1}'` ; do chkconfig --level 3 $oldboy off;done
+for oldboy in crond network rsyslog sshd; do chkconfig --level 3 $oldboy on;done

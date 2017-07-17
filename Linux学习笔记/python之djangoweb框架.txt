@@ -1,0 +1,105 @@
+python之djangoweb框架
+
+MTV model templates views
+MVC model views controller
+
+动态模糊的匹配，会把匹配的值当做一个参数传给函数
+
+正则匹配里的每个括号都是一个参数要传给处理函数
+
+\w+匹配字符串
+
+循环匹配，直到匹配到能匹配的第一个，后面的就忽略了
+
+
+(?P<month>[0-9]{2}) 传给函数的时候，如果函数参数有month，则可以对应传入，而不用按顺序
+
+captured arguments  are always strings
+
+子视图原因
+解耦
+
+url里不能写动词，只能写名词
+
+get和post请求区别在参数上
+
+get的特性：会明文显示
+
+request.GET.get('user')
+POST是非明文显示
+
+chrome插件：postman 可以设置提交请求的GET或者POST请求
+
+get提交数据的大小有限制  chrome提交的8k还是8M
+
+判断前端请求方式是get还是post
+得到的请求一般是字典
+
+get和post后台处理的方式不一样
+get一般是获取数据，不会对后台数据库进行修改
+post是创建或者修改
+
+同一个视图，根据同一个URL请求方式的不同，返回的内容不同
+这个可以实现url复用
+
+if request.method == get
+	do ...
+else 
+	do ...
+django 默认只接受这两种类型
+
+表单里写post或者get
+
+
+
+ajax可以部分刷新页面
+
+后端返回的是字符串
+
+
+http://127.0.0.1:8000/payment/?user=zhang&password=1314520&email=zhangcai@qq.com
+以get的方式获取数据
+[14/Jul/2017 15:17:17] "GET /payment/ HTTP/1.1" 200 170
+user request: zhang
+
+模板语言
+  :::for_start
+	<h2>user:|::name,name:|::username</h2>
+	:::for_end
+				
+::代表变量
+本质是拼接字符串
+
+django的模板语言不是jinja2，是自己写的，受了jinja2的启发
+
+html不写在视图文件里，解耦
+
+对页面的修改需要改python文件，不稳定
+python和html的设计不同，不利于工作开展 
+
+
+from django.template import Context,Template
+ t = Template("My name is {{name}}. I am {{age}} years old..");#生成模板
+c = Context({'name':'alex','age':21})#生成上下文
+ t.render(c)#渲染
+u'My name is alex. I am 21 years old..'
+	
+django模板解析非常快捷
+需要先生成模板，再进行循环渲染，避免资源开销的浪费
+
+没有缩进的语言要结束符
+
+{% if forloop.counter|divisibleby:'2' %}
+偶数标签为true
+
+要一次性把前端返回，所以没有while循环
+template不能设置变量
+
+模板继承
+可以重写各个父模板的部分
+
+一个文件最多只能继承一个模板
+
+文件写在文件头
+
+

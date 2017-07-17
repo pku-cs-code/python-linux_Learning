@@ -1,0 +1,133 @@
+
+nginx1.12.0安装配置
+安装环境
+[root@localhost network-scripts]# cat /etc/redhat-release 
+CentOS Linux release 7.3.1611 (Core) 
+[root@localhost network-scripts]# uname -m
+x86_64
+[root@localhost network-scripts]# uname -r
+3.10.0-514.el7.x86_64
+[root@localhost network-scripts]# uname -a
+Linux localhost.localdomain 3.10.0-514.el7.x86_64 #1 SMP Tue Nov 22 16:42:41 UTC 2016 x86_64 x86_64 x86_64 GNU/Linux
+
+useradd zhangcai
+passwd zhangcia
+cd /home/zhangcai/
+mkdir tools
+yum groupinstall -y Development Tools
+yum install wget -y
+wget http://nginx.org/download/nginx-1.12.0.tar.gz
+tar zxf nginx-1.12.0.tar.gz 
+cd nginx-1.12.0
+./configure --user=nginx --group=nginx --prefix=/usr/local/nginx-1.12.0 \
+--with-http_stub_status_module --with-http_ssl_module
+yum install -y pcre-devel
+ yum install -y openssl-devel
+make && make install
+ln -s /usr/local/nginx-1.12.0 /usr/local/nginx
+
+
+
+./configure: error: the HTTP rewrite module requires the PCRE library.
+You can either disable the module by using --without-http_rewrite_module
+option, or install the PCRE library into the system, or build the PCRE library
+statically from the source with nginx by using --with-pcre=<path> option.
+
+yum install -y pcre-devel解决
+
+./configure: error: SSL modules require the OpenSSL library.
+You can either do not enable the modules, or install the OpenSSL library
+into the system, or build the OpenSSL library statically from the source
+with nginx by using --with-openssl=<path> option.
+
+ yum install -y openssl-devel解决
+
+-bash: makeinstall: command not found
+
+
+配置完成后在本地服务器能能够curl，但是在浏览器上访问不了。
+一开始以为可能是网络没配好，ping www.baidu.com能ping通说明网络没问题。
+怀疑是防火墙和selinux作怪
+[root@localhost conf]# curl -I http://192.168.31.66/
+HTTP/1.1 200 OK
+Server: nginx/1.12.0
+Date: Tue, 09 May 2017 01:05:48 GMT
+Content-Type: text/html
+Content-Length: 612
+Last-Modified: Tue, 09 May 2017 00:53:08 GMT
+Connection: keep-alive
+ETag: "591112f4-264"
+Accept-Ranges: bytes
+
+
+关闭selinux
+setenforce 0  此次主机在运行时生效
+vim /etc/selinux/config 将状态从enforcing改为disabled  修改配置文件使服务器重启后也能够生效
+只关闭selinux还是不能访问，从防火墙找原因
+
+ 防火墙
+systemctl status firewalld #查看防火墙工作状态
+systemctl stop firewalld.service #停止firewall
+systemctl disable firewalld.service #禁止firewall开机启动
+查看防火墙工作状态，一看果然在工作
+[root@localhost network-scripts]# systemctl status firewalld
+● firewalld.service - firewalld - dynamic firewall daemon
+   Loaded: loaded (/usr/lib/systemd/system/firewalld.service; enabled; vendor preset: enabled)
+   Active: active (running) since Tue 2017-05-09 08:35:24 CST; 43min ago
+     Docs: man:firewalld(1)
+ Main PID: 525 (firewalld)
+   CGroup: /system.slice/firewalld.service
+           └─525 /usr/bin/python -Es /usr/sbin/firewalld --nofork --nopid
+
+May 09 08:35:14 localhost.localdomain systemd[1]: Starting firewalld - dynamic firewall daemon...
+May 09 08:35:24 localhost.localdomain systemd[1]: Started firewalld - dynamic firewall daemon.
+Hint: Some lines were ellipsized, use -l to show in full.
+
+接下来停止防火墙
+systemctl stop firewalld.service
+停止后查看防火墙状态，已经关闭
+[root@localhost network-scripts]# systemctl status firewalld
+● firewalld.service - firewalld - dynamic firewall daemon
+   Loaded: loaded (/usr/lib/systemd/system/firewalld.service; disabled; vendor preset: enabled)
+   Active: inactive (dead)
+     Docs: man:firewalld(1)
+
+May 09 08:35:14 localhost.localdomain systemd[1]: Starting firewalld - dynamic firewall daemon...
+May 09 08:35:24 localhost.localdomain systemd[1]: Started firewalld - dynamic firewall daemon.
+May 09 09:20:38 localhost.localdomain systemd[1]: Stopping firewalld - dynamic firewall daemon...
+May 09 09:20:38 localhost.localdomain systemd[1]: Stopped firewalld - dynamic firewall daemon.
+Hint: Some lines were ellipsized, use -l to show in full.
+
+还要禁止防火墙开机启动
+systemctl disable firewalld.service 
+
+关闭防火墙和selinux后果然能访问了
+
+
+
+
+另外附带centos7下防火墙的一些相关命令
+Centos7 关闭防火墙
+CentOS 7.0默认使用的是firewall作为防火墙，使用iptables必须重新设置一下
+1、直接关闭防火墙
+systemctl stop firewalld.service #停止firewall
+systemctl disable firewalld.service #禁止firewall开机启动
+2、设置 iptables service
+yum -y install iptables-services
+如果要修改防火墙配置，如增加防火墙端口3306
+vi /etc/sysconfig/iptables 
+增加规则
+-A INPUT -m state --state NEW -m tcp -p tcp --dport 3306 -j ACCEPT
+保存退出后
+systemctl restart iptables.service #重启防火墙使配置生效
+systemctl enable iptables.service #设置防火墙开机启动
+最后重启系统使设置生效即可。
+
+
+然后独立配置nginx-vhost.conf文件
+cd /usr/local/nginx/conf/
+mkdir extra
+在nginx.conf中http中添加行include      extra/*.conf;
+将nginx.conf中server有关的部分全部剪切掉，另外放在extra文件夹下nginx-vhost.conf中
+检查语法
+../sbin/nginx -t

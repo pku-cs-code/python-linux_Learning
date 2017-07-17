@@ -1,0 +1,132 @@
+python之hashlib模块
+
+md5加密，输入内容相同加密后的内容一致
+python3相比python2，在加密之前必须对字符进行编码
+hmac在python3和python2中也有区别，需要加密前进行一个key密钥指定
+
+
+>>> import hashlib
+>>> m = hashlib.md5()
+>>> m.update(b"Hello")
+>>> m.update(b"It's me")
+>>> print(m.digest())
+b']\xde\xb4{/\x92Z\xd0\xbf$\x9cR\xe3Br\x8a'
+>>> m.update(b"It's been a long time since last time we ...")
+>>> print(m.digest())
+b'\xa0\xe9\x89E\x03\xcb\x9f\x1a\x14\xaa\x07?<\xae\xfa\xa5'
+>>> print(len(m.digest()))
+16
+>>> m.hexdigest()
+'a0e9894503cb9f1a14aa073f3caefaa5'
+>>> print(m.hexdigest())
+a0e9894503cb9f1a14aa073f3caefaa5
+>>> a = hashlib.md5()
+>>> a.update(b"Hello")
+>>> print(a.hexdigest())
+8b1a9953c4611296a827abf8c47804d7
+>>> a.update(b"It's me")
+>>> print(a.hexdigest())
+5ddeb47b2f925ad0bf249c52e342728a
+>>> print(a.digest())
+b']\xde\xb4{/\x92Z\xd0\xbf$\x9cR\xe3Br\x8a'
+
+>>> hash = hashlib.sha512()
+>>> hash.update('admin')
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+TypeError: Unicode-objects must be encoded before hashing
+>>> print(hash.hexdigest())
+cf83e1357eefb8bdf1542850d66d8007d620e4050b5715dc83f4a921d36ce9ce47d0d13c5d85f2b0ff8318d2877eec2f63b931bd47417a81a538327af927da3e
+>>> print(len(hash.hexdigest()))
+128
+>>> b = hashlib.sha512()
+>>> b.update("admin")
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+TypeError: Unicode-objects must be encoded before hashing
+>>> b.update('admin')
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+TypeError: Unicode-objects must be encoded before hashing
+>>> print(b.hexdigest())
+cf83e1357eefb8bdf1542850d66d8007d620e4050b5715dc83f4a921d36ce9ce47d0d13c5d85f2b0ff8318d2877eec2f63b931bd47417a81a538327af927da3e
+>>> b.update('admin',encoding='utf-8')
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+TypeError: update() takes no keyword arguments
+>>>
+
+
+
+python3中更新有编码报错
+>>> c =hashlib.sha512()
+>>> c.update("test")
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+TypeError: Unicode-objects must be encoded before hashing
+>>> print(c.hexdigest())
+cf83e1357eefb8bdf1542850d66d8007d620e4050b5715dc83f4a921d36ce9ce47d0d13c5d85f2b0ff8318d2877eec2f63b931bd47417a81a538327af927da3e
+
+python2没有
+C:\Users\cai>python
+Python 2.7.13 (v2.7.13:a06454b1afa1, Dec 17 2016, 20:42:59) [MSC v.1500 32 bit (Intel)] on win32
+Type "help", "copyright", "credits" or "license" for more information.
+>>> import hashlib
+>>> a =hashlib.sha512()
+>>> a.update("test")
+>>> print(c.hexdigest())
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+NameError: name 'c' is not defined
+>>> print(a.hexdigest())
+ee26b0dd4af7e749aa1a8ee3c10ae9923f618980772e473f8819a5d4940e0db27ac185f8a0e1d5f84f88bc887fd67b143732c304cc5fa9ad8e6f57f50028a8ff
+
+python3需要制定编码格式
+>>> f="test"
+>>> c =hashlib.sha512(f.encode('utf-8'))
+>>> print(c.hexdigest())
+ee26b0dd4af7e749aa1a8ee3c10ae9923f618980772e473f8819a5d4940e0db27ac185f8a0e1d5f84f88bc887fd67b143732c304cc5fa9ad8e6f57f50028a8ff
+
+
+python2
+>>> import hmac
+>>> hmac.new("secret_key")
+<hmac.HMAC instance at 0x035338F0>
+>>> a = hmac.new("secret_key")
+>>> a.update("test")
+>>> a.hexdigest()
+'067a732507f937494b66aea19ce9bfa3'
+
+python3指定字符编码为utf-8后加密后的内容和python3相同
+>>> a = hmac.new(bytes("secret_key",encoding='utf-8'))
+>>> a.hexdigest()
+'615ec21baa54e2904a8d9d2f51409704'
+>>> a.update("test")
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+  File "C:\Program Files\Python35\lib\hmac.py", line 93, in update
+    self.inner.update(msg)
+TypeError: Unicode-objects must be encoded before hashing
+>>> a.update("test",encoding='utf-8')
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+TypeError: update() got an unexpected keyword argument 'encoding'
+>>> a.update(("test",encoding='utf-8'))
+  File "<stdin>", line 1
+    a.update(("test",encoding='utf-8'))
+                             ^
+SyntaxError: invalid syntax
+>>> a.update(("test".encoding('utf-8')))
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+AttributeError: 'str' object has no attribute 'encoding'
+>>> a.update(("test".encode('utf-8')))
+>>> a.hexdigest()
+'067a732507f937494b66aea19ce9bfa3'
+
+
+如果指定字符集为gb2312，则加密后的内容不同了
+>>> a.update(("test".encode('gb2312')))
+>>> a.hexdigest()
+'2bca72710aa9c4c395c05eb4302ad278'
+

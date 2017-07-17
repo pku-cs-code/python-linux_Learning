@@ -1,0 +1,52 @@
+分区知识
+GPT vs MBR
+
+DOS下输入DISKPART
+进入分区状态，GPT带*号就是GPT格式的
+
+DISKPART> list disk
+
+  磁盘 ###  状态           大小     可用     Dyn  Gpt
+  --------  -------------  -------  -------  ---  ---
+  磁盘 0    联机              596 GB      0 B
+  磁盘 1    联机             1862 GB
+
+一块硬盘最多可以分成四个主分区，而且MBR只能讲控制权交给一个激活分区，
+四个主分区只能有一个激活分区，这意味着一个硬盘上只能最多安装一个操作系统
+默认c盘是激活分区
+https://zhidao.baidu.com/question/588330452.html
+
+>DISKPART> list partition
+>
+>没有选择要列出分区的磁盘。
+>选择一个磁盘，再试一次。
+>
+>DISKPART> list disk
+>
+>  磁盘 ###  状态           大小     可用     Dyn  Gpt
+>  --------  -------------  -------  -------  ---  ---
+>  磁盘 0    联机              596 GB      0 B
+>  磁盘 1    联机             1862 GB      0 B        *
+>
+>DISKPART> select disk 0
+>
+>磁盘 0 现在是所选磁盘。
+>
+>DISKPART> list partition
+>
+>  分区 ###       类型              大小     偏移量
+>  -------------  ----------------  -------  -------
+>  分区      1    主要                 100 GB  1024 KB
+>  分区      2    主要                 496 GB   100 GB
+
+DOS下命令行分区
+https://jingyan.baidu.com/article/92255446efce49851748f463.html
+
+新建压缩卷来分区
+http://pcedu.pconline.com.cn/windows7/skill/1105/2416991_all.html
+
+GPT格式的硬盘应设置UEFI启动，一般不支持BIOS，除了新建一个MBR分区
+查看下面的文章可以看到支持GPT启动的windows系统
+http://blog.csdn.net/gao_chun/article/details/50441970
+
+使用GPT分区系统会要求创建MSR和EFI分区，默认为128MB和100MB，用于保留空间和存放引导程序等

@@ -1,0 +1,257 @@
+20170405
+Linux中以.开头的文件是隐藏文件，需要ls -a来显示出来
+.bash_profile是用户的环境变量
+
+Linux文件类型
+Linux中一切皆文件，目录也是文件，是目录文件。
+ll后第一列表示文件类型
+普通文件：-，占百分之九十以上，纯文本文件ascii、二进制文件（binary），数据格式文件（data），ct读不出来
+[root@mode ~]# file /bin/cat
+/bin/cat: ELF 64-bit LSB executable, x86-64, version 1 (SYSV), dynamically linked (uses shared libs), for GNU/Linux 2.6.18, stripped
+[root@mode ~]# file /etc/hosts
+/etc/hosts: ASCII text
+[root@mode ~]# file /var/log/wtmp 
+/var/log/wtmp: data
+file查看文件类型
+
+目录文件：
+块设备block、字符设备（创建字符设备mknod）
+[root@mode zhangcai]# find /dev -type b|xargs ls -l
+brw-rw----. 1 root disk   7,  0 Apr  6 01:03 /dev/loop0
+brw-rw----. 1 root disk   7,  1 Apr  6 01:03 /dev/loop1
+brw-rw----. 1 root disk   7,  2 Apr  6 01:03 /dev/loop2
+brw-rw----. 1 root disk   7,  3 Apr  6 01:03 /dev/loop3
+kudzu查看硬件改动
+
+套接口文件（套接字文件）.sock经常在网络之间进行数据连接
+MySQL服务启动会产生一个套接口文件
+[root@mode zhangcai]# find /dev -type s -exec ls -l {} \;
+srw-rw-rw-. 1 root root 0 Apr  6 01:03 /dev/log
+符号链接文件
+[root@mode zhangcai]# ls -ld /etc/init.d
+lrwxrwxrwx. 1 root root 11 Mar 31 07:29 /etc/init.d -> rc.d/init.d
+访问前面的找到后面的。链接文件和源文件不是一个文件，相当于windows中的快捷方式
+[root@mode opt]# ln -s /data/oldboy/ /opt/test
+[root@mode opt]# ll
+total 8
+-rwx------. 1 root root   11 Apr  6 01:54 p
+drwxr-xr-x. 2 root root 4096 Mar 26  2015 rh
+lrwxrwxrwx. 1 root root   13 Apr  6 04:20 test -> /data/oldboy/
+硬链接都是普通文件，软链接是链接文件
+l类型 /etc/rc.local 
+
+管道文件fifo
+
+文件拓展名
+实际意义不大，为了兼容windows，linux可以不用拓展名
+.tar、.tar.gz、.tgz、.tar.bz
+.sh
+.pl
+.py
+.html、.htm、php、.jsp、.do
+.conf
+.rpm
+
+[root@mode opt]# ln -s /application/apache2.2.17 /application/apache
+删除7天内文件（不包含7天，也就是6天的文件）find ./ -type f -name "*.log" -mtime +7 | xargs rm -f
+xargs比-exec好用，-exec遇到数目多可能对出错
++之前，-之后
+for  n in `seq 10000`; do echo 111 >> /var/log/messages;usleep 500;done
+tail -f /var/log/messages 查看运行结果；tailf /var/log/messages 也可以；tail -F /var/log/messages 更规范，区别是-F可以查看
+即使已经删掉但是只要重建就可以继续查看
+个人电脑开发环境->办公内网的测试环境->IDC机房的测试环境->线上生产环境
+
+显示行号cat -n nginx.conf;或者vim进入set nu；或者grep -n . /etc/hosts
+
+[root@mode ~]# chkconfig --level 245 sshd off
+[root@mode ~]# chkconfig --list sshd
+sshd           	0:off	1:off	2:off	3:on	4:off	5:off	6:off
+不管当前服务状态，只管下次开机启动后的状态
+
+？开机启动流程
+
+tar zcvf etc.tar.gz /etc z:gzip压缩，c：create，v：verbose显示过程，f：file
+进入要打包的上级目录，然后进行打包。-P不显示打包后提示，保持/,一般不用以防覆盖/etc/*文件
+-p是保持属性
+--exclude=file排除打包某文件
+-C制定地点解压
+tar zxvf file.tar.gz -C /home/kkk
+
+文件或目录属性：inode节点号，文件类型及权限，硬链接数，属主及所归属的组，，文件或目录的大小，最近修改的时间，文件或目录名
+inode：index node，索引节点，格式化分区后，一般分为inode和block两部分。block是用来存放数据的，inode是用来存储数据属性信息的，ls -l的结果都在inode中存着
+inode是一个编号，也对应一定的磁盘空间，但是文件名不在inode中，inode除了记录属性信息还会为文件进行信息索引
+通过inode值最快找到对应的文件实体
+ls -i查看inode，因为要存储属性信息，所以inode占用存储，5.x是128字节，6.x是256字节
+可以指定inode大小，但一般不涉及
+[root@mode zhangcai]# dumpe2fs /dev/sda3 | grep -i "Inode size"
+dumpe2fs 1.41.12 (17-May-2010)
+Inode size:	          256
+Block:一个文件至少占用一个Inode和block，只要inode数量大于block那么inode就够用。一个block至少1k，ext3/ext4(fat32/nfs)block大小1k，2k，4k
+You have new mail in /var/spool/mail/root
+[root@mode zhangcai]# df -i
+Filesystem     Inodes IUsed  IFree IUse% Mounted on
+/dev/sda3      367920 73453 294467   20% /
+tmpfs           62736     1  62735    1% /dev/shm
+/dev/sda1       51200    44  51156    1% /boot
+磁盘读取数据是按block读取的
+block大小选择
+block分大了浪费空间，分小了影响磁盘读取性能，生产环境一般设置为4k，因为小于4k的文件很少
+非系统block给4k，boot分区是1k
+fdisk -l查看磁盘信息
+[root@mode ~]# fdisk -l
+
+Disk /dev/sda: 6442 MB, 6442450944 bytes
+255 heads, 63 sectors/track, 783 cylinders
+Units = cylinders of 16065 * 512 = 8225280 bytes
+Sector size (logical/physical): 512 bytes / 512 bytes
+I/O size (minimum/optimal): 512 bytes / 512 bytes
+Disk identifier: 0x000e68f0
+
+   Device Boot      Start         End      Blocks   Id  System
+/dev/sda1   *           1          26      204800   83  Linux
+Partition 1 does not end on cylinder boundary.
+/dev/sda2              26          52      204800   82  Linux swap / Solaris
+Partition 2 does not end on cylinder boundary.
+/dev/sda3              52         784     5880832   83  Linux
+Partition 3 does not end on cylinder boundary.
+
+Disk /dev/sdb: 106 MB, 106954752 bytes
+64 heads, 32 sectors/track, 102 cylinders
+Units = cylinders of 2048 * 512 = 1048576 bytes
+Sector size (logical/physical): 512 bytes / 512 bytes
+I/O size (minimum/optimal): 512 bytes / 512 bytes
+Disk identifier: 0x00000000
+
+[root@mode ~]# ll /dev/sd*
+brw-rw----. 1 root disk 8,  0 Apr  6 07:53 /dev/sda
+brw-rw----. 1 root disk 8,  1 Apr  6 07:53 /dev/sda1
+brw-rw----. 1 root disk 8,  2 Apr  6 07:53 /dev/sda2
+brw-rw----. 1 root disk 8,  3 Apr  6 07:53 /dev/sda3
+brw-rw----. 1 root disk 8, 16 Apr  6 07:53 /dev/sdb
+[root@mode ~]# fdisk /dev/sdb 
+Device contains neither a valid DOS partition table, nor Sun, SGI or OSF disklabel
+Building a new DOS disklabel with disk identifier 0xd57472a9.
+Changes will remain in memory only, until you decide to write them.
+After that, of course, the previous content won't be recoverable.
+
+Warning: invalid flag 0x0000 of partition table 4 will be corrected by w(rite)
+
+WARNING: DOS-compatible mode is deprecated. It's strongly recommended to
+         switch off the mode (command 'c') and change display units to
+         sectors (command 'u').
+
+Command (m for help): n^Hp
+Command action
+   e   extended
+   p   primary partition (1-4)
+^C
+[root@mode ~]# fdisk /dev/sdb 
+Device contains neither a valid DOS partition table, nor Sun, SGI or OSF disklabel
+Building a new DOS disklabel with disk identifier 0xf7a71148.
+Changes will remain in memory only, until you decide to write them.
+After that, of course, the previous content won't be recoverable.
+
+Warning: invalid flag 0x0000 of partition table 4 will be corrected by w(rite)
+
+WARNING: DOS-compatible mode is deprecated. It's strongly recommended to
+         switch off the mode (command 'c') and change display units to
+         sectors (command 'u').
+
+Command (m for help): n
+Command action
+   e   extended
+   p   primary partition (1-4)
+p
+Partition number (1-4): 1
+First cylinder (1-102, default 1): 1
+Last cylinder, +cylinders or +size{K,M,G} (1-102, default 102): 
+Using default value 102
+
+Command (m for help): p
+
+Disk /dev/sdb: 106 MB, 106954752 bytes
+64 heads, 32 sectors/track, 102 cylinders
+Units = cylinders of 2048 * 512 = 1048576 bytes
+Sector size (logical/physical): 512 bytes / 512 bytes
+I/O size (minimum/optimal): 512 bytes / 512 bytes
+Disk identifier: 0xf7a71148
+
+   Device Boot      Start         End      Blocks   Id  System
+/dev/sdb1               1         102      104432   83  Linux
+
+Command (m for help): w
+The partition table has been altered!
+
+Calling ioctl() to re-read partition table.
+Syncing disks.
+[root@mode ~]# partprobe
+Warning: WARNING: the kernel failed to re-read the partition table on /dev/sda (Device or resource busy).  As a result, it may not reflect all of your changes until after reboot.
+[root@mode ~]# mkfs.ext4 /dev/sdb1
+mke2fs 1.41.12 (17-May-2010)
+Filesystem label=
+OS type: Linux
+Block size=1024 (log=0)
+Fragment size=1024 (log=0)
+Stride=0 blocks, Stripe width=0 blocks
+26208 inodes, 104432 blocks
+5221 blocks (5.00%) reserved for the super user
+First data block=1
+Maximum filesystem blocks=67371008
+13 block groups
+8192 blocks per group, 8192 fragments per group
+2016 inodes per group
+Superblock backups stored on blocks: 
+	8193, 24577, 40961, 57345, 73729
+
+Writing inode tables: done                            
+Creating journal (4096 blocks): done
+Writing superblocks and filesystem accounting information: done
+
+This filesystem will be automatically checked every 36 mounts or
+180 days, whichever comes first.  Use tune2fs -c or -i to override.
+[root@mode ~]# tune2fs -c -1 /dev/sd
+sda   sda1  sda2  sda3  sdb   sdb1  
+[root@mode ~]# tune2fs -c -1 /dev/sdb1
+tune2fs 1.41.12 (17-May-2010)
+Setting maximal mount count to -1
+You have new mail in /var/spool/mail/root
+[root@mode ~]# mount /dev/sdb1 /mnt/
+[root@mode ~]# df -h
+Filesystem      Size  Used Avail Use% Mounted on
+/dev/sda3       5.4G  1.8G  3.4G  34% /
+tmpfs           246M     0  246M   0% /dev/shm
+/dev/sda1       190M   55M  125M  31% /boot
+/dev/sdb1        95M  1.6M   89M   2% /mnt
+[root@mode ~]# df -i
+Filesystem     Inodes IUsed  IFree IUse% Mounted on
+/dev/sda3      367920 73449 294471   20% /
+tmpfs           62736     1  62735    1% /dev/shm
+/dev/sda1       51200    44  51156    1% /boot
+/dev/sdb1       26208    11  26197    1% /mnt
+[root@mode ~]# dumpe2fs /dev/sdb1 | grep -i "block size"
+dumpe2fs 1.41.12 (17-May-2010)
+Block size:               1024
+[root@mode ~]# dumpe2fs /dev/sdb1 | grep -i "inode size"
+dumpe2fs 1.41.12 (17-May-2010)
+
+默认分区常规情况下，inode是足够的，而block消耗的更快，如果磁盘满会提示如下错误。
+No  space left on device.两种情况：block不够，inode不够
+假如block为1k或者4k的情况，block先满，inode有剩余
+
+删除软链接对硬链接及软链接无影响
+删除硬链接对源链接无影响，对软链接无影响
+删除源文件对硬链接文件没影响，但导致软链接失效，白字红底闪烁
+同时删除硬链接和源文件，软链接失效
+源文件和硬链接文件具有相同的索引节点，软链接为源文件的快捷方式
+
+目录不可以创建硬链接，但可以创建软链接，对目录创建软链接是生产场景中常用的技巧
+硬链接不能跨越文件系统，相当于跨越了分区
+每个目录下都有一个硬链接 .和上级目录的链接..
+
+文件被删除：
+1硬链接全部被删除，创建一个硬链接i_link+1，当硬链接全部被删除时即为0时
+2服务进程没有使用，i_count（引用计数）被读+1，少一个-1，初始值为0
+3新文件覆盖，被覆盖或者文件系统主动回收
+
+企业实战：
+重启一下

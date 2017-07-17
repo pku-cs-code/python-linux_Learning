@@ -1,0 +1,5 @@
+Port 52113
+PermitEmptyPasswords no
+PermitRootLogin no
+UseDNS no#因为会很慢
+#by zhangcai 20170401

@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        @media (min-width: 768px) {
+      .lead {
+          background-color: red;
+        /*font-size: 21px;*/
+  }  }
+        .c1:after{
+                /*content:'zz';*/
+                /*content: '\u8766';*/
+            /*\u是对应的字体文件*/
+                content: '2709';
+            }
+            .c2{
+                background-color: red;
+            }
+            .c2:after{
+                content: '.';
+                /*必须加一个内容，然后将其隐藏*/
+                clear: both;
+                visibility: hidden;
+            }
+
+            .clearfix:after{
+                content: '.';
+                /*必须加一个内容，然后将其隐藏*/
+                clear: both;
+                visibility: hidden;
+            }
+
+    </style>
+    <div class="lead">fdfdfsfasdfsdf</div>
+    <div class="c1">caicaizhang</div>
+    <div class="c2 clearfix">
+        <div style="float:left">123</div>
+        <div style="float:left">456</div>
+        <!--<div style="clear: both"></div>-->
+    </div>
+        <div class="c3 clearfix">
+        <div style="float:left">123</div>
+        <div style="float:left">456</div>
+        <!--<div style="clear: both"></div>-->
+    </div>
+</head>
+<body>
+
+</body>
+</html>

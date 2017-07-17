@@ -1,0 +1,114 @@
+mysql5.1.72安装
+groupadd mysql
+useradd -s /sbin/nologin -g mysql -M mysql
+cd /home/zhangcai/tools/
+tar zxf mysql-5.1.72.tar.gz
+ cd mysql-5.1.72
+./configure \
+--prefix=/usr/local/mysql5.1.72 \
+--with-unix-socket-path=/usr/local/mysql5.1.72/tmp/mysql.sock \
+--localstatedir=/usr/local/mysql5.1.72/data \
+--enable-assembler \
+--enable-thread-safe-client \
+--with-mysqld-user=mysql \
+--with-big-tables \
+--without-debug \
+--with-pthread \
+--with-mysqld-ldflags=-all-static \
+--with-client-ldflags=-all-static
+#--with-extra-charsets=complex \
+#--with-readline \
+#--with-ssl \
+#--with-embedded-server \
+#--enable-local-infile \
+#--with-plugins=partition,innobase \
+#--with-plugin-PLUGIN \
+
+make && make install 
+
+echo $?
+
+错误
+checking for termcap functions library... configure: error: No curses/termcap library found
+解决
+yum install -y ncurses-devel
+警告
+/usr/bin/rm: cannot remove 'libtoolT': No such file or directory
+忽略不计
+
+注意：在虚拟机下编译时，为了防止编译时负载太高xshell连接中断可以以直接去虚拟机下编译
+另外，为了节省编译时间，可以先关机了手动增加内存以节省时间
+
+编译参数解释
+/configure \
+--prefix=/usr/local/mysql5.1.72 \ #指定mysql安装路径
+--with-unix-socket-path=/usr/local/mysql5.1.72/tmp/mysql.sock \ #指定mysql socket文件存放目录
+--localstatedir=/usr/local/mysql5.1.72/data \ #设定mysql的数据文件存放位置
+--enable-assembler \  #允许使用汇编模式
+--enable-thread-safe-client \  #以线程方式编译客户端
+--with-mysqld-user=mysql \  #指定mysql运行的系统用户
+--with-big-tables \
+--without-debug \  #使用非debug模式
+--with-pthread \  #强制使用pthread线程程序编译
+--with-mysqld-ldflags=-all-static \ #服务器使用静态库（优化性能）
+--with-client-ldflags=-all-static #客户端使用静态库（优化性能）
+
+ln -s /usr/local/mysql5.1.72 /usr/local/mysql
+mkdir -p /usr/local/mysql/data  #路径下面创建数据文件
+chown -R mysql /usr/local/mysql  #授权目录可以访问
+/usr/local/mysql/bin/mysql_install_db  --user=mysql --datadir=/usr/local/mysql/data  #初始化数据库
+/bin/cp support-files/my-small.cnf /etc/my.cnf 
+#生产环境一般用large、huge
+
+ cp support-files/mysql.server /usr/local/mysql/bin/
+chmod 700 /usr/local/mysql/bin/mysql.server
+/usr/local/mysql/bin/mysql.server start
+cp /usr/local/mysql/bin/mysql.server /etc/init.d/mysqld
+#设置开机启动
+chkconfig --add mysqld
+chkconfig mysqld on
+chkconfig --list mysqld
+
+查看启动情况
+[root@bbs bin]# netstat -lnt|grep 3306
+tcp        0      0 0.0.0.0:3306                0.0.0.0:*                   LISTEN
+[root@bbs bin]# lsof -i :3306
+COMMAND  PID  USER   FD   TYPE DEVICE SIZE/OFF NODE NAME
+mysqld  1353 mysql   10u  IPv4  13371      0t0  TCP *:mysql (LISTEN)
+
+#将mysql命令添加到全局路径
+echo "export PATH=$PATH:/usr/local/mysql/bin">>/etc/profile
+source /etc/profile
+
+mysql #登入，如果有问题很可能是初始化的问题，先删除data目录下的所有文件再重新初始化
+cp support-files/mysql.server /etc/init.d/mysqld
+chmod 700 /etc/init.d/mysqld 
+
+chkconfig mysqld on
+chkconfig --list mysqld 
+mysqld         	0:off	1:off	2:on	3:on	4:on	5:on	6:off
+
+[root@bbs mysql-5.1.72]# mysqladmin -uroot password "123456"
+-bash: mysqladmin: command not found
+#如果其它当前登录tty没有断开，则需要断开了重新连接。当前加入环境变量的tty没有问题
+
+当前tty修改环境变量后可用
+mysqladmin -uroot password "123456"
+mysql
+再次mysql登录发现登不上了，需要输入密码
+ERROR 1045 (28000): Access denied for user 'root'@'localhost' (using password: NO)
+[root@bbs bin]# mysql -uroot -p
+Enter password: 
+mysql -uroot -p'123456'  #也可以不用交互直接登录，但是可能有安全隐患
+
+select user();
+select user,host from mysql.user;
+drop user ""@localhost;
+drop user ""@localhost.localdomain;
+
+为了安全删除不必要的用户
+drop user ""@bbs.etiantian.org;
+drop user ""@localhost;
+
+如果host中的有大写（比如C64）就不管用了，需要去表里面去删
+delete from mysql.user where user="" and host="C64";

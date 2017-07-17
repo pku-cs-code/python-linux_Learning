@@ -1,0 +1,61 @@
+python编码报错
+
+[root@test scripts]# python3 socket_server_from_win.py 
+  File "socket_server_from_win.py", line 21
+SyntaxError: (unicode error) 'utf-8' codec can't decode byte 0xb2 in position 0: invalid start byte
+
+原因是要设置编码为utf-8，linux下需要声明为
+#coding:utf-8
+虽然我已经声明了下面的一句
+# -*- coding: utf-8 -*-
+
+经过多方查证，可能是因为在vim新建py文件的时候文件编码不是utf-8导致的
+因为我在win下用emeditor将相同的代码保存为utf-8文本py文件时传入到linux中可以正确执行
+参考文档
+http://www.yaoguangkeji.com/a_rbx8MRrb.html
+
+
+vim打开文件后
+输入:set fileencoding竟然发现文件编码未指定，而/etc/vimrc中已经指定了相应的编码了呀
+if v:lang =~ "utf8$" || v:lang =~ "UTF-8$"
+   set fileencodings=ucs-bom,utf-8,latin1
+
+竟然发现发现~/.vimrc文件不存在
+在vim中对文件执行命令
+:set fileencoding=utf-8
+竟然就好了
+参考文档
+http://blog.csdn.net/jnbbwyth/article/details/6991425
+
+
+原因如果更改了文件编码格式，即使输入中文，在xshell终端下也是乱码的
+这就是xshell和linux客户端字符编码交互问题了
+还没有解决
+
+更改xshell字符编码为gb2312后，在socket_client.py文件里添加中文也是会报错
+client端报错后退出
+Traceback (most recent call last):
+  File "socket_client.py", line 17, in <module>
+    sk.send(bytes(user_input,'utf8'))
+BrokenPipeError: [Errno 32] Broken pipe
+
+server端报错后退出
+server waiting...
+Traceback (most recent call last):
+  File "socket_server_from_win.py", line 17, in <module>
+    print(str(client_data,'utf8'))
+UnicodeEncodeError: 'ascii' codec can't encode characters in position 0-17: ordinal not in range(128)
+
+
+将xshell客户端和当前session的字符都设置为gb2312还是报错
+
+
+
+将xshell客户端语言设置为Default Language，linux客户端字符编码设置为gb2312则不会报中文报错
+好像也有错误。。。
+
+
+代码正文，如print内容中包含中文则会报错
+SyntaxError: (unicode error) 'utf-8' codec can't decode byte 0xb3 in position 0: invalid start byte
+
+没有更好的处理方法，除了代码正文不写中文

@@ -1,0 +1,243 @@
+python之前端
+
+cmdb
+
+资产
+自动化运维
+
+HTML 
+CSS
+JavaScript
+
+html记住20个左右标签
+
+http本质上是socket
+请求后就断开的是短链接
+
+web服务器本质上是socket写的
+
+<!DOCTYPE html> 推荐使用这套规则，兼容性好
+
+标签分类
+块级标签
+行内标签（内联标签）
+
+块级标签最常用的是div
+内联标签最常用的是span
+
+特殊字符 &lt; &gt;
+
+p标签之间留有空行，说明默认有样式
+
+</br>是自闭合的，表示换行
+
+一个标签可以包含另外的标签
+
+a标签是超链接
+
+a标签的锚
+href="#t61"
+a标签的id唯一，即使不报错也留有隐患
+
+所有的标签都可以定义id，style
+特殊的标签有特殊的属性
+
+a特有的属性target，href
+
+img 有title和src属性
+
+h1
+h2...有自己的默认样式，一次递减
+
+h系列是标题
+
+select标签，下拉标签
+size标签价滚动条
+
+新建django工程
+D:\PycharmProjects\django_form>python3 manage.py startapp app01
+
+D:\PycharmProjects\django_form>python3 manage.py runserver 8000
+
+form标签用来提交数据的
+
+textarea多行文本输入
+label for属性点击文本相当于点CheckBox
+
+ul
+ol
+dl
+
+table表格
+thead表头
+tbody表内容
+
+thead和tbody也可以不写，但是建议写，因为容易理解
+
+filedset
+
+
+块级标签 div p h1
+内联标签 span a label input form img
+
+各种符号&nbsp;空格
+
+标签 input系列 select textarea form提交用            div span布局用
+a img table
+H ul li ol dl p br hr 
+
+属性：
+公共属性： id,name（一般只是用来提交数据）,style,class
+input标签，text,password
+<input type="text" value="123"/>
+input:button,submit
+<input type="submit" value="BTN"/>
+input:checkbox
+<input type="checkbox" checked="checked"/>
+input:radio
+<input type="radio" checked="checked"/>
+select
+<select>
+	<option value="9" selected="selected">dfd<option>
+<select/>
+会提交value=9而不是dfd
+
+
+form
+<form action='' enctype='multipart/form-data' method='POST'>
+	<input type='text'/>
+	<input type='file'/>
+<form/>
+如果要提交文件需要在其所在的form标签中添加特殊属性
+
+提交方式POST，DELETE等
+不是直接把文件放到内存
+对form是要有要求的
+
+textarea
+<textarea name="xxx">
+textcontent
+<textarea/>
+
+table标签
+thead
+tbody
+tr行
+td列
+
+列必须包含在行里面
+合并单元格
+colspan
+rowspan
+
+ 
+css存储位置
+style写在标签里
+写在head<style>里
+    <style>
+        .cc{
+            color: red;font-size: 18px;
+        }
+    </style>
+	其他的可以引用这个样式
+	后面的可以用class
+	
+style优先级最高，head里的优先级按文件声明的顺序来的
+推荐使用文件样式，可以重用
+
+css之基本选择器
+class选择器
+标签选择器
+   a{color:red;}所有的a标签都应用样式
+  div span select
+  input,type=text
+  input[type='text']{}所有的input中text应用样式
+样式选择器 ID选择器
+  #uu{}
+  <div id='uu'><div/>
+放到head里面的style里面
+
+层级选择器(空格表示下一级标签)
+ .c3 #i8 a div .c4{}
+ <div>
+	<a>
+		<div>
+			<span class='c4'>
+			<span/>
+		<div/>
+		<span class='c4'><span>
+	<a/>
+ <div/>
+ <span class='c4'><span/>
+ 
+组合选择器（逗号表示或，两者都可以）
+a,p{color:red;}  
+
+应用样式
+background后面可以设置图片位置，根据位置调整图片显示位置
+width
+height
+border
+cursor
+	a标签的cursor是小手
+	cursor：pointer;小手
+	cursor:help问号
+	cursor:wait等待
+	cursor:move
+	cursor:crosshair
+
+display:
+	none;隐藏
+	block;变成块级标签
+	inline;把块级标签变成内联标签
+
+块级标签：小块的
+内联标签：横向铺满的
+
+float浮动 width百分比是相对于父标签大小而言
+将不同宽度标签拼凑到一起，float：right；float：left；改变位置，width：40%占据大小
+
+如果子标签都是float，name父标签则不存在了
+	子标签不会把父标签撑起来
+	<div style="clear: both;"></div>放在float标签下方声明可以撑起来父标签
+
+position:
+	fixed;固定。像一些商城的右下角有固定图标。写成fixed会脱离原来文档。是针对窗口的
+	absolute;绝对。一次固定在窗口某个位置。absolute一般不自己出现，通常和relative一起
+	relative;相对。relative本身不产生任何效果，与absolute一起使用才有效果
+		绝对和相对结合起来可以用
+		外层是relative，内层是absolute。合起来定位局部的位置
+		
+		
+透明度
+opacity:chrome中用这个
+	z-index:11设置层叠的优先级
+	在高index设置opacity可以看到底层内容
+IE中是filter:alpha
+
+margin和padding
+外边距：外部增加
+内边距：自己增加
+ padding：10px;全部方向10px
+ padding： 10px 20px 10px 10px;上 右 下 左
+ padding:10px 20px;第一个10px代表上下，第二个20px代表左右。margin也是这样用法
+ 
+
+
+
+
+
+		
+	
+	
+	
+
+
+
+
+
+
+
+
+
+

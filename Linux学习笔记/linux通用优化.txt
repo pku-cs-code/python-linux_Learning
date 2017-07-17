@@ -1,0 +1,74 @@
+通用优化
+ipatbles工作场景如果有wan ip一般要打开，高并发除外
+
+vim /etc/sysctl.conf
+将修改的内容拷贝到文本最末端，此时没有生效，需要执行
+sysctl -p生效
+
+
+net.ipv4.tcp_fin_timeout =2
+net.ipv4.tcp_tw_reuse = 1
+net.ipv4.tcp_tw_recycle = 1
+net.ipv4.tcp_syncookies = 1
+net.ipv4.tcp_keepalive_time = 600
+net.ipv4.ip_local_port_range  = 4000 65000
+net.ipv4.tcp_max_syn_backlog = 16384
+net.ipv4.tcp_max_tw_buckets = 36000
+net.ipv4.route.gc_timeout = 100
+net.ipv4.tcp_syn_retries = 1
+net.ipv4.tcp_synack_retries = 1
+net.core.somaxconn = 16384
+net.core.netdev_max_backlog = 16384
+net.ipv4.tcp_max_orphans =16384
+#以下是对iptables防火墙的优化，防火墙不会提示，可以忽略不理。
+net.ipv4.ip_conntrack_max = 25000000
+net.ipv4.netfilter.ip_conntrack_max = 25000000
+net.ipv4.netfilter.ip_conntrack_tcp_timeout_establish = 180
+net.ipv4.netfilter.ip_conntrack_tcp_timeout_time_wait = 120
+net.ipv4.netfilter.ip_conntrack_tcp_timeout_close_wait = 60
+net.ipv4.netfilter.ip_conntrack_tcp_timeout_fin_wait = 120
+
+[root@mode-cai ~]# netstat -n | awk '/`tcp/ {++oldboy[$NF]} END {for(a in oldboy) print a,oldboy[a]}'
+
+yum install sendmail -y
+/var/spool/clientmqueue #sendmail 目录临时存放地点
+
+find /var/spool/clientmqueue/ -type f | xargs rm -f
+mkdir /server/scripts -p
+vim del.sh中放入find /var/spool/clientmqueue/ -type f | xargs rm -f
+#定时任务打开
+crontab -e
+#定时任务查看 
+crontab -l
+
+锁定关键系统文件，防止黑客创建
+chattr +i /etc/passwd
+chattr +i /etc/group
+chattr +i /etc/shadow
+chattr +i /etc/gsadow
+chattr +i /etc/inittab
+
+[root@mode-cai ~]# rm -fr /etc/passwd
+rm: cannot remove `/etc/passwd': Operation not permitted
+[root@mode-cai ~]# useradd kkk
+useradd: cannot open /etc/passwd
+
+处理后吧chattr改名oldboy（192.168.1.60,6.4），但一定要记得，否则以后也处理不好。
+[root@mode-cai ~]# mv /usr/bin/chattr  /usr/bin/oldboy
+[root@mode-cai ~]# >/etc/passwd
+-bash: /etc/passwd: Permission denied
+
+[root@mode-cai ~]# oldboy -i /etc/passwd
+[root@mode-cai ~]# useradd kkll
+useradd: cannot open /etc/group
+[root@mode-cai ~]# oldboy +i /etc/passwd
+[root@mode-cai ~]# lsattr /etc/passwd
+----i--------e- /etc/passwd
+
+
+清楚版本号防止特定系统版本bug和对应的软件bug
+ > /etc/issue
+
+
+
+

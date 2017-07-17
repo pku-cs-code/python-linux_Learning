@@ -1,0 +1,366 @@
+php的拓展缓存和加速插件安装配置
+
+[root@test ~]# cat /redhat-release
+cat: /redhat-release: No such file or directory
+You have new mail in /var/spool/mail/root
+[root@test ~]# cat /etc/redhat-release
+CentOS release 6.8 (Final)
+[root@test ~]# uname -m
+x86_64
+[root@test ~]# apachectl -v
+Server version: Apache/2.2.15 (Unix)
+Server built:   Jan 12 2017 17:09:39
+[root@test ~]# /usr/local/php5.3.10/bin/ph
+phar        phar.phar   php         php-config  phpize      
+[root@test ~]# /usr/local/php5.3.10/bin/ph
+phar        phar.phar   php         php-config  phpize      
+[root@test ~]# /usr/local/php5.3.10/bin/php -v
+PHP 5.3.10 (cli) (built: May  2 2017 17:17:36) 
+Copyright (c) 1997-2012 The PHP Group
+Zend Engine v2.3.0, Copyright (c) 1998-2012 Zend Technologies
+
+[root@test ~]# mysqladmin -uroot -p'123456' -S /usr/local/mysql/tmp/mysql.sock version
+mysqladmin  Ver 8.42 Distrib 5.1.62, for unknown-linux-gnu on x86_64
+Copyright (c) 2000, 2011, Oracle and/or its affiliates. All rights reserved.
+
+Oracle is a registered trademark of Oracle Corporation and/or its
+affiliates. Other names may be trademarks of their respective
+owners.
+
+Server version		5.1.62
+Protocol version	10
+Connection		Localhost via UNIX socket
+UNIX socket		/usr/local/mysql/tmp/mysql.sock
+Uptime:			49 min 30 sec
+
+Threads: 1  Questions: 263  Slow queries: 0  Opens: 51  Flush tables: 1  Open tables: 4  Queries per second avg: 0.88
+[root@test ~]# 
+
+解决perl编译可能出现问题
+[root@test ~]# echo 'export LC_ALL=C'>>/etc/profile
+You have new mail in /var/spool/mail/root
+[root@test ~]# source /etc/profile
+oldboy
+[root@test ~]# echo $PATH
+/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin:/usr/local/sersync/bin:/root/bin:/usr/local/mysql/bin:/root/bin:/usr/local/mysql/bin
+[root@test ~]# tail -1 /etc/profile
+export LC_ALL=C
+
+
+提升缓存性能 ，降低php程序解析时对服务器的性能开销，还有对php的优化作用，加速其执行效率
+使php程序代码执行效率能提高1-10倍
+下载aAccelerator0.9.6.1
+cd /home/zhangcai/tools/
+wget https://sourceforge.net/projects/eaccelerator/files/latest/download
+cd eaccelerator-0.9.6.1
+拓展php模块
+[root@test eaccelerator-0.9.6.1]# /usr/local/php5.3.10/bin/phpize 
+Configuring for:
+PHP Api Version:         20090626
+Zend Module Api No:      20090626
+Zend Extension Api No:   220090626
+./configure --enable-eaccelerator=shared --with-php-config=/usr/local/php5.3.10/bin/php-config 
+make
+make install
+Installing shared extensions:     /usr/local/php5.3.10/lib/php/extensions/no-debug-non-zts-20090626/
+[root@test eaccelerator-0.9.6.1]# cd  /usr/local/php5.3.10/lib/php/extensions/no-debug-non-zts-20090626/
+[root@test no-debug-non-zts-20090626]# ll
+total 408
+-rwxr-xr-x 1 root root 417141 May  3 15:14 eaccelerator.so
+
+安装Memcache，高性能的分布式的内存对象缓存系统，通过在内存里维护一个统一的巨大的hash表，
+它能够用来存储各种格式的数据，包括图像、视频、文件以及数据库检索的结果等。
+简单地说就是将数据调用到内存中，然后从内存中读取，从而大大提高读取速度。
+
+memcache分为服务端软件memcached1.4.3和客户端插件memcache2.2.5
+我们安装客户端插件memcache2.2.5在php中
+
+[root@test tools]# wget https://pecl.php.net/get/memcache-2.2.3.tgz
+[root@test tools]# tar zxf memcache-2.2.3.tgz 
+[root@test tools]# cd memcache-2.2.3
+[root@test memcache-2.2.3]# /usr/local/php5.3.10/bin/phpize 
+Configuring for:
+PHP Api Version:         20090626
+Zend Module Api No:      20090626
+Zend Extension Api No:   220090626
+./configure --with-php-config=/usr/local/php5.3.10/bin/php-config 
+make
+make install
+Installing shared extensions:     /usr/local/php5.3.10/lib/php/extensions/no-debug-non-zts-20090626/
+[root@test memcache-2.2.3]# cd /usr/local/php5.3.10/lib/php/extensions/no-debug-non-zts-20090626/
+[root@test no-debug-non-zts-20090626]# ll
+total 648
+-rwxr-xr-x 1 root root 417141 May  3 15:14 eaccelerator.so
+-rwxr-xr-x 1 root root 242800 May  3 15:31 memcache.so
+
+安装PDO_MYSQL（1.0.2）模块
+PDO_MYSQL为php访问数据库定义了一个轻量级的、一致性的接口，它提供了一个数据访问抽象层
+这样无论使用什么数据库，都可以通过一致的函数执行查询和获取数据
+ /usr/local/php5.3.10/bin/phpize
+./configure --with-php-config=/usr/local/php5.3.10/bin/php-config --with-pdo-mysql=/usr/local/mysql
+make
+[root@test PDO_MYSQL-1.0.2]# make install
+Installing shared extensions:     /usr/local/php5.3.10/lib/php/extensions/no-debug-non-zts-20090626/
+[root@test PDO_MYSQL-1.0.2]# cd  /usr/local/php5.3.10/lib/php/extensions/no-debug-non-zts-20090626/
+[root@test no-debug-non-zts-20090626]# ls
+eaccelerator.so  memcache.so  pdo_mysql.so
+
+
+ImageMagick图像软件
+强大的免费工具集和开发包，读写和处理89种格式的图片文件，报错TIFF、JPEG、GIF、PNG、PDF及PhotoCD等格式
+wget https://www.imagemagick.org/download/ImageMagick.tar.gz
+tar zxf ImageMagick.tar.gz 
+cd ImageMagick-7.0.5-5/
+./configure
+make
+make install
+安装imagick php插件，调用ImageMagick的API进行图片的修改、压缩等功能
+wget http://pecl.php.net/get/imagick-2.3.0.tgz
+tar zxf imagick-2.3.0.tgz 
+cd imagick-2.3.0
+/usr/local/php5.3.10/bin/phpize
+./configure --with-php-config=/usr/local/php5.3.10/bin/php-config 
+make
+make install
+Installing shared extensions:     /usr/local/php5.3.10/lib/php/extensions/no-debug-non-zts-20090626/
+[root@test imagick-2.3.0]# cd /usr/local/php5.3.10/lib/php/extensions/no-debug-non-zts-20090626/
+[root@test no-debug-non-zts-20090626]# ls
+eaccelerator.so  imagick.so  memcache.so  pdo_mysql.so
+
+
+一些为不严谨的报错，问题原因未找到
+出现报错
+checking for MagickWand.h header file... configure: error: Cannot locate header file MagickWand.h
+是ImageMagick version is at least 6.2.4
+原因是ImageMagick-7.0.5-5这个版本的/usr/local/include/ImageMagick/目录下的wand文件夹不存在
+也许版本变迁之后变成了MagickWand，从config.m4文件55行左右
+首先创建软链接确保/usr/local/include/ImageMagick ，目录存在
+ ln -s /usr/local/include/ImageMagick-7/ /usr/local/include/ImageMagick 
+
+AC_MSG_RESULT(found in $WAND_DIR/include/wand/magick-wand.h)中可以看出来，
+在/usr/local/include/ImageMagick/下执行即可创建wand文件夹
+cp -r MagickWand wand
+
+https://www.imagemagick.org/download/releases/ImageMagick-6.5.4-10.tar.xz
+https://www.imagemagick.org/download/releases/ImageMagick-6.5.4-10.tar.xz.asc
+
+安装imagick配置时报错
+checking ImageMagick MagickWand API configuration program... configure: error: not found. Please provide a path to MagickWand-config or Wand-config program.
+原因是缺少库文件
+yum install ImageMagick-devel解决
+
+zend缓存和加速拓展模块
+Zend Optimizer通过优化代码来提高phpv5.1-v5.2应用程序的运行速度。原理是在哪些被最终执行之前由运行编译器
+Run-Time Compiler产生的代码进行优化。一般情况下使用了Zend Optimizer的php程序比不使用的
+要快40%-100%，这意味着访问者可以更快地浏览网页，从而完成更多的失误，创造更好的客户满意度
+更快的响应也意味着节省硬件资源在，增强网站提供的服务。Zend Optimizer能够给php用户带来很多益处，
+特别是那些运营网站的人。快速运行php程序可以显著降低服务器的CPU负载，并可以减少一半的反应时间，
+也就是从访问者点击链接到服务器开始读取页面之间的时间。
+
+php5.2及以前使用ZendOptimizer3.3.3
+wget http://downloads.zend.com/optimizer/3.3.3/ZendOptimizer-3.3.3-linux-glibc23-x86_64.tar.gz
+tar解压
+cd 
+./install.sh
+1）遇到第一个菜单直接[Enter]
+2）第二个菜单还是选择yes然后Enter
+3）第三个是配置你的软件目录(/usr/local/zend)，也可以直接Enter
+4）第四个是你的php.ini所在的目录(如/application/php/lib)然后Enter
+5）之后会出现询问是否配置apache web服务器，选择yes
+6）接着会让你输入web服务启动的路径（如/application/apache/bin/apachectl），然后输入Enter#注意是启动命令所在的目录
+7）之后就开始安装了，出现第一个画面和第二个画面直接Enter
+8）第三个画面是问是否启动web服务，我们也Enter
+这样呢就配置好了
+/usr/local/php/bin/php -v得到下面结果说明配置正确
+PHP 5.2.6（cli）（built 。。。）
+。。。
+with Zend Optimizerv3.3.3.。。
+
+生效条件：Apache不可以是worker模式，在安装编译apache的时候，不加--with-mpm=worker即可
+ httpd -V可以查看mpm
+[root@test ~]# httpd -V
+Server version: Apache/2.2.15 (Unix)
+Server built:   Jan 12 2017 17:09:39
+Server's Module Magic Number: 20051115:25
+Server loaded:  APR 1.3.9, APR-Util 1.3.9
+Compiled using: APR 1.3.9, APR-Util 1.3.9
+Architecture:   64-bit
+Server MPM:     Prefork
+  threaded:     no
+    forked:     yes (variable process count)
+第一步下载
+wget http://downloads.zend.com/optimizer/3.3.9/ZendOptimizer-3.3.9-linux-glibc23-x86_64.tar.gz
+第二步解压
+tar zxf ZendOptimizer-3.3.9-linux-glibc23-x86_64.tar.gz
+mv ZendOptimizer-3.3.9-linux-glibc23-x86_64 /usr/local/Zend   
+第三步编辑配置php.ini
+cp  /usr/local/php5.3.10/lib/php.ini /usr/local/php5.3.10/lib/php.ini.bak
+vim /usr/local/php5.3.10/lib/php.ini 
+添加如下行
+[Zend]
+zend_optimizer.optimization_level=1023
+zend_optimizer.encoder_loader=1
+zend_extension=/usr/local/Zend/data/5_2_x_comp/ZendOptimizer.so
+第四步重启apache
+apachectl graceful
+第五步检测生效
+[root@test tools]# /usr/local/php5.3.10/bin/php -v
+Zend Optimizer requires Zend Engine API version 220060519.
+The Zend Engine API version 220090626 which is installed, is newer.
+Contact Zend Technologies at http://www.zend.com/ for a later version of Zend Optimizer.
+
+PHP 5.3.10 (cli) (built: May  2 2017 17:17:36) 
+Copyright (c) 1997-2012 The PHP Group
+Zend Engine v2.3.0, Copyright (c) 1998-2012 Zend Technologies
+
+Zend Optimizer是针对php5.2及以前的版本，对php5.3不适用
+
+其他能适配php5.3的版本再去找资料
+
+
+xcache缓存加速拓展模块
+XCache是又快又稳定的PHP opcode缓存器，经过良好的测试并在大流量/高负载的生产机器上稳定运行，
+经过在Linux上测试并支持所有PHP分支的最新发布版本，如PHP_4_3 PHP_4_4 PHP_5_0 PHP_5_1 PHP_5_2 
+HEAD(6.x)，并支持线程安全/windows。与同类opcode缓存器相比更胜一筹，比如能够快速跟进PHP版本。
+Xcache两个特点：
+将php代码进行编译（表现类似.NET和JAVA的编译，内部机制不同），这样可以不用重复读取PHP文件，加速
+整个程序的运行效率；
+可以缓存数据到内存中，直接可以方便调用，例如你的一些不会经常改动的数据，只用一次从数据库读取出来后
+保存到Xcache中，就不用再去使用数据库了（理想环境）。
+安装
+wget https://xcache.lighttpd.net/pub/Releases/1.3.2/xcache-1.3.2.tar.bz2
+[root@test tools]# tar jxf xcache-1.3.2.tar.bz2 
+[root@test tools]# cd xcache-1.3.2
+[root@test xcache-1.3.2]# /usr/local/php5.3.10/bin/phpize 
+Configuring for:
+PHP Api Version:         20090626
+Zend Module Api No:      20090626
+Zend Extension Api No:   220090626
+./configure --enable-xcache --with-php-config=/usr/local/php5.3.10/bin/php-config 
+安装xcache 时报错configure: error: invalid value of canonical build原因是--with-php-config=/usr/local/php5.3.10/bin/php-config 
+“=”后面多了个空格
+make && make install
+
+Installing shared extensions:     /usr/local/php5.3.10/lib/php/extensions/no-debug-non-zts-20090626/
+[root@test xcache-1.3.2]# ll /usr/local/php5.3.10/lib/php/extensions/no-debug-non-zts-20090626/
+total 2320
+-rwxr-xr-x 1 root root  417141 May  3 15:14 eaccelerator.so
+-rwxr-xr-x 1 root root 1072529 May  3 20:43 imagick.so
+-rwxr-xr-x 1 root root  242800 May  3 15:31 memcache.so
+-rwxr-xr-x 1 root root  157300 May  3 15:41 pdo_mysql.so
+-rwxr-xr-x 1 root root  475975 May  4 17:01 xcache.so
+
+配置php拓展插件模块
+vim /usr/local/php5.3.10/lib/php.ini
+将; extension_dir = "./"改成
+extension_dir = "/usr/local/php5.3.10/lib/php/extensions/no-debug-non-zts-20090626/"
+或者直接使用
+sed -i 's#; extension_dir = "./"#extension_dir = "/usr/local/php5.3.10/lib/php/extensions/no-debug-non-zts-20090626/"#g'  /usr/local/php5.3.10/lib/php.ini
+操作完查看
+grep extension_dir /usr/local/php5.3.10/lib/php.ini
+
+
+添加以下内容到php.ini尾行
+extension = memcache.so
+extension = pdo_mysql.so
+extension = imagick.so
+或者cat >> /usr/local/php5.3.10/lib/php.ini<<EOF
+;--cache ext start by zhangcai 2017-05-04--
+extension = memcache.so
+extension = pdo_mysql.so
+extension = imagick.so
+;--cache ext end by zhangcai 2017-05-04--
+EOF
+
+操作完查看
+tail -5 /usr/local/php5.3.10/lib/php.ini
+
+
+配置eAccelerator插件
+[root@test data]# mkdir -p /tmp/eaccelerator
+[root@test data]# chown -R apache.apache /tmp/eaccelerator/
+[root@test data]# egrep "User|Group" /etc/httpd/conf/httpd.conf #确认上面的用户就是apache配置文件中对应的用户
+
+cat >> /usr/local/php5.3.10/lib/php.ini<<EOF
+;added start by zhangcai on 20170504
+[eaccelerator]
+extension = eaccelerator.so
+eaccelerator.shm_size="64"
+eaccelerator.cache_dir=" /tmp/eaccelerator" 
+eaccelerator.enable="1" 
+eaccelerator.optimizer="1" 
+eaccelerator.check_mitime="1" 
+eaccelerator.debug="0" 
+eaccelerator.filter="" 
+eaccelerator.shm_max="0"
+eaccelerator.shm_ttl="3600" 
+eaccelerator.shm_prune_period="3600" 
+eaccelerator.shm_only="0" 
+eaccelerator.compress="1" 
+eaccelerator.compress_level="9" 
+;added end by zhangcai on 20170504
+EOF
+
+查看添加情况
+tail -20 /usr/local/php5.3.10/lib/php.ini
+如果有zend那么eaccelerator要放在zend的内容配置前，否则会有冲突
+
+因为zendOptimizer不兼容php5.3所以此处未配置zend，如果兼容的话，配置如下
+[Zend]
+zend_extension_manager.optimizer=/user/local/Zend/lib/Optimizer-3.3.3
+zend_extension_manager.optimizer_ts=/user/local/Zend/lib/Optimizer_TS-3.3.3
+zend_optimizer.version=3.3.3
+zend_extension=/user/local/Zend/lib/ZendExtensionManager.so
+zend_extension_ts=/user/local/Zend/lib/ZendExtensionManager_TS.so
+
+确认模块安装情况
+[root@test xcache-1.3.2]# /usr/local/php5.3.10/bin/php -v
+PHP 5.3.10 (cli) (built: May  2 2017 17:17:36) 
+Copyright (c) 1997-2012 The PHP Group
+Zend Engine v2.3.0, Copyright (c) 1998-2012 Zend Technologies
+    with eAccelerator v0.9.6.1, Copyright (c) 2004-2010 eAccelerator, by eAccelerator
+
+将eAccelerator安装目录中的control.php拷贝到站点目录，在网址中访问，输入账户名和密码admin / eAccelerator
+得到页面信息
+http://192.168.31.67/control.php?sec=0
+
+xache
+cat xcache.ini >>/usr/local/php5.3.10/lib/php.ini
+然后去php.ini中修改
+首先加；注释掉zend拓展的两条，将extension=xcache.so取消注释
+下面调整参数为
+xcache.size=128M
+xcaxhe.count=2
+xcache.ttl=86400
+xcache.gc_interval=3600
+xcache.var_size=0
+
+修改后
+[root@test xcache-1.3.2]# /usr/local/php5.3.10/bin/php -v 
+PHP Warning:  Cannot load module 'XCache' because conflicting module 'eAccelerator' is already loaded in Unknown on line 0
+PHP 5.3.10 (cli) (built: May  2 2017 17:17:36) 
+Copyright (c) 1997-2012 The PHP Group
+Zend Engine v2.3.0, Copyright (c) 1998-2012 Zend Technologies
+    with eAccelerator v0.9.6.1, Copyright (c) 2004-2010 eAccelerator, by eAccelerator
+
+有人说eacc模块和xcache不能共用，其实不是这样的，把xcache模块调到前面或者把eacc模块配置调到后面去
+
+修改后
+[root@test xcache-1.3.2]# vim /usr/local/php5.3.10/lib/php.ini
+[root@test xcache-1.3.2]# /usr/local/php5.3.10/bin/php -v
+PHP 5.3.10 (cli) (built: May  2 2017 17:17:36) 
+Copyright (c) 1997-2012 The PHP Group
+Zend Engine v2.3.0, Copyright (c) 1998-2012 Zend Technologies
+    with eAccelerator v0.9.6.1, Copyright (c) 2004-2010 eAccelerator, by eAccelerator
+    with XCache v1.3.2, Copyright (c) 2005-2011, by mOo
+Segmentation fault
+
+查看其它安装的插件
+http://192.168.31.67/phpinfo.php
+可以从页面找到相关插件信息
+XCache可以通过重启apache再来看到
+
+生产环境插件安装建议
+功能性插件：如果开发人员没有要求，暂时不考虑安装PDO_MYSQL memcache imagick
+优化性插件：eaccelerator，xcache，ZendOptimizer任意三选二安装，或安装任一种，具体情况看实际
+业务需求，及根据实际测试结果来安装。需要测试结果来说话。

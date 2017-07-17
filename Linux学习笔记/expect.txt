@@ -1,0 +1,44 @@
+expect
+spawn启动进程-->expect期待关键字-->send向进程发送字符-->退出结束
+
+#!/usr/bin/expect
+spawn ssh -p22 root@192.168.1.58 /sbin/ifconfig eth0
+set timeout 60
+expect "*password:"
+send "123456\n"
+expect eof
+exit
+
+
+
+#!/usr/bin/expect
+if { $argc !=3 } {
+ send_user "usage: expect scp-expect.exp file host dir\n"
+ exit
+}
+
+#define var
+set file [lindex $argv 0]
+set host [lindex $argv 1]
+set dir [ lindex $argv 2]
+set password "123456"
+
+#spawn scp /etc/hosts root@192.168.1.58:/etc/hosts
+spawn scp -P22 -p $file root@$host:$dir
+set timeout 60
+expect {
+    -timeout 2
+    "yes/no" {send "yes\r";exp_continue}
+    "*password" {send "$password\r"}
+    timeout {puts "expect connect timeout,pls contact zhangcai."; return}
+}
+expect eof
+
+exit -onexit {
+ send_user "zhangcai say goodbye to you!\n"
+}
+#script usage
+#expect oldboy-2.exp file host dir
+#example
+#./oldboy-2.exp /etc/hosts 192.168.1.58 /etc/hosts
+

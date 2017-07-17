@@ -1,0 +1,15 @@
+<data>
+    <country name="Liechten">
+        <rank updated="yes">2</rank>
+        <year>2008</year>
+        <gdppc>141100</gdppc>
+        <neighbour direction="E" name="Austria" />
+        <neighbour direction="E" name="Switerland" />
+    </country>
+    <country name="Sigpore">
+        <rank updated="yes">5</rank>
+        <year>2011</year>
+        <gdppc>59900</gdppc>
+        <neighbour direction="N" name="Malaysia" />
+    </country>
+    </data>

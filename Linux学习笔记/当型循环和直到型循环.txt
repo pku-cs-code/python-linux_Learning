@@ -1,0 +1,157 @@
+当型循环和直到型循环
+
+while
+do
+done
+
+
+#条件满足就退出
+until
+do 
+
+done 
+
+[root@test ~]# cd /server/scripts/
+[root@test scripts]# sh while.sh 
+^Z
+[1]+  Stopped                 sh while.sh
+[root@test scripts]# bg
+[1]+ sh while.sh &
+[root@test scripts]# jobs
+[1]+  Running                 sh while.sh &
+[root@test scripts]# fg
+sh while.sh
+
+
+^Z
+[1]+  Stopped                 sh while.sh
+
+这样可以认为是守护进程
+
+crontab最多精确到一秒，可以使用while来更快执行
+
+
+ctrl +c停止
+ctrl +z 暂停
+bg当前放在后台执行
+fg 后台放在前面执行，可加数字调出多个任务
+jobs  查看执行的脚本或者任务
+
+nohup加权限，加全路径
+
+[root@test scripts]# nohup /server/scripts/while.sh &
+[1] 15690
+[root@test scripts]# nohup: ignoring input and appending output to `nohup.out'
+
+[root@test scripts]# ps -ef|grep whi
+root     15690 15312  0 23:25 pts/0    00:00:00 /bin/bash /server/scripts/while.sh
+root     15732 15312  0 23:25 pts/0    00:00:00 grep whi
+
+
+
+从1加到1000000
+[root@test scripts]# time sh while-1+100.sh 
+total sum is:500000500000
+
+real	0m7.205s
+user	0m6.943s
+sys	0m0.223s
+[root@test scripts]# ((sum=(1000000+1)*1000000/2));echo $sum        
+500000500000
+[root@test scripts]# time ((sum=(1000000+1)*1000000/2));echo $sum
+
+real	0m0.000s
+user	0m0.000s
+sys	0m0.000s
+500000500000
+
+[root@test scripts]# cat while-1+100.sh 
+#!/bin/bash
+i=1
+sum=0
+while((i<=1000000))
+do
+  ((sum=sum+i))
+   ((i++))
+done
+#echo "sum=$sum"
+[ -n "$sum" ]&&printf "total sum is:$sum\n"
+
+
+计算access.log中访问行的字节数
+
+[root@test scripts]# awk '{print $10}' access.log |grep -v -|tr "\n" "+"|sed 's#52+#52#g'
+11489+2547+2169+244+5252[root@test scripts]
+
+读入的方式
+1
+exec<FILE
+sum=0
+while read line
+do
+cmd
+done
+
+
+2 cat ${FILE_PATH}|while read line
+do 
+cmd
+done
+
+
+3
+while read line
+do
+cmd
+done<${file_path}
+
+很多while循环都能用for循环替代
+
+
+for型循环
+
+1
+for 变量名 in 变量名取值列表
+do
+  cmd
+done
+
+
+2 C语言型for循环结构
+
+for((exp1;exp2;exp3))
+do
+ cmd
+done
+
+ls *.log|awk -F '_finishe' '{print "mv " $0" "$1".log"}'|bash
+
+
+
+for n in `seq -w 10`;do userdel -r oldboy-$n;done
+
+
+
+
+[root@test scripts]# 
+
+[root@test scripts]# cat  add-user.sh    
+#!/bin/bash
+. /etc/init.d/functions
+>/mnt/user.txt
+for n in `seq -w 10`
+do
+#passwd must be defined first
+ passwd=` echo $(date +%t%N)$RANDOM|md5sum|cut -c 2-9`
+ useradd oldboy-$n >/dev/null 2>&1 &&user_status=$? 
+ echo "$passwd"|passwd --stdin oldboy-$n >/dev/null  &&pass_status=$?
+
+if [ $user_status -eq 0 -a $pass_status -eq 0 ];then
+ action "adduser oldboy-$n" /bin/true
+ echo -e "user:\toldboy-$n pass:\t ${passwd}">>/mnt/user.txt
+else
+ action "adduser oldboy-$n" /bin/false
+ echo -e "user:\toldboy-$n pass:\t ${passwd}">>/mnt/failuser.txt
+fi
+done
+

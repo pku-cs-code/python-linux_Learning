@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <input type="button" value="添加" onclick="AddContent();"/>
+    <div onclick="func();">
+    </div>
+    <div>
+        <ul>
+            <li>1</li>
+            <li>2</li>
+            <li>3</li>
+            <li>4</li>
+            <li>5</li>
+            <li>6</li>
+            <li>7</li>
+            <li>8</li>
+            <li>9</li>
+
+        </ul>
+    </div>
+        <script type="text/javascript" src="jquery-2.2.4.js"> </script>
+
+    <script>
+        function AddContent() {
+            $('ul').append('<li>10</li>');
+            $('li:last').click(function(){
+                //为所有的li绑定一个事件
+                var temp = $(this).text();
+                alert(temp);});
+
+        }
+        //window.xxc
+        function func() {}
+            $('li').click(function () {
+                //为所有的li绑定一个事件
+                var temp = $(this).text();
+                alert(temp);
+            })
+        //当前文档准备就绪就执行。以下两种方式是一样的
+        $(document).ready(function () {
+           //当前文档结构准备好了，但是内容还没有。绑定事件
+
+        });
+        $(function () {
+            //委托绑定事件
+            //bind和上面的性质一样，只有delegata不一样
+            /*$('li').bind('click',function () {
+                var temp = $(this).text();
+                alert(temp);
+            })*/
+            //$('li:last').unbind('click');//解除绑定，类似还有undelegate
+
+            $('ul').delegate('li','click',function () {
+                var temp = $(this).text();
+                alert(temp);
+
+            });
+        })
+
+    </script>
+</body>
+</html>

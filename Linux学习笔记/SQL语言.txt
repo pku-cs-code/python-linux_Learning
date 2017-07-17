@@ -1,0 +1,6 @@
+SQL语言
+databse数据库
+tables表
+表结构：字段
+
+mysqld_safe --skip-grant-tables &

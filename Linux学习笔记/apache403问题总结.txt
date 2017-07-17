@@ -1,0 +1,29 @@
+apache403问题总结
+403Forbidden禁止访问，服务器拒绝请求
+原因
+1没有对站点目录的权限许可配置，通常是在初始编译安装apache后，更改了默认的站点目录，在apche配置文件中不加
+为什么默认不是403，改了就是403？
+正是因为httpd.conf中包含如下配置才会使默认站点目录访问不会出现403
+<Directory /var/html> 
+  Options Indexes FollowSymLinks
+  AllowOverride None
+  Order allow,deny
+   Allow from all
+</Directory>
+
+  Options -Indexes FollowSymLinks
+Options -Indexes中“-”表示不适用索引的功能
+
+2站点目录下没有首页文件，而apache的配置由禁止了目录浏览，就是提示403错误
+-Indexes不删会有安全问题
+
+apache各参数功能见官方英文文档
+
+3目录权限修改为Deny from 192.168.31.0/24也访问不了
+
+4apache用户没有访问站点目录的权限
+比如chmod 700 /var/html后就访问不了，因为apache用户没有访问站点目录的权限
+给站点目录不要设置权限为apache.apache，要设置为755，chmod 755 -R /var/html
+文件设置为644
+避免用户以apache身份修改文件
+用户上传的目录可以设置成apache权限

@@ -1,0 +1,2 @@
+设置IP地址
+设置静态ip时需要配置好网关，在/etc/sysconfig/network-scripts/ifcfg-eth0 中可以配置，在 /etc/networks 中也可以配置

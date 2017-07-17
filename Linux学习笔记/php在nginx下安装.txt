@@ -1,0 +1,203 @@
+nginx安装php
+首先确认nginx和mysql已经装好
+
+然后安装相关的库
+yum -y install zlib libxml libjpeg freetype libpng gd curl libiconv zlib-devel \
+libxml2-devel libjpeg-devel freetype-devel libpng-devel gd-devel curl-devel libxslt-devel 
+
+或者安装yum groupinstall “x software development”
+
+安装libconv库
+tar zxf libiconv-1.15.tar.gz 
+cd libiconv-1.15
+./configure --prefix=/usr/local/libiconv
+make && make install
+cd ../
+
+除了libconv是必须的外，还有libmcrypt库可以选择性安装，可以预防图片显示不正常，验证码是×
+wget ftp://mcrypt.hellug.gr/pub/crypto/mcrypt/libmcrypt/libmcrypt-2.5.7.tar.gz
+tar zxf libmcrypt-2.5.7.tar.gz 
+cd libmcrypt-2.5.7
+./configure
+make
+make install
+sleep 2
+/sbin/ldoconfig
+cd libltdl/
+./configure --enable-ltdl-install
+make
+make install
+cd ../../
+
+
+安装mhash加密拓展库
+wget https://sourceforge.net/projects/mhash/files/mhash/0.9.9.9/mhash-0.9.9.9.tar.gz
+tar zxf mhash-0.9.9.9.tar.gz 
+cd mhash-0.9.9.9
+#64位
+./configure
+make 
+make install
+sleep 2
+cd ../
+rm -f /usr/lib64/libmcrypt.*
+rm -f /usr/lib64/libmhash*
+# rm -fr /usr/bin/libmcrypt-config
+ln -s /usr/local/lib64/libmcrypt.la /usr/lib64/libmcrypt.la
+ln -s /usr/local/lib64/libmcrypt.so /usr/lib64/libmcrypt.so
+ln -s /usr/local/lib64/libmcrypt.so.4 /usr/lib64/libmcrypt.so.4
+ln -s /usr/local/lib64/libmcrypt.so.4.4.8 /usr/lib64/libmcrypt.so.4.4.8
+ln -s /usr/local/lib64/libmhash.a  /usr/lib/libmhash.a
+ln -s /usr/local/lib64/libmhash.la  /usr/lib64/libmhash.la
+ln -s /usr/local/lib64/libmhash.so /usr/lib64/libmhash.so
+ln -s /usr/local/lib64/libmhash.so.2  /usr/lib64/libmhash.so.2
+ln -s /usr/local/lib64/libmhash.so.2.0.1  /usr/lib64/libmhash.so.2.0.1
+ln -s /usr/local/bin/libmcrypt-config /usr/bin/libmcrypt-config
+
+
+32位
+./configure
+make 
+make install
+sleep 2
+cd ../
+rm -f /usr/lib/libmcrypt.*
+rm -f /usr/lib/libmhash*
+ln -s /usr/local/lib/libmcrypt.la /usr/lib/libmcrypt.la
+ln -s /usr/local/lib/libmcrypt.so /usr/lib/libmcrypt.so
+ln -s /usr/local/lib/libmcrypt.so.4 /usr/lib/libmcrypt.so.4
+ln -s /usr/local/lib/libmcrypt.so.4.4.8 /usr/lib/libmcrypt.so.4.4.8
+ln -s /usr/local/lib/libmhash.a  /usr/lib/libmhash.a
+ln -s /usr/local/lib/libmhash.la  /usr/lib/libmhash.la
+ln -s /usr/local/lib/libmhash.so /usr/lib/libmhash.so
+ln -s /usr/local/lib/libmhash.so.2  /usr/lib/libmhash.so.2
+ln -s /usr/local/lib/libmhash.so.2.0.1  /usr/lib/libmhash.so.2.0.1
+ln -s /usr/local/bin/libmcrypt-config /usr/bin/libmcrypt-config
+
+
+
+
+安装mcrypt加密拓展库
+tar zxf mcrypt-2.6.8.tar.gz 
+cd mcrypt-2.6.8
+/sbin/ldconfig
+./configure
+make
+make install
+cd ../
+sleep 2
+
+
+php5.3.10安装
+wget http://museum.php.net/php5/php-5.3.10.tar.gz
+tar zxf php-5.3.10.tar.gz 
+cd php-5.3.10
+./configure \
+--prefix=/usr/local/php5.3.10 \
+--with-mysql=/usr/local/mysql  \
+--with-iconv=/usr/local/libiconv \
+--with-freetype-dir \
+--with-jpeg-dir \
+--with-png-dir \
+--with-zlib \
+--with-libxml-dir=/usr \
+--enable-xml \
+--disable-rpath \
+--enable-safe-mode \
+--enable-bcmath \
+--enable-shmop \
+--enable-sysvsem \
+--enable-inline-optimiztion \
+--with-curl \
+--with-curlwrappers \
+--enable-mbregex \
+--enable-fpm \
+--enable-mbstring \
+--with-mcrypt \
+--with-gd \
+--enable-gd-natice-ttf \
+--with-openssl \
+--with-mhash \
+--enable-pchtl \
+--enable-sockets \
+--with-xmlrpc \
+--enable-zip \
+--enable-soap \
+--enable-short-tags \
+--enable-zend-multibyte \
+--enable-static \
+--with-xsl \
+--with-fpm-user=nginx \
+--with-fpm-group=nginx \
+--with-libevent-dir \
+--enable-ftp
+sleep 4
+
+#--with-mcrypt=/usr/lib64 \
+
+
+make && make install
+
+编译参数设置出现错误
+checking for LDAP support... yes
+checking for LDAP Cyrus SASL support... yes
+configure: error: Cannot find ldap.h
+去掉对应编译参数
+
+#在configure过程中出现各种问题，第二天再次去另一台重新编译安装时找到了问题
+#原来是--with-iconv=/usr/local/libiconv 有问题。在前面安装libiconv时没有指定路径，在
+#配置编译参数时把路径名user和libiconv写错了，改了之后卸载之前安装了的各种库，然后重新安装
+#这些库
+
+
+#尽量不用yum remove，以后可能出现别的问题
+
+ln -s /usr/local/php5.3.10 /usr/local/php
+#查看php编译参数
+/usr/local/php/bin/php -i |grep configure
+
+cp php.ini-production /usr/local/php/lib/php.ini
+cd /usr/local/php/etc/
+ls
+#pear.conf  php-fpm.conf.default FastCGI配置文件
+#比较5.3.10和5.3.27的 php-fpm.conf.default 文件
+#修改php-fpm.conf文件
+
+#查看语法
+/usr/local/php/sbin/php-fpm -t
+#[11-May-2017 19:02:32] NOTICE: configuration file /usr/local/php5.3.10/etc/php-fpm.conf test is successful
+#与apache相比，php没有进程，但是nginx中php需要用fastcgi进程
+
+#启动FastCGI
+/usr/local/php/sbin/php-fpm 
+ps -ef|grep php
+netstat -lntup|grep php
+#tcp        0      0 127.0.0.1:9000              0.0.0.0:*                   LISTEN      35749/php-fpm 
+
+#修改 nginx配置文件
+#在nginx.conf中添加fastcgi参数
+
+    keepalive_timeout  65;
+    fastcgi_connect_timeout 300;
+    fastcgi_send_timeout 300;
+    fastcgi_read_timeout 300;
+    fastcgi_buffer_size 64k;
+    fastcgi_buffers 4 64k;
+    fastcgi_busy_buffers_size 128k;
+    fastcgi_temp_file_write_size 128k;      
+
+#在ngin-vhost.conf中bbsserver中添加
+ location ~ .*\.(php|php5)?$
+        {  
+           #fastcgi_pass unix:/tmp/php-cgi.sock;
+           fastcgi_pass 127.0.0.1:9000;
+           fastcgi_index index.php;
+           include fastcgi.conf;
+ 
+        }
+
+#配置好好访问http://bbs.etiantian.org/phpinfo.php
+#显示File not found.
+
+# 还需要添加在 location ~ .*\.(php|php5)?$中添加 root html/bbs;
+#如果出现下载文件的情况，那就是php没有安装好

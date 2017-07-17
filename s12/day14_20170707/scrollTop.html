@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        .go-top{
+            position: fixed;
+            right: 0;
+            bottom: 0;
+            width: 100px;
+            height: 100px;
+        }
+        .hide{
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div style="height: 2000px;background-color: #dddddd">顶部
+        <div id="id1" style="height: 200px;background-color: red;overflow: auto"><p>dddd</p>
+         <p>dddd</p>
+         <p>dddd</p>
+         <p>dddd</p>
+         <p>dddd</p>
+         <p>dddd</p>
+         <p>dddd</p>
+
+         <p>dddd</p>
+         <p>dddd</p>
+        </div>
+
+
+    </div>
+    <div class="go-top hide"><a onclick="GoTop();">返回顶部</a></div>
+
+    <script src="jquery-2.2.4.js"> </script>
+    <script>
+        window.onscroll = function () {//每当滚动滑轮一次就执行这个函数
+            //获取当前scrollTop的值
+            var currentTop = $(window).scrollTop();
+            if (currentTop > 100){
+                $('.go-top').removeClass('hide');
+            }else {$('.go-top').addClass('hide');}
+            console.log(123);
+        };
+
+
+        function GoTop() {
+            $(window).scrollTop(0);
+        }
+    </script>
+
+
+</body>
+</html>

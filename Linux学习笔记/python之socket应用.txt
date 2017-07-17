@@ -1,0 +1,76 @@
+python之socket应用
+
+在client和server交互的过程中，如果client已经输入完数据，server端已经接收，
+此时如果停掉client，client中断，但是server会等待直到server重新发送数据才知道client
+已经停掉了才会报错
+如果是server端已经发送完数据，在等待接收的过程中client停掉则server立马会报错
+
+一个客户端同时只能和一个服务端通信
+ 
+
+同一段代码可能在windows下client断开会报异常
+linux下client断开不报异常，server端接收的数据为空，也不会阻塞
+
+
+socket建议recv设置为8k也就是8192
+
+
+socket发送的过程中也可能不够500
+发送的时候有一个缓冲区，conn.send(ack_msg) conn.send(cmd_result)两条代码连续执行则会
+都存在于缓冲区中，会产生连包现象
+ 
+客户端在达到500后统一收，如果一段时间内（超时时间，可能几百毫秒）没有接收到500则停止接收，等待下次接收
+ 
+
+Socket Families地址簇
+socket.AF_UNIX unixt本地进程间通信
+socket.AF_INET  IPV4  默认是这个
+socket.AF_INET6 IPV6
+
+Socket Types
+socket.SOCK_STREAM  for tcp
+socket.SOCK_DGRAM  for udp
+socket.SOCK_RAW        原始套接字，普通的套接字无法处理ICMP、IGMP等网络报文
+                                          SOCK_RAW也可以处理特殊的IPV4报文
+socket.SOCK_RDM      可靠的UDP形式，即保证交付数据报但不保证顺序SOCK_RAW用来提供
+     对原始协议的低级访问，在需要执行某些特殊操作时使用，例如发送ICMP报文
+socket.SOCK_SEQPACKET  基本没人用废弃了
+
+ddos攻击
+在第三次握手的过程client不返回ack，server端就会短时间等待，此时会占用server端资源
+当这样的连接多了会影响server，ddos攻击者可以伪造ip对server进行ddos攻击
+因为server一般不对socket client端进行确认，因为会占用资源影响性能
+防火墙可以设置一些保护方法
+
+Socket犯法
+socket.socket()
+socket.socketpair()
+sk.bind(address)将套接字绑定到一定地址
+sk.listen(backlog)开始监听传入连接，指定可以挂起等待的最大连接数
+sk.setblocking(bool)是否阻塞，默认True。如果设置为False，那么accept和recv一时无数据则报错
+sk.accept()接受连接并返回conn，address
+sk.connect(address)连接到address处的套接字
+sk.connect_ex(address)同上，只不过会有返回值，连接成功返回0，失败时返回编码，如10061
+sk.close()关闭套接字
+sk.recv(bufszie[,flag])接受套接字的数据，数据以字符串的形式返回，bufsize指定最多可接受的数量，flag可以提供有关信息
+sk.recvfrom(bufsize[.flag])与recv类似，但返回值时（data，address），其中data是包含接收数据的字符串，address是套接字地址
+sk.send(string[,flag])将string中的数据发送到连接的套接字，返回值是哟啊发送的字节数量
+	该数量可能小于string的值，即可能未将指定内容全部发送
+sk.sendall(string[,flag])将string中的数据发送到连接的套接字，但在返回之前会发送所有数据
+	成功返回None
+	内部通过递归调用send，将所有内容发送出去
+sendall和send区别，大文件，sendall
+sk.sendto(string[,flag],address)将数据发送到套接字，adress形式是(ip,port)的元组
+	指定远程地址。返回值是   
+	该函数主要用于UDP协议
+sk.settimeout(timeout)设置超时时间
+sk.getpeername()返回连接套接字的远程地址
+sk.getsockame()返回套接字自己的地址，通常是一个元组
+sk.fileno()套接字的文件描述符
+socket.sendfile()发送文件，但目前多数情况下没什么用。新版本出现的功能
+	client有sendfile，但server端没有recvfile
+
+SocketServer
+
+
+

@@ -1,0 +1,149 @@
+shell数组
+
+数组就是相同数据类型的元素按一定顺序排列的集合
+
+可以简化编程
+
+方式1  array=(value1 value2 value3)
+
+取数组的长度
+[root@test scripts]# array=(1 2 3)
+[root@test scripts]# echo ${#array[@]}
+3
+[root@test scripts]# echo ${#array[*]}
+3
+[root@test scripts]# echo ${#array[@]}
+3
+[root@test scripts]# echo ${#array[*]}
+3
+[root@test scripts]# echo ${array[0]}
+1
+[root@test scripts]# echo ${array[2]}
+3
+[root@test scripts]# echo ${array[3]}
+
+[root@test scripts]# echo ${array[*]}
+1 2 3
+[root@test scripts]# echo ${array[@]}
+1 2 3
+[root@test scripts]# array[3]=4
+[root@test scripts]# echo ${array[3]}
+4
+[root@test scripts]# echo ${array[@]}
+1 2 3 4
+
+
+#数组的替换和删除
+[root@test scripts]# array[0]=d0
+[root@test scripts]# echo ${array[@]}
+d0 2 3 4
+[root@test scripts]# echo ${#array[@]}
+4
+[root@test scripts]# unset array[0]
+[root@test scripts]# echo ${#array[@]}
+3
+[root@test scripts]# echo ${array[@]}
+2 3 4
+[root@test scripts]# unset array
+[root@test scripts]# echo ${array[@]}
+
+#从第一个开始取后面的三个
+[root@test scripts]# array=(1 2 3 4 5)
+[root@test scripts]# echo ${array[@]:1:3}
+2 3 4
+#从第三个开始的后面两个
+[root@test scripts]# echo ${array[@]:3:2}
+4 5
+#把5替换成6，临时替换，数组原数组未改变，和sed很像
+[root@test scripts]# echo ${array[@]/5/6}
+1 2 3 4 6
+
+修改数组
+[root@test scripts]# echo ${array[@]/5/"d5"}
+1 2 3 4 d5
+[root@test scripts]# array=(${array[@]/5/6})
+[root@test scripts]# echo ${array[@]}
+1 2 3 4 6
+
+
+#从左边开始最短的替换
+[root@test scripts]# echo ${array1[@]#o}
+ne two three four five
+[root@test scripts]# echo ${array1[@]#fo}
+one two three ur five
+#three没有了
+[root@test scripts]# echo ${array1[@]%t*e}
+one two four five
+[root@test scripts]# echo ${array1[@]%%t*e}
+one two four five
+
+ man array
+
+array=([1]=one [2]=two [3]=three)  key value键值对
+
+#重新定义数组会覆盖原来的数组，单个定义数组元素会替换原来数组元素的值
+
+[root@test ~]# array[1]=one             
+[root@test ~]# echo ${array[@]}
+one one two three
+[root@test ~]# array=([0]=one [2]=two [3]=three)
+[root@test ~]# echo ${array[@]}
+one two three
+
+#declare -a array
+
+#命令定义，最实用
+array=($(ls))
+
+array=(
+  one
+  two
+  three
+
+)
+
+
+[root@test scripts]# cat check-url-array.sh 
+#!/bin/bash
+
+. /etc/init.d/functions
+url_list=(
+www.baidu.com
+http://etiantian.org
+http://oldboy.blog.51cto.com
+http://192.168.31.60
+)
+
+function wait(){
+echo -n "execute cmd after 3 secconds."
+for((i=0;i<3;i++))
+do
+  echo -n ".";sleep 1
+done
+echo "\n"
+}
+
+function check_url(){
+  wait
+  echo "check ulr..."
+  for((i=0;i<${#url_list[@]};i++))
+  do
+    judge=($(curl -I -s  --connect-timeout 5  ${url_list[$i]}|head -1))
+  # echo ${judge[1]} ${judge[2]}
+   if [[ "${judge[1]}" = "200" && "${judge[2]}"=="OK" ]];then
+     action "${url_list[$i]} is successful." /bin/true
+    else
+     action "${url_list[$i]} is failed." /bin/false
+    fi
+#    for((j=0;j<${#judge[@]};j++))
+#      do
+#         echo "${judge[$j]}"
+#      done
+  done
+}
+check_url
+
+
+#取值的时候还可以用httpcode
+#curl -o /dev/null -s -w "%{http_code}" www.baidu.com
+#超时一般设置为10s左右

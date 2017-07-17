@@ -1,0 +1,13 @@
+crond服务
+Linux调度的任务：
+系统自身执行的工作：系统周期性执行的任务
+用户执行的工作：某个用户定期要做的任务
+/etc/cron.deny  不允许执行crontab命令
+/etc/cron.allow  允许执行crontab命令
+/var/spool/cron  所有用户crontab文件存放的目录，以用户名命名
+
+ >/dev/dull 2>&1添加上述命令到不输出到文件的定时任务，可以防止系统
+邮件服务未开而使临时邮件目录inode节点迅速增加
+在做定时脚本时，把输出定向到制定日志中或者/dev/null中
+
+

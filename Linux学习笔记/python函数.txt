@@ -1,0 +1,282 @@
+python函数
+def 定义函数，关键字
+
+第一次测试时是失败，后来把qq邮箱换成发件箱的邮箱，成功了
+换成gmail也成功了，不过是在垃圾箱中
+然后通过网页给qq发邮件，测试是否两个邮件服务器通信有问题，发送
+主题和内容均为test时中间有出现过一次问题，提示系统退信
+后发了很长一段文字就可以了，说明qq邮箱有拦截机制
+在通过网页版正式邮件发给qq后，再次在py中发送通过了，也许是qq将发件人加入了
+白名单
+
+import smtplib
+from email.mime.text import MIMEText
+from email.utils import formataddr
+def mail():
+    ret = True
+    try:
+        msg = MIMEText('邮件内容','plain','utf-8')
+        msg['From'] = formataddr(["张才",'zhangcainginx@163.com'])
+        msg['To'] = formataddr(["张才",'414220021@qq.com'])
+        msg['Subject'] = "主题"
+        server = smtplib.SMTP("smtp.163.com",25)
+        server.login("zhangcainginx@163.com","邮箱密码")
+        server.sendmail('zhangcainginx@163.com',['414220021@qq.com',],msg.as_string())
+        server.quit()
+    except Exception:
+        ret = False
+    return ret
+
+ret = mail()
+if ret:
+    print("发送成功")
+else:
+    print("发送失败")
+
+
+
+如果函数没有return，那么默认返回的是None
+
+def show(**arg):
+    print(arg,type(arg))
+show(12)
+
+带两个*是字典
+调用函数时后面的参数可以不定
+
+def show(*args,**kwargs):
+    print(args,type(args))
+    print(kwargs,type(kwargs))
+
+show(11,22,33,n1=88,)
+
+
+一个*的参数放前面，两个*的参数放后面
+传参数的时候前面和后面的传参对应指定参数类型
+
+
+def show(*args,**kwargs):
+    print(args,type(args))
+    print(kwargs,type(kwargs))
+
+#show(11,22,33,n1=88,)
+l = [11,22,33,]
+d = {'n1':'88','n2':'99'}
+show(l,d)
+show(*l,**d)
+
+
+s1 = "{name} is {acter}"
+d ={'name':'alex','acter':'sb'}
+result = s1.format(**d)
+print(result)
+
+lambda表达式，简单函数的简单表示
+
+func = lambda a:a+1
+#函数自动加了return值
+#创建形式参数a
+#函数内容a+1，结果return
+#lambda表达式是简单函数的表达方式
+
+re = func(99)
+print(re)
+
+
+内置函数
+
+abs
+all	所有的都是真才是真
+	None是假，空字符串，
+	>>> bool("")
+	False
+	>>> bool(" ")
+	True
+	>>> bool([])
+	False
+	>>> bool(())
+	False
+	>>> bool({})
+	False
+	>>> all(["",])
+	False
+any	只要有一个为真就为真
+ascii	类
+bin	二进制
+bool	布尔
+byterarray	转换成字节数组
+	p = bytearray('无配置',encoding='utf-8',)
+	print(p)
+bytes	转成字节
+callable 是否可执行
+	>>> f = lambda x:x+1
+	>>> f(5)
+	6
+	>>> callable(f)
+	True
+	>>> l = []
+	>>> l()
+	Traceback (most recent call last):
+	  File "<stdin>", line 1, in <module>
+	TypeError: 'list' object is not callable
+	>>> callable(l)
+	False
+chr	把数字转成ascii
+ord	把ascii码转成数字
+	>>> ord('A')
+	65
+	>>> ord('a')
+	97
+	>>> chr(99)
+	'c'
+	>>> chr(97)
+	'a'
+classmethod	类方法
+compile	编译
+complex	复数
+delattr		反射的时候用	
+getatter
+hasatter
+dict		字典
+dir		当前变量所有的key
+divmod	取余数
+enumerate	
+		>>> li = ["laex","eric","lily"]
+		>>> print(li)
+		['laex', 'eric', 'lily']
+		>>> for i in li:print(i)
+		...
+		laex
+		eric
+		lily
+		>>> for i,item in enumerate(li,1):print(i,item)
+		...
+		1 laex
+		2 eric
+		3 lily
+eval	 直接拿出结果，也可以split以*分割后取出
+	>>> eval("6*8")
+	48
+exec
+filter	过滤，满足条件拿出来
+	>>> def func(x):
+	...     if x>33:
+	...             return True
+	...     else:
+	...             return False
+	...
+	>>> li
+	[11, 22, 33, 44]
+	>>> filter(func,li)
+	<filter object at 0x0000022D59ECFF28>
+	>>> new_li = filter(func,li)
+	>>> new_li
+	<filter object at 0x0000022D59ECFEF0>
+	>>> list(new_li)
+	[44]
+map	输入经过一个函数输出，一次性？
+	>>> li =[11,22,33,44]
+	>>> new_li = map(lambda x:x+100,li)
+	>>> l = list(new_li)
+	>>> l
+	[111, 122, 133, 144]
+	>>> for i in new_li:print(i)
+	...
+	>>>
+	>>>
+	>>> def func(x):
+	...     return x+100
+	...
+	>>> new_li = map(func,li)
+	>>> list(new_li)
+	[111, 122, 133, 144]
+
+float	数字或者字符串转成float类型
+format	格式化，类似调用int.__format__
+frozenset	不能增加修改的集合
+globals	当前可用全局变量
+hash	哈希
+help	帮助
+hex	转成16进制
+id
+input
+int
+isinstance
+issubclass
+iter
+len
+list
+locals	局部变量
+max	取到最大值
+min	取到最小值
+memoryview
+next
+oct	转成八进制
+open	打开文件
+w，r，a，
+r	只读模式
+w	只写模式（不可读，不存在即创建，存在则追加内容）
+a	追加模式（可读：不存在则创建，存在则追加内容）
+r+	可读写（可读、可写、可追加）
+w+	写读
+a+	同a
+U表示在读取时，可以将\r \n \r\n自动转成\n(与r和r+模式同使用)
+rU
+r+U
+	seek（指定当前指针位置，参数是字节），tell（定位字节）
+	read在python3是按字符读
+	truncate得到指针前的内容，后面的都去掉，写进源文件中
+
+
+b表示处理二进制文件，linux可忽略，windows要加
+rb
+wb
+ab
+
+
+ord
+pow	幂
+print
+property
+range	拿到一个区间，但没有立即在内存里创建，调用时开辟内存，省内存
+	>>> i = range(0,10)
+	>>> i
+	range(0, 10)
+	>>> for k in i:print(k)
+	...
+	0
+	1
+	2
+	3
+	4
+	5
+	6
+	7
+	8
+	9
+
+repr	调用__repr__，返回给机器看，给人看用str
+reversed	反转
+roundset	四舍五入
+	>>> round(8.4)
+	8
+	>>> round(8.5)
+	8
+	>>>
+	>>> round(8.6)
+	9
+slice
+sort	排序
+staticmethod
+str	字符串类
+sum	求和
+super	父类
+tuple		
+type
+vars	dir返回的的是key，vars返回keys和vlues
+zip  第一个元素和第一个元素结合，类似第二个、第三个……
+	形成新的列表
+
+	
+
+

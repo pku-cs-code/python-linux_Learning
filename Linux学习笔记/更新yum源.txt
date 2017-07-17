@@ -1,0 +1,28 @@
+CentOS5
+更换官方yum源为163源
+cd /etc/yum.repos.d
+/bin/mv CentOS-Base.repo CentOS-Base.repo.ori
+wget  http://mirrors.163.com/.help/CentOS5-Base-163.repo
+mv CentOS5-Base-163.repo CentOS-Base.repo 
+rpm --import /etc/pki/rpm-gpg/RPM-GPG-KEY*
+
+cd /etc/yum.repos.d
+/bin/mv CentOS-Base.repo CentOS-Base.repo.ori
+wget http://mirrors.sohu.com/help/CentOS-Base-sohu.repo
+mv CentOS5-Base-sohu.repo CentOS-Base.repo
+rpm --import /etc/pki/rpm-gpg/RPM-GPG-KEY*
+
+163的源在centos5.8下安装ntp不好使
+
+rpm --import /etc/pki/rpm-gpg/RPM-GPG-KEY*#导入key
+yum upgrade
+
+CentOS6更新yum源
+更新为163源
+cd /etc/yum.repos.d
+/bin/mv CentOS-Base.repo CentOS-Base.repo.ori
+ wget http://mirrors.163.com/.help/CentOS6-Base-163.repo
+mv CentOS6-Base-163.repo CentOS-Base.repo
+rpm --import /etc/pki/rpm-gpg/RPM-GPG-KEY*
+
+

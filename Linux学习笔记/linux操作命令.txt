@@ -1,0 +1,65 @@
+linux操作命令
+env 显示修改过的环境变量
+df  -hiT 查看挂载的磁盘等相关信息，-h是human以人为看得懂的方式显示，会显示多少G，-i是显示节点
+free -m 查看内存信息的 cat /proc/meminfo
+hostname更改主机名及修改配置文件/etc/sysconfig/network永久生效，或者通过setup修改临时和永久均生效（5生效，6不生效）
+file 查看普通文件的文件类型
+ln -s 创建链接文件
+tar zxvf xvf p C --exclude -X j t
+  gzip打包
+  打包：zcvf zcf
+  解包：xvf xf zxvf
+  bzip打包
+  打包：jxvf jcf
+  解包：jxf jxvf
+unzip用于解Windows的zip包，解压rar安装相应linux解压工具
+gzip：学习数据库会用到
+[root@mode zhangcai]# cut -d " " -f1,4 zhangcai.txt 
+My 49000448
+以空格为分割符取1,4列
+
+[root@mode zhangcai]# cut -c 1-6,13-21 zhangcai.txt 
+My qq 00448
+oldboy 49000448
+按字符序号取名称和qq号
+cut -dfc
+cut取文件额一部分，简单应用
+tail -c 也可以
+awk制定多个分隔符
+[root@mode zhangcai]# awk -F '[ ,]' '{print $3" "$7}' zhangcai.txt 
+oldboy is
+以空格、逗号为分隔符提取低3列和第7列，且输出的中间用空格隔开$3" "$7
+[root@mode zhangcai]# awk -F '[ ,]' '{print $3" "$NF}' zhangcai.txt 
+oldboy 49000448
+$NF直接最后一列结果
+[root@mode zhangcai]# wc -l /etc/services 
+10774 /etc/services
+查看文件行数，字节数等的命令
+[root@mode zhangcai]# cat -n /etc/services  |tail -1
+ 10774	iqobject        48619/udp               # iqobject
+[root@mode zhangcai]# sed -n '$=' /etc/services 
+10774
+[root@mode zhangcai]# awk '{print NR}' /etc/services | tail -1
+10774
+NR当前行号
+10774
+[root@mode zhangcai]# grep -n $ /etc/services  | tail -1
+10774:iqobject        48619/udp               # iqobject
+[root@mode zhangcai]# ps -ef | grep ssh | wc -l
+4
+判断一个服务是否活着看进程是否大于1
+ps查看进程信息，-ef或者-aux。-auxw？
+[root@mode zhangcai]# grep -E "3306|1521" /etc/services  --color
+mysql           3306/tcp                        # MySQL
+mysql           3306/udp                        # MySQL
+ncube-lm        1521/tcp                # nCube License Manager
+ncube-lm        1521/udp                # nCube License Manager
+[root@mode zhangcai]# egrep "3306|1521" /etc/services  --color
+mysql           3306/tcp                        # MySQL
+mysql           3306/udp                        # MySQL
+ncube-lm        1521/tcp                # nCube License Manager
+ncube-lm        1521/udp                # nCube License Manager
+
+date
+
+[root@mode zhangcai]# stat zhangcai.txt 

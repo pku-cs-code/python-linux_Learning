@@ -1,0 +1,196 @@
+sersync
+利用inotify和rsync
+inotify监控sersync所在服务器的文件系统的事件变化
+inotify google的openduckkill，都是基于脚本语言编写的
+sersync利用c++编写，会对临时文件和重复的文件操作进行过滤，结合rsync可以减少运行时消耗的本地和网络资源
+sersync已经是二进制文件
+多线程同步
+出错处理机制
+自带crontab功能，只需要在xml配置文件中开启
+自带socket和http的协议拓展，利于二次开发
+
+调用多个rsync线程，等待线程队列的守护线程，线程组守护线程逐个唤醒
+当队列中inotify事件较多的时候会被全部唤醒一起工作，这样设计的目的是同时处理多个inotify时间
+提升服务器的并发性能
+
+
+服务线程的作用
+同步处理失败的文件，再次同步失败的文件会生成rsync_fail_log.sh脚本，记录失败事件
+每个数个小时执行脚本一次，同时清空脚本
+第三个作用是crontab功能
+
+过滤队列的建立是为了过滤短时间产生的重复inotify信息
+
+一台master安装serync，多台slave安装rsync，可以实现数据分发
+
+在主服务器master上只需要有rsync命令即可，在从服务器slave需要进行简单的rsync配置并开启守护进程
+相当于sersync监控本地数据，然后通过rsync推送到rsync server上
+
+下载serync
+wget https://raw.githubusercontent.com/orangle/sersync/master/release/sersync2.5.4_64bit_binary_stable_final.tar.gz --no-check-certificate
+
+将目录解压后
+ <sersync>
+ 24         <localpath watch="/data0/www/www">
+ 25             <remote ip="192.168.1.58" name="www"/>
+ 26             <remote ip="192.168.1.59" name="www"/>
+ 27             <!--<remote ip="192.168.8.39" name="tongbu"/>-->
+ 28             <!--<remote ip="192.168.8.40" name="tongbu"/>-->
+ 29         </localpath>
+ 30         <localpath watch="/data0/www/bbs/">
+ 31             <remote ip="192.168.1.58" name="bbs"/>
+ 32             <remote ip="192.168.1.59" name="bbs"/>
+ 33             <!--<remote ip="192.168.8.39" name="tongbu"/>-->
+ 34             <!--<remote ip="192.168.8.40" name="tongbu"/>-->
+ 35         </localpath>
+ 36         <localpath watch="/data0/www/blog/">
+ 37             <remote ip="192.168.1.58" name="blog"/>
+ 38             <remote ip="192.168.1.58" name="blog"/>
+ 39             <!--<remote ip="192.168.8.39" name="tongbu"/>-->
+ 40             <!--<remote ip="192.168.8.40" name="tongbu"/>-->
+ 41         </localpath>
+
+[root@test bin]# mv sersync2 sersync
+[root@test sersync]# echo 'export PATH=$PATH:/usr/local/sersync/bin' >> /etc/profile
+[root@test sersync]# tail -1 /etc/profile
+export PATH=$PATH:/usr/local/sersync/bin
+[root@test sersync]# source /etc/profile
+[root@test bin]# which sersync 
+/usr/local/sersync/bin/sersync
+[root@test bin]# sersync  -r -d -o /usr/local/sersync/conf/confxml.xml
+set the system param
+execute：echo 50000000 > /proc/sys/fs/inotify/max_user_watches
+execute：echo 327679 > /proc/sys/fs/inotify/max_queued_events
+parse the command param
+option: -r 	rsync all the local files to the remote servers before the sersync work
+option: -d 	run as a daemon
+option: -o 	config xml name：  /usr/local/sersync/conf/confxml.xml
+daemon thread num: 10
+parse xml config file
+host ip : localhost	host port: 8008
+daemon start，sersync run behind the console 
+use rsync password-file :
+user is	rsync_backup
+passwordfile is 	/etc/rsyncmaster.passwd
+config xml parse success
+please set /etc/rsyncd.conf max connections=0 Manually
+sersync working thread 12  = 1(primary thread) + 1(fail retry thread) + 10(daemon sub threads) 
+Max threads numbers is: 32 = 12(Thread pool nums) + 20(Sub threads)
+please according your cpu ，use -n param to adjust the cpu rate
+------------------------------------------
+rsync the directory recursivly to the remote servers once
+working please wait...
+execute command: cd /data0/www/www && rsync -artuz -R --delete ./  --timeout=100 rsync_backup@192.168.1.58::www --password-file=/etc/rsyncmaster.passwd >/dev/null 2>&1 
+[root@test bin]# run the sersync: 
+watch path is: /data0/www/www
+
+You have mail in /var/spool/mail/root
+[root@test bin]# ps -ef | grep sersync
+root     27627     1  0 07:08 ?        00:00:00 sersync -r -d -o /usr/local/sersync/conf/confxml.xml
+root     27765  1453  0 07:15 pts/0    00:00:00 grep sersync
+
+sersync -r -d -o /usr/local/sersync/conf/*.conf
+-r是全部重新开始同步，对于初次同步可以使用，但是一般时不用
+
+一般来说千兆网卡100k的文件每秒40-50个
+上述配置只会生效一个，可以将不同的配置文件分别更改后创建不同的配置文件
+然后再分别启动对应不同的配置文件，会有不同的同步线程存在
+像我们这种情况可以直接对更高一级目录进行监控
+
+sersync配置文件
+debug打印inotify信息
+filter默认过滤系统文件.等，可以自定义需要过滤的文件
+rsync也有过滤，但sersync的exclude被过滤的路径不会加入监控，大大减少rsync的通讯量
+默认creatfile为false，提高性能，减少rsync通讯
+要使得creatFolder保持为true，如果为false则不会对产生的目录进行监控，也不会对子目录进行监控
+除非特殊需要
+
+serync的原理是监控各个事件，然后通过rsync同步
+name为rsync中中括号模块的名称
+rsync也可以用ssh通道进行同步
+
+插件支持command refresh CDN socket http发生文件改变不同步只调用插件
+目前http因为兼容原因去除，以后会加入
+serync -d -m plugin可以直接调用插件
+
+并发：一段时间间隔多个事件同时发生，宏观上看是在同时进行，微观上在分时地交替进行
+压力工具webbench
+
+sersync
+每秒10个10-50k的文件无任何延迟
+每秒20个10-50k的文件几乎无延迟
+每秒30个10-50k的文件几乎无延迟
+每秒40个10-50k的文件几乎无延迟
+每秒50个10-50k的文件出现延迟小于1秒
+每秒60个10-50k的文件出现延迟小于1秒
+每秒70个10-50k的文件出现延迟小于1秒
+每秒80个10-50k的文件出现延迟1秒左右
+每秒90个10-50k的文件出现延迟2秒左右，开始不同步，延迟较大 
+每秒100个10-50k的文件出现延迟比较大
+
+注：其实按累计文件来就算延迟是不科学的，需要server端每秒创建的文件一直延迟
+
+同步的时候rsync server几乎不消耗cpu，但sersync消耗大
+
+tree | wc -l
+
+
+备份案例实践
+服务端
+[root@test ~]# vim /etc/rsyncd.conf
+You have mail in /var/spool/mail/root
+[root@test ~]# useradd rsync -s /sbin/nologin 
+[root@test ~]# vim /etc/rsyncd.conf
+[root@test ~]# mkdir /backup/
+[root@test ~]# chown -R rsync /backup/
+[root@test ~]# cd /backup/
+
+
+在客户端上
+[root@localhost cron]# mkdir /var/html/www/oldboy_site -p
+[root@localhost cron]# mkdir /app/logs
+[root@localhost cron]# mkdir /app/logs/oldboy_site_log -p
+[root@localhost cron]# ll
+total 0
+[root@localhost cron]# cd /var/html/www/ 
+[root@localhost www]# tar zcvf oldboy_site_$(date +%F).tar.gz ./oldboy_site
+./oldboy_site/
+[root@localhost www]# ll
+total 8
+drwxr-xr-x. 2 root root 4096 Apr 20 03:00 oldboy_site
+-rw-r--r--. 1 root root  121 Apr 20 03:02 oldboy_site_2017-04-20.tar.gz
+[root@localhost www]# tar zcvf /backup/oldboy_site_$(date +%F).tar.gz ./oldboy_site
+./oldboy_site/
+[root@localhost www]# ll /backup/
+total 4
+-rw-r--r--. 1 root root 121 Apr 20 03:04 oldboy_site_2017-04-20.tar.gz
+
+g/backcup/s//backup\/\$ip/g
+
+脚本
+#bak site
+ip=`grep IPADDR /etc/sysconfig/network-scripts/ifcfg-eth0 | cut -d  = -f2`
+mkdir /backup/$ip
+
+cd /var/html/ && tar zcf /backup/$ip/www_$(date +%F).tar.gz ./www
+cd /app/ && tar zcf /backup/$ip/logs_$(date +%F).tar.gz ./logs
+
+#bak sysconf
+cd / && tar zcf /backup/$ip/etc_$(date +%F).tar.gz ./etc
+cd /server && tar zcf /backup/$ip/scripts_$(date +%F).tar.gz ./scripts
+/bin/cp /var/spool/cron/root /backup/$ip/
+
+#rsync data to backserver
+cd /backup/$ip && rsync -avzP ./ rsync_backup/$ip@192.168.1.60::backup/$ip --password-file=/etc/rsyncd.passwd >/dev/null 2>&1
+
+#del file 7 days ago
+find /backup/$ip/ -type f -name "*.tar.gz" -mtime +7 | xargs rm -f
+
+
+增量推送占带宽，会占一半
+本地打包占用资源
+文件太小，总量大，打包
+文件太大，数量太大，推送
+
+web-------->backup
+推送和拉取都是针对web而言的，服务端在backupserver

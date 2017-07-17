@@ -1,0 +1,69 @@
+trap跳板机
+ trap "" 1 2 3 20 15
+trap "" HUP INI QUIT TERM TSTP
+
+[root@test scripts]# cat touch-file.sh 
+#!/bin/bash
+
+trap "find /tmp -type f -name "oldboy_*" -mmin +1|xargs rm -f && exit" INT
+while true
+do
+ touch /tmp/oldboy_$(date +%F-%H-%M-%S)
+ usleep 5000
+done
+
+
+
+
+
+
+[root@test scripts]# cat tiaoban.sh 
+#!/bin/bash
+
+function trapper(){
+trap ':' INT EXIT TSTP TERM HUP
+}
+
+while :
+do
+   trapper
+      clear
+      cat <<menu
+       1)web a
+       2)web b
+       3)exit
+menu
+	     read -p "please select:" num
+             case $num in
+             1)
+              ssh 192.168.31.63
+              ;;
+             2)
+              ssh 192.168.31.58
+              ;;
+             3|*)
+              exit
+              ;;
+             esac 
+done
+
+
+vim /etc/profile.d/tiaoban.sh
+[root@test ~]# cat /etc/profile.d/tiaoban.sh
+#!/bin/bash
+[ "$UID" -ne 0 ]&& . /server/scripts/tiaoban.sh
+
+chmod +x /etc/profile.d/tiaoban.sh
+
+su - zhangcai
+       1)web a
+       2)web b
+       3)exit
+please select:^C^Z
+
+在普通用户下登录会显示三个选项，同时按住ctrl+c和ctrl+z没有反应，按3退出
+
+
+[root@test scripts]# su - zhangcai
+-bash-4.1$ ssh-keygen -t rsa 
+ssh-copy-id -i .ssh/id_rsa.pub '-p 22 root@192.168.31.58'

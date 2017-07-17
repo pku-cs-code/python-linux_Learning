@@ -1,0 +1,92 @@
+老男孩培训出品
+
+提示：如果centos6.4 则需要如下操作：
+yum install zlib libxml libjpeg freetype libpng gd curl libiconv zlib-devel libxml2-devel libjpeg-devel freetype-devel libpng-devel gd-devel curl-devel –y
+rpm -qa zlib-devel libxml2-devel libjpeg-devel freetype-devel libpng-devel gd-devel
+
+7.4.3安装libiconv库
+由于这个安装非常简单，就不一一讲解了。大家可以按照命令复制执行即可。
+mkdir -p /home/oldboy/tools
+cd /home/oldboy/tools
+wget http://ftp.gnu.org/pub/gnu/libiconv/libiconv-1.14.tar.gz
+tar zxf libiconv-1.14.tar.gz
+cd libiconv-1.14
+./configure --prefix=/usr/local/libiconv
+make
+make install
+cd ../
+#技巧（tips）:* 可以复制多行命令一次输入执行。
+相关地址：http://www.gnu.org/software/libiconv/ （获得软件包途径打开g.cn，输入download libiconv）
+#老男孩老师曾经用的上一个稳定版为libiconv-1.10.tar.gz
+7.4.4安装libmcrypt库
+This is a modular version of libmcrypt, that uses dynamic loading. It is usefull where adding/removing of algorithms at run-time is necessary. Limbcrypt-nm is no longer supported#/developed. http://mcrypt.hellug.gr/lib/
+wget "http://downloads.sourceforge.net/mcrypt/libmcrypt-2.5.8.tar.gz?modtime=1171868460&big_mirror=0"
+tar zxf libmcrypt-2.5.8.tar.gz 
+cd libmcrypt-2.5.8
+./configure
+make
+make install
+sleep 2
+/sbin/ldconfig
+cd libltdl/
+./configure --enable-ltdl-install
+make
+make install
+cd ../../
+7.4.5安装mhash加密扩展库
+Mhash是基于离散数学原理的不可逆向的php加密方式扩展库，其在默认情况下不开启。mhash的可以用于创建校验数值，消息摘要，消息认证码，以及无需原文的关键信息保存（如密码）等。[1]
+Mhash为PHP提供了多种哈希算法，如MD5，SHA1，GOST 等。你可以通过MHASH_hashname（）来查看支持的算法有哪些。
+注意问题：
+1该扩展不能提供最新的哈希算法。
+2.该扩展结果原则上运算不可逆。
+参考资料：http://baike.baidu.com/view/9549224.htm
+wget "http://downloads.sourceforge.net/mhash/mhash-0.9.9.9.tar.gz?modtime=1175740843&big_mirror=0"
+tar zxf mhash-0.9.9.9.tar.gz
+cd mhash-0.9.9.9/
+./configure
+make
+make install
+sleep 2
+cd ../
+rm -f /usr/lib/libmcrypt.*
+rm -f /usr/lib/libmhash*
+ln -s /usr/local/lib/libmcrypt.la /usr/lib/libmcrypt.la
+ln -s /usr/local/lib/libmcrypt.so /usr/lib/libmcrypt.so
+ln -s /usr/local/lib/libmcrypt.so.4 /usr/lib/libmcrypt.so.4
+ln -s /usr/local/lib/libmcrypt.so.4.4.8 /usr/lib/libmcrypt.so.4.4.8
+ln -s /usr/local/lib/libmhash.a /usr/lib/libmhash.a
+ln -s /usr/local/lib/libmhash.la /usr/lib/libmhash.la
+ln -s /usr/local/lib/libmhash.so /usr/lib/libmhash.so
+ln -s /usr/local/lib/libmhash.so.2 /usr/lib/libmhash.so.2
+ln -s /usr/local/lib/libmhash.so.2.0.1 /usr/lib/libmhash.so.2.0.1
+ln -s /usr/local/bin/libmcrypt-config /usr/bin/libmcrypt-config
+
+64位：
+rm -f /usr/lib64/libmcrypt.*
+rm -f /usr/lib64/libmhash*
+ln -s /usr/local/lib64/libmcrypt.la /usr/lib64/libmcrypt.la
+ln -s /usr/local/lib64/libmcrypt.so /usr/lib64/libmcrypt.so
+ln -s /usr/local/lib64/libmcrypt.so.4 /usr/lib64/libmcrypt.so.4
+ln -s /usr/local/lib64/libmcrypt.so.4.4.8 /usr/lib64/libmcrypt.so.4.4.8
+ln -s /usr/local/lib64/libmhash.a /usr/lib64/libmhash.a
+ln -s /usr/local/lib64/libmhash.la /usr/lib64/libmhash.la
+ln -s /usr/local/lib64/libmhash.so /usr/lib64/libmhash.so
+ln -s /usr/local/lib64/libmhash.so.2 /usr/lib64/libmhash.so.2
+ln -s /usr/local/lib64/libmhash.so.2.0.1 /usr/lib64/libmhash.so.2.0.1
+ln -s /usr/local/bin/libmcrypt-config /usr/bin/libmcrypt-config
+7.4.6安装mcrypt加密扩展库
+PHP程序员们在编写代码程序时，除了要保证代码的高性能之外，还有一点是非常重要的，那就是程序的安全性保障。PHP除了自带的几种加密函数外，还有功能更全面的PHP加密扩展库Mcrypt和Mhash。
+其中，Mcrypt扩展库可以实现加密解密功能，就是既能将明文加密，也可以密文还原。
+mcrypt 是 php 里面重要的加密支持扩展库，该库在默认情况下不开启。
+编辑本段支持的算法和加密模式
+Mcrypt库支持20多种加密算法和8种加密模式，具体可以通过函数mcrypt_list_algorithms()和mcrypt_list_modes()来显示[1]
+参考：http://baike.baidu.com/view/9537042.htm
+wget "http://downloads.sourceforge.net/mcrypt/mcrypt-2.6.8.tar.gz?modtime=1194463373&big_mirror=0"
+tar zxf mcrypt-2.6.8.tar.gz
+cd mcrypt-2.6.8/
+/sbin/ldconfig
+./configure
+make
+make install
+cd ../
+sleep 2

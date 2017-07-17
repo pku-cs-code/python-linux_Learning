@@ -1,0 +1,169 @@
+shell高级编程
+
+shell是一个解释器，在操作系统的最外层，负责直接与系统对话，把用户的输入解释给操作系统，
+并处理各种各样的操作系统的输出结果，输出到屏幕返回给用户。这种对话方式可以是交互的方式
+（从键盘输入命令，可立即得到shell的回应），或非交互式（脚本）。
+
+shell脚本
+命令或语句不在命令行执行，而是通过一个程序文件执行
+类似于DOS、win系统下的*.bat批处理文件
+命令、变量、流程控制语句等有机结合起来就形成了一个功能强大的shell脚本
+
+/var/log日志十分重要
+清除/var/log下的messages日志文件
+
+cd /var/log
+cat /dev/null > messages
+echo "Logs cleaned up."
+
+1不是root执行不了
+2没有流程控制，每一个步骤没有判断，没有逻辑
+
+#!/bin/sh
+#清除日志脚本，版2
+LOG_DIR=/var/log
+if [ "$UID" -ne "$ROOT_UID" ]
+then
+  echo "Must be root to run this script."
+  exit 1
+fi
+cd $LOG_DIR || {
+     echo " Cann't change to necessary directory."  > &2
+     exit 1
+}
+
+cat /dev/null > messages
+echo "Logs cleaned up."
+exit 0
+#退出之前返回0表示成功，返回1表示失败
+
+
+清空日志的三种方法
+
+1  echo " ">test.log #清空后有空行
+2 >test.log
+3 cat /dev/null > test.log 
+
+应用场景：保留文件，清空内容
+
+shell脚本很适合处理纯文本类型的数据
+几乎所有的配置文件、日志文件都是纯文本文件。nfs、rsync、httpd、nginx、lvs、portmap……
+除很多程序是shell脚本外，一些内核程序也是shell脚本
+
+shell脚本语言的种类
+unix/linux主要有两大类
+Bourne shell (sh ksh bash)
+Bourne shell （sh）
+Kor n shell （ksh）
+Bourne Again shell (bash)
+POSIX shell (sh)
+
+C shell (csh tcsh)
+C shell (sch)
+TENEX/TOPS C shell (tcsh)
+ 
+shell脚本语言是弱类型语言（直接能赋值，不像c语言等需要定义变量，语法比较宽松）
+Bourne shell（sh）已经被bash shell所取代
+
+其他脚本语言
+php 网页程序，也是脚本语言。更专注于web开发，例如dedecms，discuz。
+       中小型公司网站和很多开源网站都是php
+perl 脚本语言。比shell强大的多，语法复杂，前几年很火，语法灵活、复杂，实现方式很多，不易读，
+       团队协作困难，支持正则。
+python 近几年很火的语言，可以做脚本开发，也可以做web开发
+           中等以上的公司都要求会python
+
+shell脚本与php、perl、python语言的区别
+shell的优点：处理操作系统底层的业务，结合大量的linux命令和相关函数来处理
+         大量的命令为它做支撑，2000多个命令都是shell支撑，grep、awk、sed
+          一键安装，报警脚本，常规的业务应用，shell开发更简单快速
+php、python优点：开发运维工具，web界面的管理工具
+
+常用操作系统的默认shell
+Linux是Bourne Again shell （bash）
+Solaris和FreeBSD缺省的是Bourne shell（sh）
+AIX下是Korn Shell（ksh）
+HP-UX缺省的是POSIX shell（sh）
+
+不同的shell20%-30%的差别
+
+查看shell
+[root@test ~]# echo $SHELL
+/bin/bash
+[root@test ~]# grep root /etc/passwd
+root:x:0:0:root:/root:/bin/bash
+operator:x:11:0:operator:/root:/sbin/nologin
+
+tac /etc/init.d/nfs
+倒着显示
+#!/bin/sh
+#!幻数  必须在第一行，如果不是第一行则为注释
+或者#!/bin/bash
+[root@test scripts]# ll /bin/sh 
+lrwxrwxrwx. 1 root root 4 Mar 31 07:29 /bin/sh -> bash
+
+
+推荐用#!/bin/bash 4.0bash版本后可能有些差别
+
+#!/usr/bin/awk
+#!/bin/sed
+#!/usr/bin/tcl
+#!/usr/bin/expect
+#!/usr/bin/perl
+#!/usr/bin/env python
+
+Bash 是GNU/Linux默认的shell，如果不加这样的首行，在linux之外的环境可能有错误
+脚本的开头不指定解释器，执行时要加解释器bash等执行脚本
+
+注释部分不会被当做程序执行。为了方便别人和自己，便于团队写作，要写注释
+
+shell脚本以非交互的方式运行时，会先查找环境变量ENV，改变量指定了 一个环境文件
+（.bashrc），然后从该环境变量文件开始执行，读取了ENV文件后，shell才开始执行shell脚本的内容
+1bash script-name 后sh script-name
+2path/script-name或./script-name
+3source script-name或 .script-name
+
+第一种是脚本文件本身没有可执行权限时常用的方法，推荐使用
+tab不出来是权限不够
+第二种需要把文件权限加上可执行权限 chmod +x script-name or chmod 755 script-name
+第三种userdir=`pwd`，source(or).testsouce.sh可以将变量传递给当前窗口
+ 
+1)解释器
+#!/bin/bash
+2)加版本版权信息
+#Date 
+#Author
+#Mail
+#Function
+#version
+可配置~/.vimrc文件中自动生成
+3）脚本中不用中文注释，尽量用英文
+4)脚本以.sh结尾
+5)代码书写习惯
+  1成对的一次写出来
+  2[]中括号两端要有空格，书写时即可留出两个空格，然后退格书写内容
+  3流程控制语句一次性书写完
+     if语句格式一次完成
+     if
+        then
+     fi
+  for循环一次完成
+    for
+       do
+    done
+    还有while until case
+
+6)通过缩进让代码更易读
+ vim多行缩进
+
+
+
+
+
+
+
+
+
+
+
+

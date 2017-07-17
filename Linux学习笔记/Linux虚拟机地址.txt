@@ -1,0 +1,21 @@
+Linux虚拟机地址
+CentOS64位
+192.168.1.58：22
+root 123456
+
+CentOS64位克隆
+192.168.1.59:22
+root 123456
+
+centOS6.8-mode
+192.168.1.60：52113
+zhangcai 123456
+
+centos5.8-mode
+192.168.1.61：52113
+zhangcai 111111
+
+6.8nomodified
+192.168.1.63:22
+root 123456
+

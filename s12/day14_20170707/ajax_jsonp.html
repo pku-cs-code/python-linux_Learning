@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+        <input type="button" value="获取节目" onclick="SubmitData();"/>
+        <div id="container"></div>
+
+
+    <script type="text/javascript" src="jquery-2.2.4.js"> </script>
+    <script>
+        function SubmitData() {
+            //var inpVal = $('#n1').val();
+            //var inpName = $('#n1').attr('name');
+
+            $.ajax({
+                url:"http://www.jxntv.cn/data/jmd-jxtv2.html",
+                data:{},
+                type:'GET',
+                dataType:'jsonp',
+                jsonp:'callback',
+                jsonpCallback:'list',//calllist不变，list是返回值
+                //可以在list里拿到数据
+                success:function (arg) {
+                    //arg = {data:xxx}
+
+
+                    //arg服务器返回的值
+                    //请求成功后后自动调用
+                    //如果django返回ok，则这里arg是ok
+                    console.log(arg);
+                    var jsonpArray = arg.data;
+                    $.each(jsonpArray,function (k,v) {
+                        //k 下标
+                        //v 数组值
+                        var week = v.week;
+                        var temp = "<h1>"  + week +"</h1>";
+                        $('#container').append(temp);
+                        var listArray = v.list;
+                        $.each(listArray,function (kk,vv) {
+                            var link = vv.link;
+                            var name = vv.name;
+                            var tempNew = "<a href='" +link +"'>" + name + "</a></br>";
+                            $('#container').append(tempNew);
+
+                        })
+
+                    })
+
+
+            },
+                error:function () {
+
+                },
+            });//输送
+        }
+    </script>
+</body>
+</html>

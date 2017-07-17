@@ -1,0 +1,39 @@
+端口
+21：ftp用于数据传输
+22：ssh
+25：smtp，用于邮件发送
+3306：mysql
+873：rsync
+161：snmp简单网络管理协议
+111：RPC端口
+3389：windows远程桌面的服务端口
+80：web http
+443：ssl加密 https
+110：pop3邮件接收协议
+53：DNS
+2049：nfs
+
+查看端口
+netstat -an
+[root@localhost scripts]# netstat -an| grep ESTABLISHED | wc -l
+1
+[root@localhost scripts]# netstat -an| grep TIME_WAIT | wc -l
+0
+
+ awk '{print $1}' access.log|sort|uniq -c |sort -rn -k1
+
+rename批量修改文件名
+rename from to file
+
+telnet www.baidu.com 80
+nmap  etiantian.org -p 80
+echo -e "\n" |telnet baidu.com | grep connected 
+ nc -w 5  119.75.218.70 80
+
+给一块网卡配置多个ip vip：虚拟ip
+ ifconfig eth0:1 192.168.1.67 netmask 255.255.255.0 up  （ip alias）
+生成相应eth0:1 配置文件，重启后也生效
+ ip addr add 192.168.1.0/24 broadcast 192.168.1.68 dev eth0（辅助ip）
+辅助ip ifconfig看不到，但是ip add可以看到
+keeplive高可用软件
+

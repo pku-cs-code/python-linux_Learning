@@ -1,0 +1,9 @@
+shutdown -h now立刻关机
+
+ctrl+a行首
+ctrl+e行尾
+ctrl+d登出
+ctrl+c取消
+ctrl+l清屏
+ctrl+u剪切光标之前的内容
+ctrl+k清楚光标之后的内容

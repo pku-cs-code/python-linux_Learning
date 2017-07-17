@@ -1,0 +1,30 @@
+系统产生随机数的六种方法
+
+echo "$RANDOM$(date +%t%N)"|md5sum|cut -c 10-17
+
+[root@test scripts]# openssl rand -base64 8|md5sum
+770daba2270f8f23a5b4cea7171008f1  -
+
+[root@test ~]# date +%s%N
+1495610511468910874
+
+[root@test ~]# head /dev/urandom|cksum
+4188027134 2123
+
+UUID universally unique  identifier
+[root@test ~]# cat /proc/sys/kernel/random/uuid|md5sum
+8b48acf0b64e7e39a14152661c36feef  -
+
+第六种
+ yum install -y expect
+[root@test ~]# mkpasswd |md5sum
+ca53ee48c0104de33f16edb48db7e063  -
+[root@test ~]# mkpasswd -s 0
+g3VivIzb6
+[root@test ~]# mkpasswd -l 8
+fYp"8jL7
+
+ 
+echo $RANDOM|md5sum|cut -c 1-9|sort|uniq -c|sort -nk1
+for n in `seq 20`;do echo $RANDOM|md5sum|cut -c 1-9 ;done |sort|uniq -c             
+

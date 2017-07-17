@@ -1,0 +1,40 @@
+可以选择整块缩进或者取消缩进
+tab+shift或者shift+tab整块取消缩进
+tab缩进
+
+ctrl+/整块注释
+
+File->settings->Editor->File and Code Templates->Python Script
+
+添加以下代码：
+
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+# @Time    : ${DATE} ${TIME}
+# @Author  : Aries
+# @Site    : ${SITE}
+# @File    : ${NAME}.py
+# @Software: ${PRODUCT_NAME}
+
+
+最底部Run控制台处于float window单独状态时，要记得选择调回去
+
+PyCharm 2017.1.4 x64 密钥
+
+http://xclient.info/a/f0b9738a-36fd-8a97-a966-0d3db497092d.html?_=ec7bff65395338b0225abe0a7bbcba95
+
+License server
+http://xidea.online
+
+下载页面
+
+http://xclient.info/s/pycharm.html?_=ec7bff65395338b0225abe0a7bbcba95
+
+
+pycharm创建的django的project名和directory名称要一致，否则会报错
+
+
+
+
+
+

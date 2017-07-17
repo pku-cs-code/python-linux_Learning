@@ -1,0 +1,97 @@
+**  幂
+// 整除，取商的整数部分
+==
+!=
+<>比较两个对象是否不相等（python3不允许）
+<
+>
+>=
+<=
+=
++=
+-=
+*=
+/=
+%=  返回除法的余数，可以判断奇偶，前端应用
+
+位运算
+&  与，按位与
+|  或，按位或
+^  异或，只要不一样
+~  取反
+<< 左移动运算符，乘以2
+>> 右移动运算符，除以2
+
+右移和左移的运算效率高
+
+逻辑运算符
+and  与
+or   或
+not  非
+
+身份运算符
+is
+is not
+
+>>> 1/2
+0.5
+>>> 1//2
+0
+>>> 5//2
+2
+>>> 5/2
+2.5
+
+>>> 10%2
+0
+>>> 10%3
+1
+>>> 10%4
+2
+>>> 11%2
+1
+>>> 8%2
+0
+>>> 9%2
+1
+
+>>> 10&50
+2
+>>> 10|50
+58
+>>> 10^50
+56
+>>> 10<<1
+20
+>>> 10>>1
+5
+
+>>> sex = "m"
+>>> age = 26
+>>> if sex == "m" and age >25:
+...   print("time to get married")
+... 
+time to get married
+
+>>> names = ["alex","rain"]
+>>> if 'jack' not in names:
+...   print("yes")
+... 
+yes
+>>> if (sex == "m" and age >25):
+...   print("time to get married")
+... 
+time to get married
+
+>>> type(names)
+<class 'list'>
+>>> type(names) is list
+True
+>>> type(names) is tuple
+False
+>>> type(3) is int  
+True
+
+
+
+

@@ -1,0 +1,23 @@
+mkdir virtest
+cd virtest/
+virtualenv virenv
+ls
+virtualenv -p /usr/local/python3/bin/python3 virenv/
+source virenv/bin/activate
+pip install requests
+deactivate
+
+#使用虚拟环境时需要将其激活
+[root@test virtest]# source virenv/bin/activate
+(virenv) [root@test virtest]# pip --version
+pip 9.0.1 from /home/zhangcai/virtest/virenv/lib/python3.3/site-packages (python 3.3)
+
+
+
+virtualenv envpython2
+virtualenv -p /usr/bin/python envpython2/
+source envpython2/bin/activate
+pip --version
+(envpython2) [root@test virtest]# pip --version
+pip 9.0.1 from /home/zhangcai/virtest/envpython2/lib/python2.6/site-packages (python 2.6)
+deactivate 

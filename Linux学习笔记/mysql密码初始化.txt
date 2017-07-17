@@ -1,0 +1,162 @@
+mysql密码初始化
+
+以免密码形式mysqld_safe --skip-grant-tables &登录时
+
+[root@test mysql]# mysql -uroot -p"123456"
+Welcome to the MySQL monitor.  Commands end with ; or \g.
+Your MySQL connection id is 4
+Server version: 5.1.62 Source distribution
+
+Copyright (c) 2000, 2011, Oracle and/or its affiliates. All rights reserved.
+
+Oracle is a registered trademark of Oracle Corporation and/or its
+affiliates. Other names may be trademarks of their respective
+owners.
+
+Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
+
+mysql> 
+
+然后关掉mysql安全登录服务，重启mysql
+[root@test mysql-5.1.62]# /etc/init.d/mysqld start
+Starting MySQL. SUCCESS! 
+[root@test mysql-5.1.62]# mysql
+Welcome to the MySQL monitor.  Commands end with ; or \g.
+Your MySQL connection id is 1
+Server version: 5.1.62 Source distribution
+
+Copyright (c) 2000, 2011, Oracle and/or its affiliates. All rights reserved.
+
+Oracle is a registered trademark of Oracle Corporation and/or its
+affiliates. Other names may be trademarks of their respective
+owners.
+
+Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
+
+mysql> show databases;
++--------------------+
+| Database           |
++--------------------+
+| information_schema |
+| mysql              |
+| test               |
++--------------------+
+3 rows in set (0.00 sec)
+
+mysql> use mysql;
+Database changed
+mysql> select user,host,password from user;
++------+-----------+----------+
+| user | host      | password |
++------+-----------+----------+
+| root | localhost |          |
+| root | test      |          |
+| root | 127.0.0.1 |          |
+|      | localhost |          |
+|      | test      |          |
++------+-----------+----------+
+5 rows in set (0.00 sec)
+
+mysql> select user();
++----------------+
+| user()         |
++----------------+
+| root@localhost |
++----------------+
+1 row in set (0.00 sec)
+
+mysql> 
+初次登录不要密码，直接mysql即可进入，也可[root@test mysql]# mysql -uroot -p进入
+但是如果此时执行[root@test mysql]# mysqladmin -u root password '123456'
+从另一个tty再次登录mysql时需要登录密码才行，以下为具体实际操作情况
+[root@test ~]# mysql
+ERROR 1045 (28000): Access denied for user 'root'@'localhost' (using password: NO)
+[root@test ~]# mysql -uroot
+ERROR 1045 (28000): Access denied for user 'root'@'localhost' (using password: NO)
+[root@test ~]# mysql -uroot -p
+Enter password: 
+Welcome to the MySQL monitor.  Commands end with ; or \g.
+Your MySQL connection id is 6
+Server version: 5.1.62 Source distribution
+
+Copyright (c) 2000, 2011, Oracle and/or its affiliates. All rights reserved.
+
+Oracle is a registered trademark of Oracle Corporation and/or its
+affiliates. Other names may be trademarks of their respective
+owners.
+
+Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
+
+mysql> 
+以下为查看密码改动的情况验证，password那一栏有信息了，只不过是加密信息
+mysql> use mysql;
+Database changed
+mysql> select user,host,password from user;
++------+-----------+-------------------------------------------+
+| user | host      | password                                  |
++------+-----------+-------------------------------------------+
+| root | localhost | *6BB4837EB74329105EE4568DDA7DC67ED2CA2AD9 |
+| root | test      |                                           |
+| root | 127.0.0.1 |                                           |
+|      | localhost |                                           |
+|      | test      |                                           |
++------+-----------+-------------------------------------------+
+5 rows in set (0.00 sec)
+
+
+为了数据安全删除空用户
+mysql> select user,host from mysql.user;
++------+-----------+
+| user | host      |
++------+-----------+
+| root | 127.0.0.1 |
+|      | localhost |
+| root | localhost |
+|      | test      |
+| root | test      |
++------+-----------+
+5 rows in set (0.00 sec)
+
+mysql> drop user ""@localhost;
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> select user,host from mysql.user;
++------+-----------+
+| user | host      |
++------+-----------+
+| root | 127.0.0.1 |
+| root | localhost |
+|      | test      |
+| root | test      |
++------+-----------+
+4 rows in set (0.00 sec)
+
+mysql> drop user ""@test;
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> select user,host from mysql.user;
++------+-----------+
+| user | host      |
++------+-----------+
+| root | 127.0.0.1 |
+| root | localhost |
+| root | test      |
++------+-----------+
+3 rows in set (0.00 sec)
+
+mysql> drop user root@test;
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> select user,host from mysql.user;
++------+-----------+
+| user | host      |
++------+-----------+
+| root | 127.0.0.1 |
+| root | localhost |
++------+-----------+
+2 rows in set (0.00 sec)
+
+只保留|
+ root | 127.0.0.1 |
+| root | localhost | 两个用户，以后程序要的话要另外添加
+

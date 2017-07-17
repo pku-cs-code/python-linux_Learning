@@ -1,0 +1,7 @@
+continue
+跳出本次循环
+
+break跳出一层循环
+
+shell中break是跳出全部循环
+

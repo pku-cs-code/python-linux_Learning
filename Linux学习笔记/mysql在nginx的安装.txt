@@ -1,0 +1,7 @@
+nginx的mysql5.1.62安装
+mysql-5.6.12-linux-glibc-x86_64.tar.gz 免安装包
+
+mysql-5.1.73.tar.gz 需要编译安装
+mysql-5.1.73-linux-x86_64-glibc23.tar.gz 直接解开包就能用了
+
+5.5的安装方式就不一样了，需要用cmake安装

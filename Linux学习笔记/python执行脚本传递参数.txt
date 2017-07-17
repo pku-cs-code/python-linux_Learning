@@ -1,0 +1,17 @@
+python执行脚本传递参数
+
+import sys  #跟python解释器相关的所有模块
+
+
+import sys
+print (sys.argv)
+
+C:\Users\cai>python D:\PycharmProjects\s12\20170606_day2\index.py runser
+['D:\\PycharmProjects\\s12\\20170606_day2\\index.py', 'runser']
+
+C:\Users\cai>python D:\PycharmProjects\s12\20170606_day2\index.py 8080
+['D:\\PycharmProjects\\s12\\20170606_day2\\index.py', '8080']
+
+优先去找字节码文件，如果lib.py删除了，只要字节码文件还存在就还可以执行
+如果没有字节码文件运行时则会生成字节码文件
+

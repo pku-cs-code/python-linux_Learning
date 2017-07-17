@@ -1,0 +1,27 @@
+http安装配置
+增加别名ip，可以提供服务使用
+
+[root@test ~]# ifconfig eth0:181 192.168.31.181 netmask 255.255.255.0
+[root@test ~]# ifconfig
+eth0      Link encap:Ethernet  HWaddr 00:0C:29:16:3C:E1  
+          inet addr:192.168.31.60  Bcast:192.168.31.255  Mask:255.255.255.0
+          inet6 addr: fe80::20c:29ff:fe16:3ce1/64 Scope:Link
+          UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1
+          RX packets:12020 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:2558 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:1000 
+          RX bytes:833101 (813.5 KiB)  TX bytes:262082 (255.9 KiB)
+
+eth0:181  Link encap:Ethernet  HWaddr 00:0C:29:16:3C:E1  
+          inet addr:192.168.31.181  Bcast:192.168.31.255  Mask:255.255.255.0
+          UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1
+
+lo        Link encap:Local Loopback  
+          inet addr:127.0.0.1  Mask:255.0.0.0
+          inet6 addr: ::1/128 Scope:Host
+          UP LOOPBACK RUNNING  MTU:65536  Metric:1
+          RX packets:1143 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:1143 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:0 
+          RX bytes:116195 (113.4 KiB)  TX bytes:116195 (113.4 KiB)
+

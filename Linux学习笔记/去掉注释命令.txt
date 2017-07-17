@@ -1,0 +1,2 @@
+È¥µô×¢ÊÍÃüÁî
+# grep -v "^#" /etc/samba/smb.conf | grep -v "^;"

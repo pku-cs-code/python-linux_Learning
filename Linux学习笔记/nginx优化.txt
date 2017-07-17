@@ -1,0 +1,82 @@
+nginx缓存expires设置
+  location ~ .*\.(gif|jpg|jpeg|png|bmp|swf)$
+        {
+          expires 3650d;
+          root html/www;
+        }
+        location ~ .*\(js|css)?$
+        {
+         expires 30d;
+         root index/html;
+        }
+设置缓存
+
+根据目录添加缓存则目录内的内容都会缓存
+
+单个文件设置过期
+robot.txt爬虫
+
+不希望被缓存的内容：
+1广告图片
+2网站流量统计（js等，放在网站的最下面，为了更好统计pv）
+
+企业信息缓存查看
+51cto1周
+sina15年
+京东25年
+淘宝10年
+节省带宽，提高用户体验
+
+压缩模块
+ngx_http_gzip_module模块
+gzip on;
+gzip_min_length 1k;
+gzip_buffers 4 16k;
+gzip_http_version 1.0;
+gzip_comp_level 2;
+gzip_types text/plain application/x-javascript text/css application/xml;
+gzip_vary on;
+
+图片、gzip包不能压缩，是已经压缩过的。视频也不能压缩
+
+此为错误原因
+gzip不能使用的原因是在编译安装nginx时指定了只安装了两个模块
+./configure --user=nginx --group=nginx --prefix=/usr/local/nginx-1.2.9 \
+--with-http_stub_status_module --with-http_ssl_module
+
+默认不带编译模块有gzip模块，加上了就只是指定了上面两个模块
+在centsos7下重新安装编译时，先是换了个版本然后按照centos6这天机器的编译过程重新来了一遍，
+发现还是不行。然后又不带模块按默认模块重新编译，结果还是不行，是因为没有将之前安装的nginx完全删除掉
+以前的nginx相关配置在新安装的nginx中会保留，需要先把以前nginx安装路径下的东西全部删除掉
+删除掉后重新不带模块，即按默认安装模块编译，发现gzip可以了
+
+我在今天又重新开启了虚拟机进行测试，发现昨天的结论貌似不对。
+昨天认为是如果带两个模块就只带两个模块的看法是不对的，应该是启用这两个模块，默认这两个模块是禁用的
+这篇文章有参考价值https://www.centos.bz/2016/10/nginx-configure-parameter/
+去nginx安装时的目录去./congiure --help也能看到默认启用和禁用和模块
+
+今天之所以好用，很可能是浏览器缓存的原因，因为我今天用cccleaner清理了一下电脑
+昨天不能缓存的nginx服务器192.168.31.63今天可以缓存了，查看configure配置时的模块可以看出来也只有两个
+[root@bbs conf]# /usr/local/nginx/sbin/nginx -V
+nginx version: nginx/1.2.9
+built by gcc 4.4.7 20120313 (Red Hat 4.4.7-3) (GCC) 
+TLS SNI support enabled
+configure arguments: --user=nginx --group=nginx --prefix=/usr/local/nginx-1.2.9 --with-http_stub_status_module --with-http_ssl_module
+
+
+需要压缩的对象
+1大于1k的纯文本文件，图片、视频不要压缩，因为不但不会减小，压缩时消耗cpu、mem资源
+
+nginx403错误页面优雅显示
+删除html/www中的index.html文件，浏览器端访问出现403forbidden
+修改nginx_vhost.conf中的错误页面为 error_page 403 /403.html;
+将403.html放在html/www中
+检查语法后reload重启
+
+nginx不支持自定义404错误跳转
+需要设置fastcgi_intercept_errors on，还要修改error_page这个选项的参数，使二者符合
+fastcgi_intercept_errors on;
+      error_page 404 /404.html; #<===html/www
+自定义的404页面必须大于512字节，否则可能会出现IE默认的404页面
+chrome、firefox没问题，IE可能有问题，IE需要跳转页面大于512字节
+我的IE11大于512字节也好像不行

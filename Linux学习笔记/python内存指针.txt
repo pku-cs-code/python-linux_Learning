@@ -1,0 +1,62 @@
+﻿python变量指针
+
+>>> a = 3    
+>>> b = a
+>>> id(a),id(b)
+(15729416, 15729416)
+>>> a = 5
+>>> id(a),id(b)
+(15729368, 15729416)
+>>> id = 99
+>>> print(id)
+99
+>>> id(a),id(b)
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+TypeError: 'int' object is not callable
+
+#id是关键字
+#不是物理地址，和c语言不一样，解释器，是内存地址
+
+python2不支持input，除非输入的是已经定义的变量
+>>> name = input("please input your name:")
+please input your name:zhang
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+  File "<string>", line 1, in <module>
+NameError: name 'zhang' is not defined
+>>> name = input("please input your name:")
+please input your name:a
+>>> print name
+5
+>>> name = raw_input("please input your name:")
+please input your name:zhang
+>>> name = raw_input("please input your name:")
+please input your name:zhang
+>>> print name
+zhang
+>>> name = input("please input your name:")
+please input your name:"zhangcai"
+>>> print name
+zhangcai
+>>> a=5
+>>> eval(a)
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+TypeError: eval() arg 1 must be a string or code object
+>>> eval('a')
+5
+
+
+python2输入的是什么格式就当做什么格式处理。不加引号当做变量处理
+
+python2       python3
+input()-->     eval()
+raw_input()--> input() 
+
+
+
+
+
+
+

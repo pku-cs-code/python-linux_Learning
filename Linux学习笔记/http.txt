@@ -1,0 +1,227 @@
+http
+hyper text transfer protocol
+www都要遵循这个规则
+
+一个请求行
+若干消息头
+实体内容
+请求方式get或post
+
+RFC1945 HTTP/1.0  RFC2616 HTTP/1.1
+
+REQUEST请求
+RESPONSE接收
+
+GET HEAD POST
+
+静态网页：程序在客户端解析，如浏览器
+没有后台数据库，不含程序和可交互的网页
+一般用于更新较少的展示型网站
+htm html xml shtml jpc gif png bmp js css 
+swf avi wmv flv
+有固定的url，以.htm .html .shtml常见形式为后缀，不含有问号？
+相对稳定，容易被搜索引擎收录seo
+没有数据库的支持，制作和维护的成本大
+交互性差，功能方面有限制
+
+动态网页：程序在服务端解析
+url后缀一般以.asp .aspx .php .jsp do cgi perl等结尾
+有？ &
+特点：
+以数据库技术为基础的，大大降低网站维护的工作量
+可以实现更多的功能，如登录、注册、在线调查、订单管理
+大多不是独立存在于服务器的网页文件，只有当用户请求时服务器才返回一个完整的网页
+搜索引擎一般不可能从一个网站的数据库访问全部网页
+需要做伪静态才可以被搜索引擎抓取
+在服务端解析，会消耗大量cpu和内存资源
+网站优化：把动态内容变成静态的，然后缓存起来提供访问
+
+伪静态网页
+通过某些规则改变动态网页url，消除动态网页中的参数，但不会生成任何网页
+便于搜索引擎收录
+实质仍然是动态的
+在性能上仍然存在瓶颈，效率上没有任何提升，反而会降低性能（因为处理成伪静态需要消耗资源）
+
+web架构优化方案
+将用户请求的数据解析后的静态网页放在磁盘或内存中
+门户新闻业务（一旦发布完成，几乎不会改动）
+新闻业务的静态化比较简单编辑人员发布新闻然后同步到所有服务器上，再对用户提供访问
+用户访问全国服务器的缓存
+视频网站业务（一旦发布完成，几乎不会改动）
+优酷视频网上传视频，审核转码的过程，大概1-2个小时
+blog/bbs（用户发布完成，可能会随时更新）
+比较复杂
+用到异步消息队列
+
+web1.0
+以静态页面为主，早期门户新闻类页面，或传统的企业宣传页面
+有网站维护方提供更新和维护内容
+web2.0
+以动态页面为主，以用户为中心，网站由用户参与或者 编辑的，如bbs，blog，sns
+web3.0
+网站内的信息可以直接和其他网站相关信息进行交互 
+API是基于全球范围的，也就是XMLWebservice
+速度可以达到10G，所有应用不用担心速度
+是一个技术框架或者平台
+特征：
+微内容的自由整合和有效聚合
+适合多种终端平台，实现信息服务的普适性
+良好的人性化用户体验，以及基础性的个性化配置
+
+静态web语言
+html
+现今比较流行的页面设计div+css（样式）
+<html>
+<head><title>Oldboyblog</title></head>
+<body>
+<br><br><br><br><br>I am oldboy.<br>
+<table bgcolor=white border=1>
+<tr>
+  <td>第一行第一列</td>
+  <td>第一行第二列</td>
+</tr>
+<tr>
+  <td>第二行第一列</td>
+  <td>第二行第二列</td>
+</tr>
+</table>
+</body>
+</html>
+
+动态web语言
+php 用lnmp解析
+JSP JAVA程序一般由Tomcat/Resin/weblogic解析
+.asp .aspx一般由pws IIS解析
+
+访问模式
+b/s访问 browser /server 如Apache nginx
+瘦客户端架构
+BS架构可以直接放在广域网上，实行一定的权限限制
+缺点：
+跨浏览器BS架构不尽如人意
+BS架构的表现要达到CS程序的程度需要花费不少的精力（需要测试人员做各种测试）
+在速度和安全性上需要花费巨大的设计成本
+
+
+C/S模式 client/server
+胖客户端架构
+界面和操作可以很丰富
+安全性很容易保证，实现多层认证也不难
+由于只有一层交互，所以响应速度很快
+服务器端和客户端可以更好的兼容
+
+适应面窄，适用于局域网中（当前的BS和CS架构差别比较模糊），例如魔兽、CS、收银系统
+用户群固定，不适合面向一些不可知的用户
+维护成本高，发生一次升级，则所有客户端的程序都需要改变
+ 
+
+PV Page View
+IP Internet Protocal
+UV User Vistor一台电脑客户端视为一个用户
+PV≥IP
+UV度量 
+cookie分辨，放在c盘中，是独一无二的编号
+
+当前互联网主流web服务
+IIS （Internet information services），微软的
+apache主流www.apache.org
+nginx新兴主流
+ligttpd 不温不火，逐渐被淘汰的意味
+tomcat 互联网java容器的主流
+resin  互联网java容器的主流
+
+nginx更新快nginx.org
+resin www.caucho.com
+tomcat tomcat.apache.org
+
+源码安装，编译自己想要的参数
+yum或者rpm安装，简单方便但是不够灵活
+高级安装：
+源码-->制作成rpm-->放到自己的yum仓库里
+
+
+配置虚拟主机时设置站点目录时要关闭selinux，不然在虚拟主机log里会有报错
+[Sun Apr 13 04:27:10 2014] [error] [client 192.168.31.247] (13)Permission denied: access to /index.html denied
+为了验证是selinux的缘故，又打开selinux发现又不好使了
+[root@test bbs]# setenforce 1
+[root@test bbs]# getenforce
+Enforcing
+[root@test bbs]# setenforce 0
+[root@test bbs]# getenforce
+Permissive
+
+expires模块配置
+ExpiresActive On
+ExpiresDefault "access plus 12 month"
+ExpiresByType text/html "access plus 12 month"
+ExpiresByType text/css "access plus 12 month"
+ExpiresByType image/gif "access plus 12 month"
+ExpiresByType image/jpeg "access plus 12 month"
+ExpiresByType image/jpg "access plus 12 month"
+ExpiresByType image/png "access plus 12 month"
+ExpiresByType application/x-shockwave-flash "access plus 12 month"
+ExpiresByType application/x-javascript "access plus 12 month"
+ExpiresByType video/x-flv "access plus 12 month"
+
+之前没有expires标志
+[root@test bbs]# curl -I www.baidu.com
+HTTP/1.1 200 OK
+Server: bfe/1.0.8.18
+Date: Fri, 28 Apr 2017 11:35:20 GMT
+Content-Type: text/html
+Content-Length: 277
+Last-Modified: Mon, 13 Jun 2016 02:50:05 GMT
+Connection: Keep-Alive
+ETag: "575e1f5d-115"
+Cache-Control: private, no-cache, no-store, proxy-revalidate, no-transform
+Pragma: no-cache
+Accept-Ranges: bytes
+之后有expires标志
+[root@test conf.d]# curl -I bbs.zhangcai.org 
+HTTP/1.1 200 OK
+Date: Sat, 12 Apr 2014 22:44:54 GMT
+Server: Apache/2.2.15 (CentOS)
+Last-Modified: Sat, 12 Apr 2014 22:01:22 GMT
+ETag: "130a-27-4f6df97416b63"
+Accept-Ranges: bytes
+Content-Length: 39
+Cache-Control: max-age=31104000
+Expires: Tue, 07 Apr 2015 22:44:54 GMT
+Connection: close
+Content-Type: text/html; charset=UTF-8
+
+
+火狐(35及以下版本)配置Yslow可以查看Components查看expires时间戳
+
+deflate模块配置
+<ifmodule mod_deflate.c>
+DeflateCompressionLevel 9
+SetOutputFilter DEFLATE
+AddOutputFilterByType DEFLATE text/html text/plain text/xml
+AddOutputFilterByType DEFLATE application/javascript
+AddOutputFilterByType DEFLATE text/css
+</ifmodule>
+
+#某公司曾经的生产配置
+#DelateCompressionLevel 9
+#SetOutputFilter DEFLATE
+#DeflateFilterNote Input instream
+#DeflateFilterNote Output outstream
+#DeflateFilterNote Ratio ratio
+deflate模块配置后有Vary: Accept-Encoding
+
+[root@test bbs]# curl -I http://bbs.zhangcai.org/index.html
+HTTP/1.1 200 OK
+Date: Sat, 12 Apr 2014 23:49:00 GMT
+Server: Apache/2.2.15 (CentOS)
+Last-Modified: Sat, 12 Apr 2014 22:01:22 GMT
+ETag: "130a-27-4f6df97416b63"
+Accept-Ranges: bytes
+Content-Length: 39
+Cache-Control: max-age=31104000
+Expires: Tue, 07 Apr 2015 23:49:00 GMT
+Vary: Accept-Encoding
+Connection: close
+Content-Type: text/html; charset=UTF-8
+
+

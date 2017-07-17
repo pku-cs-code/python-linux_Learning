@@ -1,0 +1,17 @@
+python之队列
+
+保证数据在各线程间安全传输
+
+class queue.Queue(maxsize=0)先入先出
+class queque.LifoQueue(maxsize=0)  last in first out
+class queque.PriorityQueue   存储数据时设置优先级
+
+exception queque.Empty队列为空则等待
+get() getnowait()阻塞或者不阻塞
+Queue。qsize()
+Queue.empty()#return true if empty
+Queue.full()#return true if full
+Queue.put(item,block=True,timeout=None)
+Queue.put_nowait(item)不等
+Queue.get_nowait()
+Queue.task_done()

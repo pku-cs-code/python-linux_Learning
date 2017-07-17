@@ -1,0 +1,176 @@
+rsync
+增量同步
+三种方法:
+1、本地数据传输  local only mode
+ rsync 
+2、通过远程的shell来传输 pull and push mode
+  rsync -vzrtop --progress -e
+3、守护进程的方式传输
+
+ rsync -avz -P /etc/ /tmp/
+当第二次拷贝时如果文件没有很大的变化，那么拷贝十分迅速，这是rsync的增量模式
+[root@test tmp]# rsync -avz -P /etc/ /tmp/
+sending incremental file list
+
+sent 47289 bytes  received 211 bytes  95000.00 bytes/sec
+total size is 27938881  speedup is 588.19
+-avz保持属性
+一般-vzrtopg -P
+-avz -P
+脚本中-v和--progress可以不用。--progress用-P代替
+
+推送：rsync -avz -P zhangcai -e 'ssh -p 22' root@192.168.1.58:/tmp/
+拉取：[zhangcai@test home]$ rsync -avz -P  -e 'ssh -p 22' root@192.168.1.58:/tmp/zhangcai /tmp
+zhangcai/把zhangcai目录下的文件推送过去
+zhangcai把zhangcai目录及以下的文件都推送过去
+
+[root@test xinetd.d]# cat /etc/rsyncd.conf 
+#Minimal configuration file for rsync daemon
+#See rsync(1) and rsyncd.conf(5) man pages for help
+
+#This line is required by the /etc/init.d/rsyncd script
+#GLOBAL OPTIONS
+uid = root
+gid = root
+
+user chroot = no
+
+read only = no
+#limit access to private LANs
+hosts allow= 192.168.1.0/24
+hosts deny = 0.0.0.0/32
+max connects = 5
+
+pid file = /var/run/rsyncd.pid
+
+secrets file = /etc/rsyncd/rsyncd.passwd
+lock file = /var/run/rsync.lock
+
+motd file = /etc/rsyncd/rsyncd.motd
+
+#This will give you a separate log file
+log file = /var/log/rsyncd.log
+
+#This will log every file transferred - up to 85,000+ per user, per sync
+transfer logging = yes
+log format = %t %a %m %f %b
+syslog facility = local3
+timeout =300
+
+#MODULE OPTIONS
+[zhangcai]
+path = /home/zhangcai
+list = false
+ignore errors
+auth users = rsync_backup
+#comment = zhangcai home
+#exclude = 
+
+
+
+[root@test xinetd.d]# echo "rsync_backip:zhangcai" >/etc/rsyncd.passwd
+多个用户密码用逗号分隔
+[root@test xinetd.d]# cat /etc/rsyncd.passwd 
+rsync_backip:zhangcai
+[root@test xinetd.d]# chmod 600 /etc/rsyncd.passwd 
+[root@test xinetd.d]# ll /etc/rsyncd.passwd 
+-rw-------. 1 root root 22 Apr  2 03:36 /etc/rsyncd.passwd
+[root@test xinetd.d]# rsync --daemon
+[root@test xinetd.d]# ps -ef | grep rsync | grep -v grep
+root     23834     1  0 03:38 ?        00:00:00 rsync --daemon
+[root@test xinetd.d]# netstat -lnt | grep 873
+tcp        0      0 0.0.0.0:873                 0.0.0.0:*                   LISTEN      
+tcp        0      0 :::873                      :::*                        LISTEN      
+[root@test xinetd.d]# lsof -i tcp:873
+COMMAND   PID USER   FD   TYPE DEVICE SIZE/OFF NODE NAME
+rsync   23834 root    3u  IPv4  33138      0t0  TCP *:rsync (LISTEN)
+rsync   23834 root    5u  IPv6  33139      0t0  TCP *:rsync (LISTEN)
+[root@test xinetd.d]# echo "/usr/bin/rsync --daemon" >>/etc/rc.local 
+You have mail in /var/spool/mail/root
+[root@test xinetd.d]# tail -1 /etc/rc.local 
+/usr/bin/rsync --daemon
+
+客户端，密码文件只有密码没有账户名
+[root@localhost ~]# echo "zhangcai"> /etc/rsyncd.passwd
+[root@localhost ~]# chomod 600 /etc/rsyncd.passwd 
+-bash: chomod: command not found
+[root@localhost ~]# cat /etc/rsyncd.passwd 
+zhangcai
+[root@localhost ~]# ll /etc/rsyncd.passwd 
+-rw-r--r--. 1 root root 9 Apr 17 02:00 /etc/rsyncd.passwd
+[root@localhost ~]# chmod 600 /etc/rsyncd.passwd 
+[root@localhost ~]# ll /etc/rsyncd.passwd 
+-rw-------. 1 root root 9 Apr 17 02:00 /etc/rsyncd.passwd
+
+在客户端执行推送
+ rsync -avz -P /tmp/ rsync_backup@192.168.1.60::zhangcai/ --password-file=/etc/rsyncd.passwd
+出现错误rsync @ERROR: auth failed on module zhangcai
+原因是在server端[root@test xinetd.d]# cat /etc/rsyncd.passwd 
+rsync_backip:zhangcai
+把rsync用户名写错了，应该是rsync_backup
+
+         Push: rsync [OPTION...] SRC... [USER@]HOST::DEST
+               rsync [OPTION...] SRC... rsync://[USER@]HOST[:PORT]/DEST
+
+另一种推送的方法
+rsync -avz -P /tmp/  rsync://rsync_backup@192.168.1.60:/zhangcai/ --password-file=/etc/rsyncd.passwd 
+注意模块前面需要加/
+
+pull方式
+rsync -avz -P   rsync://rsync_backup@192.168.1.60:/zhangcai/ /home/zhangcai/ --password-file=/etc/rsyncd.passwd 
+或者
+ rsync -avz -P  rsync_backup@192.168.1.60::zhangcai/  /home/zhangcai/ --password-file=/etc/rsyncd.passwd
+
+推送时加参数--delete
+[root@localhost zhangcai]# rsync -avz -P --delete /home/zhangcai/bsd/ rsync://rsync_backup@192.168.1.60:/zhangcai/  --password-file=/etc/rsyncd.passwd 
+会把远端的目录给清空，本地目录有什么远端目录也会有什么，确保数据一致
+如果本地目录为空，远端目录也会清空，远端有丢数据的风险
+生产中慎用
+拉取的情况和推送的结果也是这样，如果加--delete使本地的目录和远端同步
+如果远端没有的本地也会没有，确保数据一致
+加--delete拉取的风险也很大
+如果拉取的目录是系统目录，如根目录，那么本地的数据会从根开始删除直至和远端一致
+
+如果要配置多个模块，可以把一些参数放在上面，把模块名和路径写在下面
+
+
+sersync
+利用rsync和inotify封装
+先要确保rysnc能够使用
+确认系统支持inotify
+[root@test scripts]# ls -l /proc/sys/fs/inotify/
+total 0
+-rw-r--r-- 1 root root 0 Apr  2 05:39 max_queued_events
+-rw-r--r-- 1 root root 0 Apr  2 05:39 max_user_instances
+-rw-r--r-- 1 root root 0 Apr  2 05:39 max_user_watches
+
+下载inotify
+ wget http://github.com/downloads/rvoicilas/inotify-tools/inotify-tools-3.14.tar.gz --no-check-certificate
+解压后进入目录
+./configure  --prefix=/usr/local/inotify
+ make && make install
+
+OpenSSL: error:14077410:SSL routines:SSL23_GET_SERVER_HELLO:sslv3 alert handshake failure Unable to establish SSL connection.
+上面原因是wget版本出现问题，yum update wget更新就好
+
+关于解释器的头行需要#!/bin/bash
+rsync启动只能放在/etc/rc.local之中或者chkconfig开启，不能两者都使用，否则冲突了使rsync启动不起来
+如果在客户端用推的方式，在服务端删除一部分同步的内容后，只有等到客户端内容
+改变之后才会进行同步
+
+在安装inotify报错
+error while loading shared libraries: libinotifytools.so.0: cannot open shared object file: No such file or directory
+编译安装时
+./configure --prefix=/usr --libdir=/lib64加指定库即可
+https://github.com/rvoicilas/inotify-tools/issues/7
+
+老男孩老师说rsync50-60并发比较好，一到80性能下降的特别厉害
+实时测试每秒100、120延迟非常小
+效果比sersync效果要好
+paste合成有一个文件
+每秒150个延迟也比较小
+可能是因为数据比较少，所以性能表现的比较好
+每秒200效果几乎是同步的
+在每秒200以下inotify比sersync（默认配置）效果要好
+
+uptime查看负载

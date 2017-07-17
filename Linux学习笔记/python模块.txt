@@ -1,0 +1,192 @@
+python模块
+
+.py文件组成的代码集合就叫做模块
+os是系统相关的模块，file是文件操作相关的模块
+
+自定义模块
+内置标准模块（又称为标准库）
+开源模块
+
+解耦：使关联度降低
+
+
+
+os	提供python和操作系统交互接口
+	os.getcwd()获取当前工作目录，当前python脚本工作目录
+	os.chdir(dirname) 改变当前脚本工作目录，相当于shell下的cd
+	os.curdir 	返回当前目录：（.）
+	os.pardir	获取当前目录的父目录字符串名：（..）
+	os.makedirs('dirname1/dirname2') 可生成多层递归目录
+	os.removedirs('dirname2')	若目录为空，则删除，并递归到上一目录
+	os.mkdir('dirname') 	生成单级目录；相当于shell中的mkdir dir
+	os.rmdir('dirname')	删除单级空目录，如目录不为空则无法删除
+	os.listdir('dirname')	列出指定目录下的所有文件和子目录，包括隐藏文件
+	os.remove()	删除一个文件
+	os.rename('oldname','newname')	重命名文件/目录，如果newname本来就存在则报错
+	os.stat('path')		获取文件，目录信息，可以获取文件大小
+	os.sep 	输出操作系统特定的路径分隔符，win下为“\\”，linux下为“/”
+	os.linesep	输出当前平台使用的行终止符，win下为\t\n，linux下为\n
+	os.pathsep	输出用于分割文件路径的字符串
+	os.name	输出字符串指示当前使用平台。win->'nt',linux->'posix'
+	os.system("bash command")	运行shell命令，直接显示
+	os.environ	获取系统环境变量
+	os.path.abspath(path)	返回path规范化的绝对路径
+	os.path.split(path)	将path分割成目录和文件名二元数组返回
+	os.path.dirname(path)	返回path的目录，其实就是os.path.split(path)
+	os.path.basename(path)	返回path最后的文件名，如果以/或\结尾，
+	os.path.exists(path)	如果path存在则返回True，不存在返回False
+	os.path.isabs(path)	如果path是绝对路径则返回True，不是则返回False
+	os.path.isfile(path)	如果path是一个存在的文件，则返回True，否则返回False
+	os.path.isdir(path)	如果path是一个存在的目录，则返回True，否则返回False
+	os.path.join(path[,path2[,...]])	将多个路径组合后返回，第一个将被忽略
+	os.path.getatime(path)	返回path所指向的文件或者目录的最后存取时间
+	os.path.getmtime(path)	
+	os.popen("dir").read	获取nt下dir后的目录
+
+sys
+sys.argv	命令行参数List，第一个元素是程序本身
+sys.exit(n)	退出程序，正常退出时exit(0)
+sys.version	获取python解释程序的版本信息
+sys.maxint	最大的int值
+sys.path	返回模块的搜索路径，初始化时使用python
+sys.platform	返回操作系统平台名称
+sys.stdout.write('please..')
+val = sys.stdin.readline()[:-1]
+
+
+shutil模块
+shutil.copyfileobj(fsro.fdst[,length])	拷贝文件对象
+shutil.copyfile(src,dst)	拷贝文件
+shutil.copymode(src,dst)	仅拷贝权限，内容、组、用户均不变
+shutil.copystat(src,dst)	拷贝文件状态信息
+shutil.copy(src,dst)	拷贝文件和权限
+shutil.copy2(src,dst)	拷贝文件和状态信息
+shutil.ignore_patterns(*patterns)	拷贝文件，排除掉某些
+shutil.copytree	递归地去拷贝文件
+shutil.rmtree(path[,ignore_errors[,onerror]])	递归地去删除文件
+shutil.move(src,dst)	递归地去移动文件
+shutil.make_archive(base_name,format,...)	创建压缩包并返回文件路径
+				base_name压缩包的文件名，也可以是路径名
+				format格式：zip,tar,bztar,gztar
+				root_dir:要压缩的文件夹路径，默认当前路径
+				ower：用户，默认当前用户
+				group：组，默认当前组
+				logger：用于记录日志，通常是logging.Logger对象
+shutil是调用ZipFile和TarFile两个模块
+import shutil
+import zipfile
+
+shutil.make_archive("D:\\test","zip",root_dir="D:\\test")
+
+z = zipfile.ZipFile('D:\\test3.zip','w')
+z.write('D:\\test')
+z.write('D:\\test2\\test1.txt')
+z.close()
+
+ZipFile需要指定文件名
+
+
+json & pickle模块
+
+shelve模块	简单的key,value将内存数据持久化
+python2和python2不一样
+shelve只需要记住key就可以dump，比pickle要方便
+（我的shelve 报错，原因是一个类不能导入到别的类）
+
+	
+>>> import os
+>>> a=os.popen("dir").read()
+>>> a
+' 驱动器 D 中的卷没有标签。\n 卷的序列号是 8EF9-0EF1\n\n d:\\PycharmProjects\\s12\\20170613_day5\\dj\\backend\\db 的目录\n\n2017/06/14  16:02    <DIR>          .\n2017/06/14  16:02    <DIR>          ..\n2017/06/14  16:02               801 sql_api.py\n2017/06/13  23:18                 0 __init__.py\n2017/06/14  00:20    <DIR>          __pycache__\n               2 个文件            801 字节\n               3 个目录 141,263,392,768 可用字节\n'
+>>> os.system("dir")
+ 驱动器 D 中的卷没有标签。
+ 卷的序列号是 8EF9-0EF1
+
+ d:\PycharmProjects\s12\20170613_day5\dj\backend\db 的目录
+
+2017/06/14  16:02    <DIR>          .
+2017/06/14  16:02    <DIR>          ..
+2017/06/14  16:02               801 sql_api.py
+2017/06/13  23:18                 0 __init__.py
+2017/06/14  00:20    <DIR>          __pycache__
+               2 个文件            801 字节
+               3 个目录 141,263,392,768 可用字节
+0
+>>> a
+' 驱动器 D 中的卷没有标签。\n 卷的序列号是 8EF9-0EF1\n\n d:\\PycharmProjects\\s12\\20170613_day5\\dj\\backend\\db 的目录\n\n2017/06/14  16:02    <DIR>          .\n2017/06/14  16:02    <DIR>          ..\n2017/06/14  16:02               801 sql_api.py\n2017/06/13  23:18                 0 __init__.py\n2017/06/14  00:20    <DIR>          __pycache__\n               2 个文件            801 字节\n               3 个目录 141,263,392,768 可用字节\n'
+>>> a=os.system("dir")
+ 驱动器 D 中的卷没有标签。
+ 卷的序列号是 8EF9-0EF1
+
+ d:\PycharmProjects\s12\20170613_day5\dj\backend\db 的目录
+
+2017/06/14  16:02    <DIR>          .
+2017/06/14  16:02    <DIR>          ..
+2017/06/14  16:02               801 sql_api.py
+2017/06/13  23:18                 0 __init__.py
+2017/06/14  00:20    <DIR>          __pycache__
+               2 个文件            801 字节
+               3 个目录 141,263,392,768 可用字节
+>>> a
+0
+>>> a=os.popen("dir").read()
+>>> a
+' 驱动器 D 中的卷没有标签。\n 卷的序列号是 8EF9-0EF1\n\n d:\\PycharmProjects\\s12\\20170613_day5\\dj\\backend\\db 的目录\n\n2017/06/14  16:02    <DIR>          .\n2017/06/14  16:02    <DIR>          ..\n2017/06/14  16:02               801 sql_api.py\n2017/06/13  23:18                 0 __init__.py\n2017/06/14  00:20    <DIR>          __pycache__\n               2 个文件            801 字节\n               3 个目录 141,263,392,768 可用字节\n'
+>>> print(a)
+ 驱动器 D 中的卷没有标签。
+ 卷的序列号是 8EF9-0EF1
+
+ d:\PycharmProjects\s12\20170613_day5\dj\backend\db 的目录
+
+2017/06/14  16:02    <DIR>          .
+2017/06/14  16:02    <DIR>          ..
+2017/06/14  16:02               801 sql_api.py
+2017/06/13  23:18                 0 __init__.py
+2017/06/14  00:20    <DIR>          __pycache__
+               2 个文件            801 字节
+               3 个目录 141,263,392,768 可用字节
+
+>>>
+>>> os.stat('sql_api.py')
+os.stat_result(st_mode=33206, st_ino=68116944363986308, st_dev=2398686961, st_nlink=1, st_uid=0, st_gid=0, st_size=801, st_atime=1497427346, st_mtime=1497427346, st_ctime=1497368896)
+>>> os.path.isfile('sql_api.py')
+True
+>>> os.path.isdir('sql_api.py')
+False
+
+
+
+>>> import shelve
+>>> a = shelve.open("shelve_test")
+>>> dir(a)
+['_MutableMapping__marker', '__abstractmethods__', '__class__', '__contains__', '__del__', '__delattr__', '__delitem__', '__dict__', '__dir__', '__doc__', '__enter__', '__eq__', '__exit__', '__format__', '__ge__', '__getattribute__', '__getitem__', '__gt__', '__hash__', '__init__', '__iter__', '__le__', '__len__', '__lt__', '__module__', '__ne__', '__new__', '__reduce__', '__reduce_ex__', '__repr__', '__setattr__', '__setitem__', '__sizeof__', '__slots__', '__str__', '__subclasshook__', '__weakref__', '_abc_cache', '_abc_negative_cache', '_abc_negative_cache_version', '_abc_registry', '_protocol', 'cache', 'clear', 'close', 'dict', 'get', 'items', 'keyencoding', 'keys', 'pop', 'popitem', 'setdefault', 'sync', 'update', 'values', 'writeback']
+>>> a.keys()
+KeysView(<shelve.DbfilenameShelf object at 0x0000016DCF57CC88>)
+>>> a.values()
+ValuesView(<shelve.DbfilenameShelf object at 0x0000016DCF57CC88>)
+>>> a.get("test")
+['alex', 'rain', 'test']
+
+>>> a.keys()
+KeysView(<shelve.DbfilenameShelf object at 0x0000016DCF57CC88>)
+>>> a.values()
+ValuesView(<shelve.DbfilenameShelf object at 0x0000016DCF57CC88>)
+>>> a.get("test")
+['alex', 'rain', 'test']
+>>> a.get("t1")
+Traceback (most recent call last):
+  File "C:\Program Files\Python35\lib\shelve.py", line 111, in __getitem__
+    value = self.cache[key]
+KeyError: 't1'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+  File "C:\Program Files\Python35\lib\shelve.py", line 106, in get
+    return self[key]
+  File "C:\Program Files\Python35\lib\shelve.py", line 114, in __getitem__
+    value = Unpickler(f).load()
+AttributeError: Can't get attribute 'Test' on <module '__main__' (built-in)>
+
+

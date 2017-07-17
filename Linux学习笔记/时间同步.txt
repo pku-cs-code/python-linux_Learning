@@ -1,0 +1,9 @@
+时间同步
+*/5 * * * * /usr/sbin/ntpdate  ntp.ubuntu.com #后面可接/dev/null 2>&1，不要写错
+
+修改时区为中国
+/bin/cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime  
+#实时查看时间
+watch -n 1 "date +%T"
+
+

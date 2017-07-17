@@ -1,0 +1,252 @@
+文件系统详解
+分区后格式化，然后挂载到某个目录下才可以存放数据
+
+[root@localhost ~]# fdisk -l
+
+Disk /dev/sda: 21.5 GB, 21474836480 bytes
+255 heads, 63 sectors/track, 2610 cylinders
+Units = cylinders of 16065 * 512 = 8225280 bytes
+Sector size (logical/physical): 512 bytes / 512 bytes
+I/O size (minimum/optimal): 512 bytes / 512 bytes
+Disk identifier: 0x000d0010
+
+   Device Boot      Start         End      Blocks   Id  System
+/dev/sda1   *           1          39      307200   83  Linux
+Partition 1 does not end on cylinder boundary.
+/dev/sda2              39         549     4096000   82  Linux swap / Solaris
+Partition 2 does not end on cylinder boundary.
+/dev/sda3             549        2611    16567296   83  Linux
+
+Disk /dev/sdb: 106 MB, 106954752 bytes
+64 heads, 32 sectors/track, 102 cylinders
+Units = cylinders of 2048 * 512 = 1048576 bytes
+Sector size (logical/physical): 512 bytes / 512 bytes
+I/O size (minimum/optimal): 512 bytes / 512 bytes
+Disk identifier: 0x00000000
+
+[root@localhost ~]# fdisk /dev/sdb
+Device contains neither a valid DOS partition table, nor Sun, SGI or OSF disklabel
+Building a new DOS disklabel with disk identifier 0x99a26091.
+Changes will remain in memory only, until you decide to write them.
+After that, of course, the previous content won't be recoverable.
+
+Warning: invalid flag 0x0000 of partition table 4 will be corrected by w(rite)
+
+WARNING: DOS-compatible mode is deprecated. It's strongly recommended to
+         switch off the mode (command 'c') and change display units to
+         sectors (command 'u').
+
+Command (m for help): p
+
+Disk /dev/sdb: 106 MB, 106954752 bytes
+64 heads, 32 sectors/track, 102 cylinders
+Units = cylinders of 2048 * 512 = 1048576 bytes
+Sector size (logical/physical): 512 bytes / 512 bytes
+I/O size (minimum/optimal): 512 bytes / 512 bytes
+Disk identifier: 0x99a26091
+
+   Device Boot      Start         End      Blocks   Id  System
+
+Command (m for help): n
+Command action
+   e   extended
+   p   primary partition (1-4)
+p
+Partition number (1-4): 1
+First cylinder (1-102, default 1): 
+Using default value 1
+Last cylinder, +cylinders or +size{K,M,G} (1-102, default 102): 
+Using default value 102
+
+Command (m for help): w
+The partition table has been altered!
+
+Calling ioctl() to re-read partition table.
+Syncing disks.
+[root@localhost ~]# partprobe让系统能够检测得到
+Warning: WARNING: the kernel failed to re-read the partition table on /dev/sda (Device or resource busy).  As a result, it may not reflect all of your changes until after reboot.
+[root@localhost ~]# mount /dev/sdb1 /mnt/
+mount: you must specify the filesystem type
+
+[root@localhost ~]# mkfs.ext4 -b 4096 -i 1024 /dev/sdb1
+mke2fs 1.41.12 (17-May-2010)
+Filesystem label=
+OS type: Linux
+Block size=4096 (log=2)
+Fragment size=4096 (log=2)
+Stride=0 blocks, Stripe width=0 blocks
+104448 inodes, 26108 blocks
+1305 blocks (5.00%) reserved for the super user
+First data block=0
+Maximum filesystem blocks=26880000
+4 block groups
+8400 blocks per group, 8400 fragments per group
+26112 inodes per group
+Superblock backups stored on blocks: 
+	8400, 25200
+
+Writing inode tables: done                            
+Creating journal (1024 blocks): done
+Writing superblocks and filesystem accounting information: done
+
+This filesystem will be automatically checked every 27 mounts or
+180 days, whichever comes first.  Use tune2fs -c or -i to override.
+[root@localhost ~]# mount /dev/sdb1 /mnt/
+[root@localhost ~]# df -h
+Filesystem            Size  Used Avail Use% Mounted on
+/dev/sda3              16G  2.4G   13G  16% /
+tmpfs                 112M     0  112M   0% /dev/shm
+/dev/sda1             291M   37M  240M  14% /boot
+192.168.1.60:/data/w_shared
+                      5.4G  1.8G  3.4G  35% /data/b_w
+192.168.1.60:/data/r_shared
+                      5.4G  1.8G  3.4G  35% /data/b_r
+/dev/sdb1              90M  4.4M   80M   6% /mnt
+
+除了inode和block外，操作系统还会记录文件系统的整体信息到superblock中
+每个inode和block都有编号，而superblock则存在于文件系统的最前面，负责管理记录整个文件系统额相关信息
+例如整个文件系统inode和block的总数量，已经使用的数量，剩余的数量
+
+文件系统使用文件和树形目录的抽象逻辑概念代替了硬盘和光盘等物理设备使用数据块的概念
+文件系统可能是一种数据访问的界面，可能在系统内存里或者没有对应的文件
+文件系统是一套实现了数据的存储、分级组织、
+访问和获取等操作的抽象数据类型
+
+格式化可以无需动inode和block，
+mkfs -t ext3 /dev/sdb1
+
+Linux支持的文件系统
+ext2，ext3，ext4，ISO9660，XFS……
+FUSE（Filesystem in Userspace）,很多分布式文件系统进行开发使用FUSE
+
+文件系统高级体系结构
+大多数文件系统代码在内核中（用户空间文件系统除外）
+
+应用层、虚拟层、实现层
+
+buffers写缓存，cache读缓存
+高并发时可能要禁用日志功能，可能造成数据丢失
+
+CentOS、Redhat： ext系列
+SUSE：ReiserFS
+IBM的AIX使用的日志文件系统jfs
+Sun OS：Ufs
+
+ext2第二拓展文件系统（Second extended filesystem）
+客服Minix文件系统的缺点，没有日志，被ext2取代
+ext2的经典实现为Linux内核中的ext2fs文件系统驱动，最大可支持2TB文件系统
+为内核为2.6时可支持32TB
+
+inode
+用来存储文件的属性信息的
+mkfs -t ext2 -b 4096 -i 1024  /dev/sdb1
+ext2的inode为128字节，ex4为256字节
+块设备：以块为单位收发数据的设备，一块硬盘
+与块设备对应的的是字符设备
+逻辑块：block，硬盘最小存储单位是扇区，数据存储的最小单位是逻辑块
+为了提高磁盘读取的效率
+
+dumpe2fs /dev/sda3查看block size和inode size
+
+分区=引导块+超级块+若干块组
+块组：super block+group descriptions +data block bitmap+inode bitmap+inode table+data blocks
+块组管理inode和block
+超级块：记录整个文件系统相关信息的地方，作用是存储文件系统的block和inode大小信息，空的和填满的块与inode总数量信息
+要访问一个分区内的数据，受限访问超级块，超级块受损则不能访问
+block大小，ext2，ext3为1k，2k，4k，其中/boot默认为1k，其他默认为4k
+超级块的大小为1k
+超级快在每个块组的前面可能都有一份拷贝。
+系统运行期间，把超级快复制到系统缓冲区内，只要把块组为0的超级块读入内存，其他组块的超级块做为备份
+位置为所在分区的前1024字节
+
+块组：超级块+GDT+块位图+inode位图+inode表+数据块
+有块位图用du查看目录大小第一次比较慢，以后就快了，是因为找的块位图
+inode位图表示inode是否空闲可用
+inode表，一个块组中的所有inode组成了inode表
+inode表用于跟踪定位每个文件，包括位置、大小（但不包括文件名）
+node和文件一起放在外存，系统运行时把inode写入内存建立映像
+数据块：真正存放文件实体的地方，文件名在目录的数据块中而不是文件的inode中
+目录名放在目录的inode（块？）中，目录的inode放目录的属性，目录的block放目录下的文件名等信息
+
+superblock、inode bitmap、block bitmap与实际数据不一样则系统重启时会通过
+valid bit等状态判断是否强制进行数据一致性检查，有时以e2fsck进行的
+上述会耗费时间，ext3在ext2基础上新增日志功能，使检查更快
+
+Linux系统删除文件的原理
+i_link=0,i_count=0
+进程访问i_count+1,i_count默认为0
+
+
+
+1100  yum install  -y httpd
+mkdir /app/log
+编辑配置文件日志记录到/app/log/access_log中
+
+ 1101  /etc/init.d/httpd  status
+ 1102  /etc/init.d/httpd  start
+ 1103  ps -ef
+ 1104  netstat -lnt
+ 1105  cd /etc/httpd/conf
+ 1106  vim httpd.conf
+ 1107  curl 192.168.1.60
+ 1108  cd /
+ 1109  ll
+ 1110  cd /app/log/
+ 1111  ll
+ 1112  vim access_log 
+ 1113  tail -10 access_log
+创建一个小的文件系统，用于存放上述日志 
+ 1114  dd if=/dev/zero of=/dev/sdc bs=8k count=10
+ 1115  ls -l /dev/sdc
+ 1116  df -h
+ 1117  fdisk /dev/sdc
+ 1118  mkfs -t ext3 /dev/sdc 
+ 1119  tune2fs -c -1 /dev/sdc
+ 1120  mount /dev/sdc /app/log/
+ 1121  mount -o loop /dev/sdc /app/log/ 挂载
+ 1122  df -h
+ 1123  curl 192.168.1.60
+ 1124  ll
+ 1125  cat access_log 
+重启httpd服务确保日志记录到上述文件系统挂载的/app/log下面
+ 1126  /etc/init.d/httpd restart
+ 1127  curl 192.168.1.60
+ 1128  cat access_log 
+ 1129  df -h
+写个循环脚本访问httpd使得httpd日志充满/app/log整个空间
+ 1130  for n in `seq 10000` ;do curl 192.168.1.61;done
+ 1131  for n in `seq 10000` ;do curl 192.168.1.60;done
+ 1132  for n in `seq 100000` ;do curl 192.168.1.60 > /dev/null &;done
+curl -s可以slient不输出到屏幕
+ 1133  for n in `seq 100000` ;do curl 192.168.1.60 > /dev/null;done
+ 1134  hitory
+ 1005  rm -f access_log 
+ 1006  df -h
+
+优化：指定block大小，不记录日志，取消时间戳，写入缓存，不设置UID
+ext4比ext3增加了很多功能：
+与ext3兼容，执行若干条命令可以从ext3迁移到ext4，原有ext3数据保留，新的以ext4存新数据
+更大的文件系统和更大的文件，ext3支持最大16TB文件系统和最大2TB文件
+ext4支持1EB（1EB=1024PB，1PB=1024TB）文件系统和16TB的文件
+
+多块分配
+延迟分配
+无线数量的子目录
+extents
+快速fsck检查
+日志校验
+“无日志”模式
+ 在线碎片整理
+inode相关特性
+持久预分配
+默认启用barrier
+
+Reiserfs
+基于B树状的文件系统，总体性能非常好，特别对小文件，SUSE默认文件系统
+XFS 淘宝、支付宝数据库
+vfat
+windows95、98文件系统或一些U盘
+虚拟文件系统
+NTFS
+可以加密
+

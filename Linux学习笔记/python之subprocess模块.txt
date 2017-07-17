@@ -1,0 +1,165 @@
+python之subprocess模块
+
+python3.5上是run，python2是call
+经测试2.6.6和3.3.3都是call
+
+
+>>> subprocess.call('df -h')
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+  File "./subprocess.py", line 523, in call
+    with Popen(*popenargs, **kwargs) as p:
+  File "./subprocess.py", line 824, in __init__
+    restore_signals, start_new_session)
+  File "./subprocess.py", line 1448, in _execute_child
+    raise child_exception_type(errno_num, err_msg)
+FileNotFoundError: [Errno 2] No such file or directory: 'df -h'
+>>> version
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+NameError: name 'version' is not defined
+>>> python -V
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+NameError: name 'python' is not defined
+>>> subprocess.call("df -h")
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+  File "./subprocess.py", line 523, in call
+    with Popen(*popenargs, **kwargs) as p:
+  File "./subprocess.py", line 824, in __init__
+    restore_signals, start_new_session)
+  File "./subprocess.py", line 1448, in _execute_child
+    raise child_exception_type(errno_num, err_msg)
+FileNotFoundError: [Errno 2] No such file or directory: 'df -h'
+>>> subprocess.call("df -h",shell=True)
+Filesystem      Size  Used Avail Use% Mounted on
+/dev/sda3       5.4G  4.6G  592M  89% /
+tmpfs           246M     0  246M   0% /dev/shm
+/dev/sda1       190M  117M   63M  66% /boot
+/dev/sdb5       9.7M  104K  9.0M   2% /mnt
+0
+>>> subprocess.call(df)
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+NameError: name 'df' is not defined
+>>> subprocess.call("df")
+Filesystem     1K-blocks    Used Available Use% Mounted on
+/dev/sda3        5657356 4757568    605748  89% /
+tmpfs             250932       0    250932   0% /dev/shm
+/dev/sda1         194241  119800     64201  66% /boot
+/dev/sdb5           9833     104      9167   2% /mnt
+0
+>>> subprocess.call(["df",'-h'])
+Filesystem      Size  Used Avail Use% Mounted on
+/dev/sda3       5.4G  4.6G  592M  89% /
+tmpfs           246M     0  246M   0% /dev/shm
+/dev/sda1       190M  117M   63M  66% /boot
+/dev/sdb5       9.7M  104K  9.0M   2% /mnt
+0
+>>> subprocess.call("df",shell=True)
+Filesystem     1K-blocks    Used Available Use% Mounted on
+/dev/sda3        5657356 4757568    605748  89% /
+tmpfs             250932       0    250932   0% /dev/shm
+/dev/sda1         194241  119800     64201  66% /boot
+/dev/sdb5           9833     104      9167   2% /mnt
+0
+>>> subprocess.call("df",shell=False)
+Filesystem     1K-blocks    Used Available Use% Mounted on
+/dev/sda3        5657356 4757568    605748  89% /
+tmpfs             250932       0    250932   0% /dev/shm
+/dev/sda1         194241  119800     64201  66% /boot
+/dev/sdb5           9833     104      9167   2% /mnt
+0
+>>> subprocess.call("df -h",shell=False)
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+  File "./subprocess.py", line 523, in call
+    with Popen(*popenargs, **kwargs) as p:
+  File "./subprocess.py", line 824, in __init__
+    restore_signals, start_new_session)
+  File "./subprocess.py", line 1448, in _execute_child
+    raise child_exception_type(errno_num, err_msg)
+FileNotFoundError: [Errno 2] No such file or directory: 'df -h'
+
+>>> subprocess.call("df-h",shell=True)
+/bin/sh: df-h: command not found
+127
+
+输出接管道
+>>> a = subprocess.call("df -h",shell=True,stdout=subprocess.PIPE)
+>>> a
+0
+
+>>> a = subprocess.Popen("df -h",shell=True,stdout=subprocess.PIPE)
+>>> a
+<subprocess.Popen object at 0x7f7344007b50>
+>>> a.stdout.read()
+b'Filesystem      Size  Used Avail Use% Mounted on\n/dev/sda3       5.4G  4.6G  592M  89% /\ntmpfs           246M     0  246M   0% /dev/shm\n/dev/sda1       190M  117M   63M  66% /boot\n/dev/sdb5       9.7M  104K  9.0M   2% /mnt\n'
+>>> a = subprocess.Popen("df -h",shell=True)
+>>> Filesystem      Size  Used Avail Use% Mounted on
+/dev/sda3       5.4G  4.6G  592M  89% /
+tmpfs           246M     0  246M   0% /dev/shm
+/dev/sda1       190M  117M   63M  66% /boot
+/dev/sdb5       9.7M  104K  9.0M   2% /mnt
+
+>>> a.stdout.read()
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+AttributeError: 'NoneType' object has no attribute 'read'
+>>> a.read()
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+AttributeError: 'Popen' object has no attribute 'read'
+
+>>> subprocess.call("dfdf",shell=False)
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+  File "./subprocess.py", line 523, in call
+    with Popen(*popenargs, **kwargs) as p:
+  File "./subprocess.py", line 824, in __init__
+    restore_signals, start_new_session)
+  File "./subprocess.py", line 1448, in _execute_child
+    raise child_exception_type(errno_num, err_msg)
+FileNotFoundError: [Errno 2] No such file or directory: 'dfdf'
+>>> subprocess.checkcall("dfdf",shell=True)
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+AttributeError: 'module' object has no attribute 'checkcall'
+
+两个进程之间默认是不能通信的，需要借助管道
+
+
+
+交互时python2.6.6和python3.3.3又有不同
+Linux环境下对比
+2.6.6
+>>> obj = subprocess.Popen(['python'],stdin=subprocess.PIPE,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+>>> obj.stdin.write('print("hello\n")')
+
+3.3.3
+>>> obj = subprocess.Popen(['python'],stdin=subprocess.PIPE,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+>>> obj.stdin.write('print("hello\n")')
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+TypeError: 'str' does not support the buffer interface
+
+pycharm中报错
+TypeError: a bytes-like object is required, not 'str'
+
+这个问题是由于python2和python2对str和bytes做了显式的区别，对于接收bytes类型的需要提前做好编码
+这里的write类型接收bytes类型，所以要对后面的内容进行编码
+原先是以为要对print的内容进行编码，尝试进行编码后依然报错TypeError: a bytes-like object is required, not 'str'
+直到看到一个帖子才理解write后面也需要接收bytes类型，所以要对write后面的内容进行编码
+帖子地址
+https://forum.sublimetext.com/t/st3-plugin-error-str-does-not-support-the-buffer-interface/10865/2
+
+
+>>> import subprocess
+>>> obj = subprocess.Popen(['python'],stdin=subprocess.PIPE,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+>>> obj.stdin.write(bytes("print('hello1')\n",encoding='utf-8'))
+16
+>>> obj.stdin.write(bytes("print('hello2'\n)",encoding='utf-8'))
+16
+>>> obj.communicate()
+(b'hello1\nhello2\n', b'')

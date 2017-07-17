@@ -1,0 +1,35 @@
+python一切事物都是对象
+
+列表功能集
+对象都是类创建的，创建的一切都是对象
+列表是类，字符串也是类a=str()，字典、float、int
+
+print type()
+
+>>> age = 18
+>>> age.bit_length()
+5
+最少的可以展示的位
+
+>>> age=-19
+>>> age.__abs__()  #取绝对值
+19
+
+>>> abs(-19)
+19
+>>> age.__add__(100)
+81
+
+___divmod___分页
+__float__  转成float，但是原来的没变
+__floordiv__地板除，只要除以后的小数的整数部分 5//6就是地板除
+__ge__ 大于等于
+__index__ 索引
+__init__ 构造方法
+  age = 19
+  age= int(19)
+  #执行int类的__init__方法
+__pos__加号
+__power__幂
+__rand__ reverse，运算数的顺序调换
+age.__rdivmod__(7) 7/18

@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <div id="n1">
+        alex
+        <h1>sb</h1>
+    </div>
+    <h1>特殊的：value</h1>
+    <h3><input type="button" onclick="GetValue();"value="获取值"/></h3>
+    <input type="text" id="n2">
+    <select id="n3">
+        <option value="1">beijing</option>
+        <option value="2">shanghai</option>
+        <option value="3">shenzhen</option>
+    </select>
+    <textarea id="n4">textarea
+
+    </textarea>
+<script type="text/javascript">
+    function GetValue(){
+        var obj = document.getElementById('n4');
+
+        alert(obj.value);
+        obj.value = '2';
+    }
+    var text = document.getElementById('n1');
+    console.log(text.innerText);
+    console.log(text.innerHTML);
+</script>
+</body>
+</html>

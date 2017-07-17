@@ -1,0 +1,1164 @@
+fdisk
+用fdisk分区的实质是修改64字节的分区表信息
+
+[root@test log]# fdisk -l
+
+Disk /dev/loop0: 0 MB, 81920 bytes
+255 heads, 63 sectors/track, 0 cylinders
+Units = cylinders of 16065 * 512 = 8225280 bytes
+Sector size (logical/physical): 512 bytes / 512 bytes
+I/O size (minimum/optimal): 512 bytes / 512 bytes
+Disk identifier: 0x00000000
+
+
+Disk /dev/sda: 6442 MB, 6442450944 bytes
+255 heads, 63 sectors/track, 783 cylinders
+Units = cylinders of 16065 * 512 = 8225280 bytes
+Sector size (logical/physical): 512 bytes / 512 bytes
+I/O size (minimum/optimal): 512 bytes / 512 bytes
+Disk identifier: 0x000e68f0
+
+   Device Boot      Start         End      Blocks   Id  System
+/dev/sda1   *           1          26      204800   83  Linux
+Partition 1 does not end on cylinder boundary.
+/dev/sda2              26          52      204800   82  Linux swap / Solaris
+Partition 2 does not end on cylinder boundary.
+/dev/sda3              52         784     5880832   83  Linux
+Partition 3 does not end on cylinder boundary.
+
+Disk /dev/sdb: 106 MB, 106954752 bytes
+64 heads, 32 sectors/track, 102 cylinders
+Units = cylinders of 2048 * 512 = 1048576 bytes
+Sector size (logical/physical): 512 bytes / 512 bytes
+I/O size (minimum/optimal): 512 bytes / 512 bytes
+Disk identifier: 0xf7a71148
+
+   Device Boot      Start         End      Blocks   Id  System
+/dev/sdb1               1         102      104432   83  Linux
+[root@test log]# fdisk /dev/sdb 
+
+WARNING: DOS-compatible mode is deprecated. It's strongly recommended to
+         switch off the mode (command 'c') and change display units to
+         sectors (command 'u').
+
+Command (m for help): m
+Command action
+   a   toggle a bootable flag
+   b   edit bsd disklabel
+   c   toggle the dos compatibility flag
+   d   delete a partition
+   l   list known partition types
+   m   print this menu
+   n   add a new partition
+   o   create a new empty DOS partition table
+   p   print the partition table
+   q   quit without saving changes
+   s   create a new empty Sun disklabel
+   t   change a partition's system id
+   u   change display/entry units
+   v   verify the partition table
+   w   write table to disk and exit
+   x   extra functionality (experts only)
+
+Command (m for help): q
+
+[root@test log]# fdisk -l
+
+Disk /dev/loop0: 0 MB, 81920 bytes
+255 heads, 63 sectors/track, 0 cylinders
+Units = cylinders of 16065 * 512 = 8225280 bytes
+Sector size (logical/physical): 512 bytes / 512 bytes
+I/O size (minimum/optimal): 512 bytes / 512 bytes
+Disk identifier: 0x00000000
+
+
+Disk /dev/sda: 6442 MB, 6442450944 bytes
+255 heads, 63 sectors/track, 783 cylinders
+Units = cylinders of 16065 * 512 = 8225280 bytes
+Sector size (logical/physical): 512 bytes / 512 bytes
+I/O size (minimum/optimal): 512 bytes / 512 bytes
+Disk identifier: 0x000e68f0
+
+   Device Boot      Start         End      Blocks   Id  System
+/dev/sda1   *           1          26      204800   83  Linux
+Partition 1 does not end on cylinder boundary.
+/dev/sda2              26          52      204800   82  Linux swap / Solaris
+Partition 2 does not end on cylinder boundary.
+/dev/sda3              52         784     5880832   83  Linux
+Partition 3 does not end on cylinder boundary.
+
+Disk /dev/sdb: 106 MB, 106954752 bytes
+64 heads, 32 sectors/track, 102 cylinders
+Units = cylinders of 2048 * 512 = 1048576 bytes
+Sector size (logical/physical): 512 bytes / 512 bytes
+I/O size (minimum/optimal): 512 bytes / 512 bytes
+Disk identifier: 0xf7a71148
+
+   Device Boot      Start         End      Blocks   Id  System
+/dev/sdb1               1         102      104432   83  Linux
+[root@test log]# fdisk /dev/sdb 
+
+WARNING: DOS-compatible mode is deprecated. It's strongly recommended to
+         switch off the mode (command 'c') and change display units to
+         sectors (command 'u').
+
+Command (m for help): m
+Command action
+   a   toggle a bootable flag
+   b   edit bsd disklabel
+   c   toggle the dos compatibility flag
+   d   delete a partition
+   l   list known partition types
+   m   print this menu
+   n   add a new partition
+   o   create a new empty DOS partition table
+   p   print the partition table
+   q   quit without saving changes
+   s   create a new empty Sun disklabel
+   t   change a partition's system id
+   u   change display/entry units
+   v   verify the partition table
+   w   write table to disk and exit
+   x   extra functionality (experts only)
+
+Command (m for help): q
+
+[root@test log]# 
+You have mail in /var/spool/mail/root
+[root@test log]# fdisk -l
+
+Disk /dev/loop0: 0 MB, 81920 bytes
+255 heads, 63 sectors/track, 0 cylinders
+Units = cylinders of 16065 * 512 = 8225280 bytes
+Sector size (logical/physical): 512 bytes / 512 bytes
+I/O size (minimum/optimal): 512 bytes / 512 bytes
+Disk identifier: 0x00000000
+
+
+Disk /dev/sda: 6442 MB, 6442450944 bytes
+255 heads, 63 sectors/track, 783 cylinders
+Units = cylinders of 16065 * 512 = 8225280 bytes
+Sector size (logical/physical): 512 bytes / 512 bytes
+I/O size (minimum/optimal): 512 bytes / 512 bytes
+Disk identifier: 0x000e68f0
+
+   Device Boot      Start         End      Blocks   Id  System
+/dev/sda1   *           1          26      204800   83  Linux
+Partition 1 does not end on cylinder boundary.
+/dev/sda2              26          52      204800   82  Linux swap / Solaris
+Partition 2 does not end on cylinder boundary.
+/dev/sda3              52         784     5880832   83  Linux
+Partition 3 does not end on cylinder boundary.
+
+Disk /dev/sdb: 106 MB, 106954752 bytes
+64 heads, 32 sectors/track, 102 cylinders
+Units = cylinders of 2048 * 512 = 1048576 bytes
+Sector size (logical/physical): 512 bytes / 512 bytes
+I/O size (minimum/optimal): 512 bytes / 512 bytes
+Disk identifier: 0xf7a71148
+
+   Device Boot      Start         End      Blocks   Id  System
+/dev/sdb1               1         102      104432   83  Linux
+[root@test log]# fdisk /dev/sdb
+
+WARNING: DOS-compatible mode is deprecated. It's strongly recommended to
+         switch off the mode (command 'c') and change display units to
+         sectors (command 'u').
+
+Command (m for help): d
+Selected partition 1
+
+Command (m for help): 1\
+1: unknown command
+Command action
+   a   toggle a bootable flag
+   b   edit bsd disklabel
+   c   toggle the dos compatibility flag
+   d   delete a partition
+   l   list known partition types
+   m   print this menu
+   n   add a new partition
+   o   create a new empty DOS partition table
+   p   print the partition table
+   q   quit without saving changes
+   s   create a new empty Sun disklabel
+   t   change a partition's system id
+   u   change display/entry units
+   v   verify the partition table
+   w   write table to disk and exit
+   x   extra functionality (experts only)
+
+Command (m for help): p
+
+Disk /dev/sdb: 106 MB, 106954752 bytes
+64 heads, 32 sectors/track, 102 cylinders
+Units = cylinders of 2048 * 512 = 1048576 bytes
+Sector size (logical/physical): 512 bytes / 512 bytes
+I/O size (minimum/optimal): 512 bytes / 512 bytes
+Disk identifier: 0xf7a71148
+
+   Device Boot      Start         End      Blocks   Id  System
+
+Command (m for help): n
+Command action
+   e   extended
+   p   primary partition (1-4)
+p
+Partition number (1-4): 1
+First cylinder (1-102, default 1): 1
+Last cylinder, +cylinders or +size{K,M,G} (1-102, default 102): +20M
+
+Command (m for help): p
+
+Disk /dev/sdb: 106 MB, 106954752 bytes
+64 heads, 32 sectors/track, 102 cylinders
+Units = cylinders of 2048 * 512 = 1048576 bytes
+Sector size (logical/physical): 512 bytes / 512 bytes
+I/O size (minimum/optimal): 512 bytes / 512 bytes
+Disk identifier: 0xf7a71148
+
+   Device Boot      Start         End      Blocks   Id  System
+/dev/sdb1               1          21       21488   83  Linux
+
+Command (m for help): n
+Command action
+   e   extended
+   p   primary partition (1-4)
+p
+Partition number (1-4): 2
+First cylinder (22-102, default 22): 
+Using default value 22
+Last cylinder, +cylinders or +size{K,M,G} (22-102, default 102): p
+Last cylinder, +cylinders or +size{K,M,G} (22-102, default 102): 
+Using default value 102
+
+Command (m for help): n
+Command action
+   e   extended
+   p   primary partition (1-4)
+p
+Partition number (1-4): 3
+No free sectors available
+
+Command (m for help): 
+Command (m for help): p  
+
+Disk /dev/sdb: 106 MB, 106954752 bytes
+64 heads, 32 sectors/track, 102 cylinders
+Units = cylinders of 2048 * 512 = 1048576 bytes
+Sector size (logical/physical): 512 bytes / 512 bytes
+I/O size (minimum/optimal): 512 bytes / 512 bytes
+Disk identifier: 0xf7a71148
+
+   Device Boot      Start         End      Blocks   Id  System
+/dev/sdb1               1          21       21488   83  Linux
+/dev/sdb2              22         102       82944   83  Linux
+
+Command (m for help): d
+Partition number (1-4): 2
+
+Command (m for help): n
+Command action
+   e   extended
+   p   primary partition (1-4)
+p
+Partition number (1-4): 2
+First cylinder (22-102, default 22): 
+Using default value 22
+Last cylinder, +cylinders or +size{K,M,G} (22-102, default 102): 20
+Value out of range.
+Last cylinder, +cylinders or +size{K,M,G} (22-102, default 102): 20M
+Value out of range.
+Last cylinder, +cylinders or +size{K,M,G} (22-102, default 102): +20M        
+
+Command (m for help): p
+
+Disk /dev/sdb: 106 MB, 106954752 bytes
+64 heads, 32 sectors/track, 102 cylinders
+Units = cylinders of 2048 * 512 = 1048576 bytes
+Sector size (logical/physical): 512 bytes / 512 bytes
+I/O size (minimum/optimal): 512 bytes / 512 bytes
+Disk identifier: 0xf7a71148
+
+   Device Boot      Start         End      Blocks   Id  System
+/dev/sdb1               1          21       21488   83  Linux
+/dev/sdb2              22          42       21504   83  Linux
+
+Command (m for help): n
+Command action
+   e   extended
+   p   primary partition (1-4)
+p
+Partition number (1-4): 3
+First cylinder (43-102, default 43): 
+Using default value 43
+Last cylinder, +cylinders or +size{K,M,G} (43-102, default 102): +20M  
+
+Command (m for help): p
+
+Disk /dev/sdb: 106 MB, 106954752 bytes
+64 heads, 32 sectors/track, 102 cylinders
+Units = cylinders of 2048 * 512 = 1048576 bytes
+Sector size (logical/physical): 512 bytes / 512 bytes
+I/O size (minimum/optimal): 512 bytes / 512 bytes
+Disk identifier: 0xf7a71148
+
+   Device Boot      Start         End      Blocks   Id  System
+/dev/sdb1               1          21       21488   83  Linux
+/dev/sdb2              22          42       21504   83  Linux
+/dev/sdb3              43          63       21504   83  Linux
+
+Command (m for help): n
+Command action
+   e   extended
+   p   primary partition (1-4)
+p
+Selected partition 4
+First cylinder (64-102, default 64): 
+Using default value 64
+Last cylinder, +cylinders or +size{K,M,G} (64-102, default 102): +28M
+
+Command (m for help): p
+
+Disk /dev/sdb: 106 MB, 106954752 bytes
+64 heads, 32 sectors/track, 102 cylinders
+Units = cylinders of 2048 * 512 = 1048576 bytes
+Sector size (logical/physical): 512 bytes / 512 bytes
+I/O size (minimum/optimal): 512 bytes / 512 bytes
+Disk identifier: 0xf7a71148
+
+   Device Boot      Start         End      Blocks   Id  System
+/dev/sdb1               1          21       21488   83  Linux
+/dev/sdb2              22          42       21504   83  Linux
+/dev/sdb3              43          63       21504   83  Linux
+/dev/sdb4              64          92       29696   83  Linux
+
+Command (m for help): n
+You must delete some partition and add an extended partition first
+
+Command (m for help): e
+e: unknown command
+Command action
+   a   toggle a bootable flag
+   b   edit bsd disklabel
+   c   toggle the dos compatibility flag
+   d   delete a partition
+   l   list known partition types
+   m   print this menu
+   n   add a new partition
+   o   create a new empty DOS partition table
+   p   print the partition table
+   q   quit without saving changes
+   s   create a new empty Sun disklabel
+   t   change a partition's system id
+   u   change display/entry units
+   v   verify the partition table
+   w   write table to disk and exit
+   x   extra functionality (experts only)
+
+Command (m for help): d
+Partition number (1-4): 4
+
+Command (m for help): p
+
+Disk /dev/sdb: 106 MB, 106954752 bytes
+64 heads, 32 sectors/track, 102 cylinders
+Units = cylinders of 2048 * 512 = 1048576 bytes
+Sector size (logical/physical): 512 bytes / 512 bytes
+I/O size (minimum/optimal): 512 bytes / 512 bytes
+Disk identifier: 0xf7a71148
+
+   Device Boot      Start         End      Blocks   Id  System
+/dev/sdb1               1          21       21488   83  Linux
+/dev/sdb2              22          42       21504   83  Linux
+/dev/sdb3              43          63       21504   83  Linux
+
+Command (m for help): n
+Command action
+   e   extended
+   p   primary partition (1-4)
+e
+Selected partition 4
+First cylinder (64-102, default 64): 
+Using default value 64
+Last cylinder, +cylinders or +size{K,M,G} (64-102, default 102): +30M
+
+Command (m for help): p
+
+Disk /dev/sdb: 106 MB, 106954752 bytes
+64 heads, 32 sectors/track, 102 cylinders
+Units = cylinders of 2048 * 512 = 1048576 bytes
+Sector size (logical/physical): 512 bytes / 512 bytes
+I/O size (minimum/optimal): 512 bytes / 512 bytes
+Disk identifier: 0xf7a71148
+
+   Device Boot      Start         End      Blocks   Id  System
+/dev/sdb1               1          21       21488   83  Linux
+/dev/sdb2              22          42       21504   83  Linux
+/dev/sdb3              43          63       21504   83  Linux
+/dev/sdb4              64          94       31744    5  Extended
+
+Command (m for help): n
+First cylinder (64-94, default 64): 21
+Value out of range.
+First cylinder (64-94, default 64): 64
+Last cylinder, +cylinders or +size{K,M,G} (64-94, default 94):       
+Using default value 94
+
+Command (m for help): m
+Command action
+   a   toggle a bootable flag
+   b   edit bsd disklabel
+   c   toggle the dos compatibility flag
+   d   delete a partition
+   l   list known partition types
+   m   print this menu
+   n   add a new partition
+   o   create a new empty DOS partition table
+   p   print the partition table
+   q   quit without saving changes
+   s   create a new empty Sun disklabel
+   t   change a partition's system id
+   u   change display/entry units
+   v   verify the partition table
+   w   write table to disk and exit
+   x   extra functionality (experts only)
+
+Command (m for help): n
+No free sectors available
+
+Command (m for help): p
+
+Disk /dev/sdb: 106 MB, 106954752 bytes
+64 heads, 32 sectors/track, 102 cylinders
+Units = cylinders of 2048 * 512 = 1048576 bytes
+Sector size (logical/physical): 512 bytes / 512 bytes
+I/O size (minimum/optimal): 512 bytes / 512 bytes
+Disk identifier: 0xf7a71148
+
+   Device Boot      Start         End      Blocks   Id  System
+/dev/sdb1               1          21       21488   83  Linux
+/dev/sdb2              22          42       21504   83  Linux
+/dev/sdb3              43          63       21504   83  Linux
+/dev/sdb4              64          94       31744    5  Extended
+/dev/sdb5              64          94       31728   83  Linux
+
+Command (m for help): d
+Partition number (1-5): 5
+
+Command (m for help): d
+Partition number (1-5): 4
+
+Command (m for help): p
+
+Disk /dev/sdb: 106 MB, 106954752 bytes
+64 heads, 32 sectors/track, 102 cylinders
+Units = cylinders of 2048 * 512 = 1048576 bytes
+Sector size (logical/physical): 512 bytes / 512 bytes
+I/O size (minimum/optimal): 512 bytes / 512 bytes
+Disk identifier: 0xf7a71148
+
+   Device Boot      Start         End      Blocks   Id  System
+/dev/sdb1               1          21       21488   83  Linux
+/dev/sdb2              22          42       21504   83  Linux
+/dev/sdb3              43          63       21504   83  Linux
+
+Command (m for help): d
+Partition number (1-4): 3
+
+Command (m for help): p
+
+Disk /dev/sdb: 106 MB, 106954752 bytes
+64 heads, 32 sectors/track, 102 cylinders
+Units = cylinders of 2048 * 512 = 1048576 bytes
+Sector size (logical/physical): 512 bytes / 512 bytes
+I/O size (minimum/optimal): 512 bytes / 512 bytes
+Disk identifier: 0xf7a71148
+
+   Device Boot      Start         End      Blocks   Id  System
+/dev/sdb1               1          21       21488   83  Linux
+/dev/sdb2              22          42       21504   83  Linux
+
+Command (m for help): n
+Command action
+   e   extended
+   p   primary partition (1-4)
+e
+Partition number (1-4): 3
+First cylinder (43-102, default 43): 
+Using default value 43
+Last cylinder, +cylinders or +size{K,M,G} (43-102, default 102): 
+Using default value 102
+
+Command (m for help): p
+
+Disk /dev/sdb: 106 MB, 106954752 bytes
+64 heads, 32 sectors/track, 102 cylinders
+Units = cylinders of 2048 * 512 = 1048576 bytes
+Sector size (logical/physical): 512 bytes / 512 bytes
+I/O size (minimum/optimal): 512 bytes / 512 bytes
+Disk identifier: 0xf7a71148
+
+   Device Boot      Start         End      Blocks   Id  System
+/dev/sdb1               1          21       21488   83  Linux
+/dev/sdb2              22          42       21504   83  Linux
+/dev/sdb3              43         102       61440    5  Extended
+
+Command (m for help): n
+Command action
+   l   logical (5 or over)
+   p   primary partition (1-4)
+l
+First cylinder (43-102, default 43): 
+Using default value 43
+Last cylinder, +cylinders or +size{K,M,G} (43-102, default 102): 20M
+Value out of range.
+Last cylinder, +cylinders or +size{K,M,G} (43-102, default 102): +20M
+
+Command (m for help): p
+
+Disk /dev/sdb: 106 MB, 106954752 bytes
+64 heads, 32 sectors/track, 102 cylinders
+Units = cylinders of 2048 * 512 = 1048576 bytes
+Sector size (logical/physical): 512 bytes / 512 bytes
+I/O size (minimum/optimal): 512 bytes / 512 bytes
+Disk identifier: 0xf7a71148
+
+   Device Boot      Start         End      Blocks   Id  System
+/dev/sdb1               1          21       21488   83  Linux
+/dev/sdb2              22          42       21504   83  Linux
+/dev/sdb3              43         102       61440    5  Extended
+/dev/sdb5              43          63       21488   83  Linux
+
+Command (m for help): n
+Command action
+   l   logical (5 or over)
+   p   primary partition (1-4)
+l
+First cylinder (64-102, default 64): 
+Using default value 64
+Last cylinder, +cylinders or +size{K,M,G} (64-102, default 102): +20M
+
+Command (m for help): p
+
+Disk /dev/sdb: 106 MB, 106954752 bytes
+64 heads, 32 sectors/track, 102 cylinders
+Units = cylinders of 2048 * 512 = 1048576 bytes
+Sector size (logical/physical): 512 bytes / 512 bytes
+I/O size (minimum/optimal): 512 bytes / 512 bytes
+Disk identifier: 0xf7a71148
+
+   Device Boot      Start         End      Blocks   Id  System
+/dev/sdb1               1          21       21488   83  Linux
+/dev/sdb2              22          42       21504   83  Linux
+/dev/sdb3              43         102       61440    5  Extended
+/dev/sdb5              43          63       21488   83  Linux
+/dev/sdb6              64          84       21488   83  Linux
+
+Command (m for help): n
+Command action
+   l   logical (5 or over)
+   p   primary partition (1-4)
+l
+First cylinder (85-102, default 85): 
+Using default value 85
+Last cylinder, +cylinders or +size{K,M,G} (85-102, default 102): +10M
+
+Command (m for help): p
+
+Disk /dev/sdb: 106 MB, 106954752 bytes
+64 heads, 32 sectors/track, 102 cylinders
+Units = cylinders of 2048 * 512 = 1048576 bytes
+Sector size (logical/physical): 512 bytes / 512 bytes
+I/O size (minimum/optimal): 512 bytes / 512 bytes
+Disk identifier: 0xf7a71148
+
+   Device Boot      Start         End      Blocks   Id  System
+/dev/sdb1               1          21       21488   83  Linux
+/dev/sdb2              22          42       21504   83  Linux
+/dev/sdb3              43         102       61440    5  Extended
+/dev/sdb5              43          63       21488   83  Linux
+/dev/sdb6              64          84       21488   83  Linux
+/dev/sdb7              85          95       11248   83  Linux
+
+Command (m for help): n
+Command action
+   l   logical (5 or over)
+   p   primary partition (1-4)
+p
+Selected partition 4
+No free sectors available
+
+Command (m for help): l
+
+ 0  Empty           24  NEC DOS         81  Minix / old Lin bf  Solaris        
+ 1  FAT12           39  Plan 9          82  Linux swap / So c1  DRDOS/sec (FAT-
+ 2  XENIX root      3c  PartitionMagic  83  Linux           c4  DRDOS/sec (FAT-
+ 3  XENIX usr       40  Venix 80286     84  OS/2 hidden C:  c6  DRDOS/sec (FAT-
+ 4  FAT16 <32M      41  PPC PReP Boot   85  Linux extended  c7  Syrinx         
+ 5  Extended        42  SFS             86  NTFS volume set da  Non-FS data    
+ 6  FAT16           4d  QNX4.x          87  NTFS volume set db  CP/M / CTOS / .
+ 7  HPFS/NTFS       4e  QNX4.x 2nd part 88  Linux plaintext de  Dell Utility   
+ 8  AIX             4f  QNX4.x 3rd part 8e  Linux LVM       df  BootIt         
+ 9  AIX bootable    50  OnTrack DM      93  Amoeba          e1  DOS access     
+ a  OS/2 Boot Manag 51  OnTrack DM6 Aux 94  Amoeba BBT      e3  DOS R/O        
+ b  W95 FAT32       52  CP/M            9f  BSD/OS          e4  SpeedStor      
+ c  W95 FAT32 (LBA) 53  OnTrack DM6 Aux a0  IBM Thinkpad hi eb  BeOS fs        
+ e  W95 FAT16 (LBA) 54  OnTrackDM6      a5  FreeBSD         ee  GPT            
+ f  W95 Ext'd (LBA) 55  EZ-Drive        a6  OpenBSD         ef  EFI (FAT-12/16/
+10  OPUS            56  Golden Bow      a7  NeXTSTEP        f0  Linux/PA-RISC b
+11  Hidden FAT12    5c  Priam Edisk     a8  Darwin UFS      f1  SpeedStor      
+12  Compaq diagnost 61  SpeedStor       a9  NetBSD          f4  SpeedStor      
+14  Hidden FAT16 <3 63  GNU HURD or Sys ab  Darwin boot     f2  DOS secondary  
+16  Hidden FAT16    64  Novell Netware  af  HFS / HFS+      fb  VMware VMFS    
+17  Hidden HPFS/NTF 65  Novell Netware  b7  BSDI fs         fc  VMware VMKCORE 
+18  AST SmartSleep  70  DiskSecure Mult b8  BSDI swap       fd  Linux raid auto
+1b  Hidden W95 FAT3 75  PC/IX           bb  Boot Wizard hid fe  LANstep        
+1c  Hidden W95 FAT3 80  Old Minix       be  Solaris boot    ff  BBT            
+1e  Hidden W95 FAT1
+
+Command (m for help): p
+
+Disk /dev/sdb: 106 MB, 106954752 bytes
+64 heads, 32 sectors/track, 102 cylinders
+Units = cylinders of 2048 * 512 = 1048576 bytes
+Sector size (logical/physical): 512 bytes / 512 bytes
+I/O size (minimum/optimal): 512 bytes / 512 bytes
+Disk identifier: 0xf7a71148
+
+   Device Boot      Start         End      Blocks   Id  System
+/dev/sdb1               1          21       21488   83  Linux
+/dev/sdb2              22          42       21504   83  Linux
+/dev/sdb3              43         102       61440    5  Extended
+/dev/sdb5              43          63       21488   83  Linux
+/dev/sdb6              64          84       21488   83  Linux
+/dev/sdb7              85          95       11248   83  Linux
+
+Command (m for help): t
+Partition number (1-7): 1
+Hex code (type L to list codes): l
+
+ 0  Empty           24  NEC DOS         81  Minix / old Lin bf  Solaris        
+ 1  FAT12           39  Plan 9          82  Linux swap / So c1  DRDOS/sec (FAT-
+ 2  XENIX root      3c  PartitionMagic  83  Linux           c4  DRDOS/sec (FAT-
+ 3  XENIX usr       40  Venix 80286     84  OS/2 hidden C:  c6  DRDOS/sec (FAT-
+ 4  FAT16 <32M      41  PPC PReP Boot   85  Linux extended  c7  Syrinx         
+ 5  Extended        42  SFS             86  NTFS volume set da  Non-FS data    
+ 6  FAT16           4d  QNX4.x          87  NTFS volume set db  CP/M / CTOS / .
+ 7  HPFS/NTFS       4e  QNX4.x 2nd part 88  Linux plaintext de  Dell Utility   
+ 8  AIX             4f  QNX4.x 3rd part 8e  Linux LVM       df  BootIt         
+ 9  AIX bootable    50  OnTrack DM      93  Amoeba          e1  DOS access     
+ a  OS/2 Boot Manag 51  OnTrack DM6 Aux 94  Amoeba BBT      e3  DOS R/O        
+ b  W95 FAT32       52  CP/M            9f  BSD/OS          e4  SpeedStor      
+ c  W95 FAT32 (LBA) 53  OnTrack DM6 Aux a0  IBM Thinkpad hi eb  BeOS fs        
+ e  W95 FAT16 (LBA) 54  OnTrackDM6      a5  FreeBSD         ee  GPT            
+ f  W95 Ext'd (LBA) 55  EZ-Drive        a6  OpenBSD         ef  EFI (FAT-12/16/
+10  OPUS            56  Golden Bow      a7  NeXTSTEP        f0  Linux/PA-RISC b
+11  Hidden FAT12    5c  Priam Edisk     a8  Darwin UFS      f1  SpeedStor      
+12  Compaq diagnost 61  SpeedStor       a9  NetBSD          f4  SpeedStor      
+14  Hidden FAT16 <3 63  GNU HURD or Sys ab  Darwin boot     f2  DOS secondary  
+16  Hidden FAT16    64  Novell Netware  af  HFS / HFS+      fb  VMware VMFS    
+17  Hidden HPFS/NTF 65  Novell Netware  b7  BSDI fs         fc  VMware VMKCORE 
+18  AST SmartSleep  70  DiskSecure Mult b8  BSDI swap       fd  Linux raid auto
+1b  Hidden W95 FAT3 75  PC/IX           bb  Boot Wizard hid fe  LANstep        
+1c  Hidden W95 FAT3 80  Old Minix       be  Solaris boot    ff  BBT            
+1e  Hidden W95 FAT1
+Hex code (type L to list codes): exit
+Changed system type of partition 1 to e (W95 FAT16 (LBA))
+
+Command (m for help): t  
+Partition number (1-7): 2
+Hex code (type L to list codes): l
+
+ 0  Empty           24  NEC DOS         81  Minix / old Lin bf  Solaris        
+ 1  FAT12           39  Plan 9          82  Linux swap / So c1  DRDOS/sec (FAT-
+ 2  XENIX root      3c  PartitionMagic  83  Linux           c4  DRDOS/sec (FAT-
+ 3  XENIX usr       40  Venix 80286     84  OS/2 hidden C:  c6  DRDOS/sec (FAT-
+ 4  FAT16 <32M      41  PPC PReP Boot   85  Linux extended  c7  Syrinx         
+ 5  Extended        42  SFS             86  NTFS volume set da  Non-FS data    
+ 6  FAT16           4d  QNX4.x          87  NTFS volume set db  CP/M / CTOS / .
+ 7  HPFS/NTFS       4e  QNX4.x 2nd part 88  Linux plaintext de  Dell Utility   
+ 8  AIX             4f  QNX4.x 3rd part 8e  Linux LVM       df  BootIt         
+ 9  AIX bootable    50  OnTrack DM      93  Amoeba          e1  DOS access     
+ a  OS/2 Boot Manag 51  OnTrack DM6 Aux 94  Amoeba BBT      e3  DOS R/O        
+ b  W95 FAT32       52  CP/M            9f  BSD/OS          e4  SpeedStor      
+ c  W95 FAT32 (LBA) 53  OnTrack DM6 Aux a0  IBM Thinkpad hi eb  BeOS fs        
+ e  W95 FAT16 (LBA) 54  OnTrackDM6      a5  FreeBSD         ee  GPT            
+ f  W95 Ext'd (LBA) 55  EZ-Drive        a6  OpenBSD         ef  EFI (FAT-12/16/
+10  OPUS            56  Golden Bow      a7  NeXTSTEP        f0  Linux/PA-RISC b
+11  Hidden FAT12    5c  Priam Edisk     a8  Darwin UFS      f1  SpeedStor      
+12  Compaq diagnost 61  SpeedStor       a9  NetBSD          f4  SpeedStor      
+14  Hidden FAT16 <3 63  GNU HURD or Sys ab  Darwin boot     f2  DOS secondary  
+16  Hidden FAT16    64  Novell Netware  af  HFS / HFS+      fb  VMware VMFS    
+17  Hidden HPFS/NTF 65  Novell Netware  b7  BSDI fs         fc  VMware VMKCORE 
+18  AST SmartSleep  70  DiskSecure Mult b8  BSDI swap       fd  Linux raid auto
+1b  Hidden W95 FAT3 75  PC/IX           bb  Boot Wizard hid fe  LANstep        
+1c  Hidden W95 FAT3 80  Old Minix       be  Solaris boot    ff  BBT            
+1e  Hidden W95 FAT1
+Hex code (type L to list codes): 8e
+Changed system type of partition 2 to 8e (Linux LVM)
+
+Command (m for help): p
+
+Disk /dev/sdb: 106 MB, 106954752 bytes
+64 heads, 32 sectors/track, 102 cylinders
+Units = cylinders of 2048 * 512 = 1048576 bytes
+Sector size (logical/physical): 512 bytes / 512 bytes
+I/O size (minimum/optimal): 512 bytes / 512 bytes
+Disk identifier: 0xf7a71148
+
+   Device Boot      Start         End      Blocks   Id  System
+/dev/sdb1               1          21       21488    e  W95 FAT16 (LBA)
+/dev/sdb2              22          42       21504   8e  Linux LVM
+/dev/sdb3              43         102       61440    5  Extended
+/dev/sdb5              43          63       21488   83  Linux
+/dev/sdb6              64          84       21488   83  Linux
+/dev/sdb7              85          95       11248   83  Linux
+
+Command (m for help): e
+e: unknown command
+Command action
+   a   toggle a bootable flag
+   b   edit bsd disklabel
+   c   toggle the dos compatibility flag
+   d   delete a partition
+   l   list known partition types
+   m   print this menu
+   n   add a new partition
+   o   create a new empty DOS partition table
+   p   print the partition table
+   q   quit without saving changes
+   s   create a new empty Sun disklabel
+   t   change a partition's system id
+   u   change display/entry units
+   v   verify the partition table
+   w   write table to disk and exit
+   x   extra functionality (experts only)
+
+Command (m for help): t
+Partition number (1-7): 1
+Hex code (type L to list codes): l
+
+ 0  Empty           24  NEC DOS         81  Minix / old Lin bf  Solaris        
+ 1  FAT12           39  Plan 9          82  Linux swap / So c1  DRDOS/sec (FAT-
+ 2  XENIX root      3c  PartitionMagic  83  Linux           c4  DRDOS/sec (FAT-
+ 3  XENIX usr       40  Venix 80286     84  OS/2 hidden C:  c6  DRDOS/sec (FAT-
+ 4  FAT16 <32M      41  PPC PReP Boot   85  Linux extended  c7  Syrinx         
+ 5  Extended        42  SFS             86  NTFS volume set da  Non-FS data    
+ 6  FAT16           4d  QNX4.x          87  NTFS volume set db  CP/M / CTOS / .
+ 7  HPFS/NTFS       4e  QNX4.x 2nd part 88  Linux plaintext de  Dell Utility   
+ 8  AIX             4f  QNX4.x 3rd part 8e  Linux LVM       df  BootIt         
+ 9  AIX bootable    50  OnTrack DM      93  Amoeba          e1  DOS access     
+ a  OS/2 Boot Manag 51  OnTrack DM6 Aux 94  Amoeba BBT      e3  DOS R/O        
+ b  W95 FAT32       52  CP/M            9f  BSD/OS          e4  SpeedStor      
+ c  W95 FAT32 (LBA) 53  OnTrack DM6 Aux a0  IBM Thinkpad hi eb  BeOS fs        
+ e  W95 FAT16 (LBA) 54  OnTrackDM6      a5  FreeBSD         ee  GPT            
+ f  W95 Ext'd (LBA) 55  EZ-Drive        a6  OpenBSD         ef  EFI (FAT-12/16/
+10  OPUS            56  Golden Bow      a7  NeXTSTEP        f0  Linux/PA-RISC b
+11  Hidden FAT12    5c  Priam Edisk     a8  Darwin UFS      f1  SpeedStor      
+12  Compaq diagnost 61  SpeedStor       a9  NetBSD          f4  SpeedStor      
+14  Hidden FAT16 <3 63  GNU HURD or Sys ab  Darwin boot     f2  DOS secondary  
+16  Hidden FAT16    64  Novell Netware  af  HFS / HFS+      fb  VMware VMFS    
+17  Hidden HPFS/NTF 65  Novell Netware  b7  BSDI fs         fc  VMware VMKCORE 
+18  AST SmartSleep  70  DiskSecure Mult b8  BSDI swap       fd  Linux raid auto
+1b  Hidden W95 FAT3 75  PC/IX           bb  Boot Wizard hid fe  LANstep        
+1c  Hidden W95 FAT3 80  Old Minix       be  Solaris boot    ff  BBT            
+1e  Hidden W95 FAT1
+Hex code (type L to list codes): 83
+Changed system type of partition 1 to 83 (Linux)
+
+Command (m for help): p
+
+Disk /dev/sdb: 106 MB, 106954752 bytes
+64 heads, 32 sectors/track, 102 cylinders
+Units = cylinders of 2048 * 512 = 1048576 bytes
+Sector size (logical/physical): 512 bytes / 512 bytes
+I/O size (minimum/optimal): 512 bytes / 512 bytes
+Disk identifier: 0xf7a71148
+
+   Device Boot      Start         End      Blocks   Id  System
+/dev/sdb1               1          21       21488   83  Linux
+/dev/sdb2              22          42       21504   8e  Linux LVM
+/dev/sdb3              43         102       61440    5  Extended
+/dev/sdb5              43          63       21488   83  Linux
+/dev/sdb6              64          84       21488   83  Linux
+/dev/sdb7              85          95       11248   83  Linux
+
+Command (m for help):
+
+
+fdisk用于小于2T的分区
+
+[root@test ~]# fdisk /dev/sdb
+
+WARNING: DOS-compatible mode is deprecated. It's strongly recommended to
+         switch off the mode (command 'c') and change display units to
+         sectors (command 'u').
+
+Command (m for help): p
+
+Disk /dev/sdb: 106 MB, 106954752 bytes
+64 heads, 32 sectors/track, 102 cylinders
+Units = cylinders of 2048 * 512 = 1048576 bytes
+Sector size (logical/physical): 512 bytes / 512 bytes
+I/O size (minimum/optimal): 512 bytes / 512 bytes
+Disk identifier: 0xf7a71148
+
+   Device Boot      Start         End      Blocks   Id  System
+/dev/sdb1               1          21       21488   83  Linux
+/dev/sdb2              22          42       21504   83  Linux
+/dev/sdb3              43          53       11264    5  Extended
+/dev/sdb4              54         102       50176   83  Linux
+/dev/sdb5              43          53       11248   83  Linux
+
+Command (m for help): m
+Command action
+   a   toggle a bootable flag
+   b   edit bsd disklabel
+   c   toggle the dos compatibility flag
+   d   delete a partition
+   l   list known partition types
+   m   print this menu
+   n   add a new partition
+   o   create a new empty DOS partition table
+   p   print the partition table
+   q   quit without saving changes
+   s   create a new empty Sun disklabel
+   t   change a partition's system id
+   u   change display/entry units
+   v   verify the partition table
+   w   write table to disk and exit
+   x   extra functionality (experts only)
+
+Command (m for help): c
+DOS Compatibility flag is not set
+
+Command (m for help): 
+Command (m for help): u
+Changing display/entry units to sectors
+
+Command (m for help): p
+
+Disk /dev/sdb: 106 MB, 106954752 bytes
+64 heads, 32 sectors/track, 102 cylinders, total 208896 sectors
+Units = sectors of 1 * 512 = 512 bytes
+Sector size (logical/physical): 512 bytes / 512 bytes
+I/O size (minimum/optimal): 512 bytes / 512 bytes
+Disk identifier: 0xf7a71148
+
+   Device Boot      Start         End      Blocks   Id  System
+/dev/sdb1              32       43007       21488   83  Linux
+/dev/sdb2           43008       86015       21504   83  Linux
+/dev/sdb3           86016      108543       11264    5  Extended
+/dev/sdb4          108544      208895       50176   83  Linux
+/dev/sdb5           86048      108543       11248   83  Linux
+
+Command (m for help): w
+The partition table has been altered!
+
+Calling ioctl() to re-read partition table.
+Syncing disks.
+[root@test ~]# mkfs.ext
+mkfs.ext2     mkfs.ext3     mkfs.ext4     mkfs.ext4dev  
+[root@test ~]# mkfs.ext
+mkfs.ext2     mkfs.ext3     mkfs.ext4     mkfs.ext4dev  
+[root@test ~]# mkfs.ext2 -i 1024 -b 1024 /dev/sdb5
+mke2fs 1.41.12 (17-May-2010)
+Filesystem label=
+OS type: Linux
+Block size=1024 (log=0)
+Fragment size=1024 (log=0)
+Stride=0 blocks, Stripe width=0 blocks
+11248 inodes, 11248 blocks
+562 blocks (5.00%) reserved for the super user
+First data block=1
+Maximum filesystem blocks=11534336
+2 block groups
+8192 blocks per group, 8192 fragments per group
+5624 inodes per group
+Superblock backups stored on blocks: 
+	8193
+
+Writing inode tables: done                            
+Writing superblocks and filesystem accounting information: done
+
+This filesystem will be automatically checked every 24 mounts or
+180 days, whichever comes first.  Use tune2fs -c or -i to override.
+[root@test ~]# tune2fs -c -1 /dev/sdb5
+tune2fs 1.41.12 (17-May-2010)
+Setting maximal mount count to -1
+[root@test ~]# df -h
+Filesystem      Size  Used Avail Use% Mounted on
+/dev/sda3       5.4G  1.8G  3.4G  35% /
+tmpfs           246M     0  246M   0% /dev/shm
+/dev/sda1       190M   55M  125M  31% /boot
+[root@test ~]# mount /dev/sd5 /mnt/
+mount: you must specify the filesystem type
+[root@test ~]# mount /dev/sd5 /mnt/
+mount: you must specify the filesystem type
+[root@test ~]# mount 
+/dev/sda3 on / type ext4 (rw)
+proc on /proc type proc (rw)
+sysfs on /sys type sysfs (rw)
+devpts on /dev/pts type devpts (rw,gid=5,mode=620)
+tmpfs on /dev/shm type tmpfs (rw,rootcontext="system_u:object_r:tmpfs_t:s0")
+/dev/sda1 on /boot type ext4 (rw)
+none on /proc/sys/fs/binfmt_misc type binfmt_misc (rw)
+sunrpc on /var/lib/nfs/rpc_pipefs type rpc_pipefs (rw)
+nfsd on /proc/fs/nfsd type nfsd (rw)
+[root@test ~]# man mount
+You have mail in /var/spool/mail/root
+[root@test ~]# mount -t ext2 /dev/sd5 /mnt/
+mount: special device /dev/sd5 does not exist
+[root@test ~]# mount /dev/sdb5 /mnt/
+[root@test ~]# df -h
+Filesystem      Size  Used Avail Use% Mounted on
+/dev/sda3       5.4G  1.8G  3.4G  35% /
+tmpfs           246M     0  246M   0% /dev/shm
+/dev/sda1       190M   55M  125M  31% /boot
+/dev/sdb5       9.7M  100K  9.0M   2% /mnt
+[root@test ~]# dumpefs /dev/sdb5
+-bash: dumpefs: command not found
+[root@test ~]# dumpe2fs /dev/sdb5
+dumpe2fs 1.41.12 (17-May-2010)
+Filesystem volume name:   <none>
+Last mounted on:          <not available>
+Filesystem UUID:          b8f15865-d797-4c2d-a556-2a573e30d839
+Filesystem magic number:  0xEF53
+Filesystem revision #:    1 (dynamic)
+Filesystem features:      ext_attr resize_inode dir_index filetype sparse_super
+Filesystem flags:         signed_directory_hash 
+Default mount options:    (none)
+Filesystem state:         not clean
+Errors behavior:          Continue
+Filesystem OS type:       Linux
+Inode count:              11248
+Block count:              11248
+Reserved block count:     562
+Free blocks:              9733
+Free inodes:              11237
+First block:              1
+Block size:               1024
+Fragment size:            1024
+Reserved GDT blocks:      43
+Blocks per group:         8192
+Fragments per group:      8192
+Inodes per group:         5624
+Inode blocks per group:   703
+Filesystem created:       Fri Mar 28 20:48:04 2014
+Last mount time:          Fri Mar 28 20:52:56 2014
+Last write time:          Fri Mar 28 20:52:56 2014
+Mount count:              1
+Maximum mount count:      -1
+Last checked:             Fri Mar 28 20:48:04 2014
+Check interval:           15552000 (6 months)
+Next check after:         Wed Sep 24 20:48:04 2014
+Reserved blocks uid:      0 (user root)
+Reserved blocks gid:      0 (group root)
+First inode:              11
+Inode size:	          128
+Default directory hash:   half_md4
+Directory Hash Seed:      5607b2e3-349f-43a2-bd45-62e6718aa970
+
+
+Group 0: (Blocks 1-8192)
+  Primary superblock at 1, Group descriptors at 2-2
+  Reserved GDT blocks at 3-45
+  Block bitmap at 46 (+45), Inode bitmap at 47 (+46)
+  Inode table at 48-750 (+47)
+  7428 free blocks, 5613 free inodes, 2 directories
+  Free blocks: 765-8192
+  Free inodes: 12-5624
+Group 1: (Blocks 8193-11247)
+  Backup superblock at 8193, Group descriptors at 8194-8194
+  Reserved GDT blocks at 8195-8237
+  Block bitmap at 8238 (+45), Inode bitmap at 8239 (+46)
+  Inode table at 8240-8942 (+47)
+  2305 free blocks, 5624 free inodes, 0 directories
+  Free blocks: 8943-11247
+  Free inodes: 5625-11248
+
+本地磁盘写在/etc/fstab中
+[root@test ~]# vim /etc/fstab 
+You have mail in /var/spool/mail/root
+[root@test ~]# umount /mnt/
+[root@test ~]# df -h
+Filesystem      Size  Used Avail Use% Mounted on
+/dev/sda3       5.4G  1.8G  3.4G  35% /
+tmpfs           246M     0  246M   0% /dev/shm
+/dev/sda1       190M   55M  125M  31% /boot
+[root@test ~]# df -h
+Filesystem      Size  Used Avail Use% Mounted on
+/dev/sda3       5.4G  1.8G  3.4G  35% /
+tmpfs           246M     0  246M   0% /dev/shm
+/dev/sda1       190M   55M  125M  31% /boot
+[root@test ~]# mount -a
+mount: wrong fs type, bad option, bad superblock on /dev/sdb5,
+       missing codepage or helper program, or other error
+       In some cases useful info is found in syslog - try
+       dmesg | tail  or so
+
+[root@test ~]# vim /etc/fstab 
+[root@test ~]# mount -a
+mount: wrong fs type, bad option, bad superblock on /dev/sdb5,
+       missing codepage or helper program, or other error
+       In some cases useful info is found in syslog - try
+       dmesg | tail  or so
+
+[root@test ~]# man fstab
+[root@test ~]# 
+[root@test ~]# vim /etc/fstab 
+[root@test ~]# mount -a
+[root@test ~]# df -h
+Filesystem      Size  Used Avail Use% Mounted on
+/dev/sda3       5.4G  1.8G  3.4G  35% /
+tmpfs           246M     0  246M   0% /dev/shm
+/dev/sda1       190M   55M  125M  31% /boot
+/dev/sdb5       9.7M  100K  9.0M   2% /mnt
+
+[root@test ~]# cd /var/cache/yum/
+[root@test yum]# ls
+timedhosts.txt  x86_64
+[root@test yum]# cd x86_64/
+[root@test x86_64]# ll
+total 4
+drwxr-xr-x. 5 root root 4096 Apr  4  2017 6
+[root@test x86_64]# cd 6
+[root@test 6]# ll
+total 16
+drwxr-xr-x. 3 root root 4096 Apr  6  2017 base
+drwxr-xr-x. 3 root root 4096 Apr  6  2017 extras
+-rw-r--r--. 1 root root  520 Apr  4  2017 timedhosts.txt
+drwxr-xr-x. 3 root root 4096 Apr  6  2017 updates
+[root@test 6]# cd base/
+[root@test base]# ll
+total 20828
+-rw-r--r--. 1 root root 21293056 Mar 31  2017 ad3a307dfd95da4d7a7aad136162378d18ead7271010822806902dfa3edb55f2-primary.sqlite
+-rw-r--r--. 1 root root        0 Apr  6  2017 cachecookie
+-rw-r--r--. 1 root root      492 Apr  6  2017 mirrorlist.txt
+drwxr-xr-x. 2 root root    24576 Apr  6  2017 packages
+-rw-r--r--. 1 root root     3751 May 22  2016 repomd.xml
+[root@test base]# cd packages/
+[root@test packages]# ls
+[root@test packages]# ll
+total 0
+[root@test packages]# cat /etc/yum.conf 
+[main]
+cachedir=/var/cache/yum/$basearch/$releasever
+keepcache=0
+debuglevel=2
+logfile=/var/log/yum.log
+exactarch=1
+obsoletes=1
+gpgcheck=1
+plugins=1
+installonly_limit=5
+bugtracker_url=http://bugs.centos.org/set_project.php?project_id=19&ref=http://bugs.centos.org/bug_report_page.php?category=yum
+distroverpkg=centos-release
+
+#  This is the default, if you make this bigger yum won't see if the metadata
+# is newer on the remote and so you'll "gain" the bandwidth of not having to
+# download the new metadata and "pay" for it by yum not having correct
+# information.
+#  It is esp. important, to have correct metadata, for distributions like
+# Fedora which don't keep old packages around. If you don't like this checking
+# interupting your command line usage, it's much better to have something
+# manually check the metadata once an hour (yum-updatesd will do this).
+# metadata_expire=90m
+
+# PUT YOUR REPOS HERE OR IN separate files named file.repo
+# in /etc/yum.repos.d
+[root@test packages]# 
+
+可以将keepcache=0改为1可以保留rpm包
+
+parted分区
+[root@centos5 ~]# parted 
+Warning: Unable to open /dev/hdc read-write (Read-only file system).  /dev/hdc has been opened
+read-only.
+GNU Parted 1.8.1
+Using /dev/hdc
+Welcome to GNU Parted! Type 'help' to view a list of commands.
+(parted)                                                                  
+(parted) q                                                                
+Information: Don't forget to update /etc/fstab, if necessary.             
+
+[root@centos5 ~]# parted
+Warning: Unable to open /dev/hdc read-write (Read-only file system).  /dev/hdc has been opened
+read-only.
+GNU Parted 1.8.1
+Using /dev/hdc
+Welcome to GNU Parted! Type 'help' to view a list of commands.
+(parted) help                                                             
+  check NUMBER                             do a simple check on the file system
+  cp [FROM-DEVICE] FROM-NUMBER TO-NUMBER   copy file system to another partition
+  help [COMMAND]                           prints general help, or help on COMMAND
+  mklabel,mktable LABEL-TYPE               create a new disklabel (partition table)
+  mkfs NUMBER FS-TYPE                      make a FS-TYPE file system on partititon NUMBER
+  mkpart PART-TYPE [FS-TYPE] START END     make a partition
+  mkpartfs PART-TYPE FS-TYPE START END     make a partition with a file system
+  move NUMBER START END                    move partition NUMBER
+  name NUMBER NAME                         name partition NUMBER as NAME
+  print [free|NUMBER|all]                  display the partition table, a partition, or all
+        devices
+  quit                                     exit program
+  rescue START END                         rescue a lost partition near START and END
+  resize NUMBER START END                  resize partition NUMBER and its file system
+  rm NUMBER                                delete partition NUMBER
+  select DEVICE                            choose the device to edit
+  set NUMBER FLAG STATE                    change the FLAG on partition NUMBER
+  toggle [NUMBER [FLAG]]                   toggle the state of FLAG on partition NUMBER
+  unit UNIT                                set the default unit to UNIT
+  version                                  displays the current version of GNU Parted and
+        copyright information
+(parted) q                                                                
+Information: Don't forget to update /etc/fstab, if necessary.             
+
+[root@centos5 ~]# man parted
+[root@centos5 ~]# parted /dev/sdb
+GNU Parted 1.8.1
+Using /dev/sdb
+Welcome to GNU Parted! Type 'help' to view a list of commands.
+(parted) help                                                             
+  check NUMBER                             do a simple check on the file system
+  cp [FROM-DEVICE] FROM-NUMBER TO-NUMBER   copy file system to another partition
+  help [COMMAND]                           prints general help, or help on COMMAND
+  mklabel,mktable LABEL-TYPE               create a new disklabel (partition table)
+  mkfs NUMBER FS-TYPE                      make a FS-TYPE file system on partititon NUMBER
+  mkpart PART-TYPE [FS-TYPE] START END     make a partition
+  mkpartfs PART-TYPE FS-TYPE START END     make a partition with a file system
+  move NUMBER START END                    move partition NUMBER
+  name NUMBER NAME                         name partition NUMBER as NAME
+  print [free|NUMBER|all]                  display the partition table, a partition, or all
+        devices
+  quit                                     exit program
+  rescue START END                         rescue a lost partition near START and END
+  resize NUMBER START END                  resize partition NUMBER and its file system
+  rm NUMBER                                delete partition NUMBER
+  select DEVICE                            choose the device to edit
+  set NUMBER FLAG STATE                    change the FLAG on partition NUMBER
+  toggle [NUMBER [FLAG]]                   toggle the state of FLAG on partition NUMBER
+  unit UNIT                                set the default unit to UNIT
+  version                                  displays the current version of GNU Parted and
+        copyright information
+(parted) p                                                                
+Error: Unable to open /dev/sdb - unrecognised disk label.                 
+(parted) mklabel gpt
+(parted) mkpart primary 0 50
+(parted) p                                                                
+
+Model: VMware, VMware Virtual S (scsi)
+Disk /dev/sdb: 107MB
+Sector size (logical/physical): 512B/512B
+Partition Table: gpt
+
+Number  Start   End     Size    File system  Name     Flags
+ 1      17.4kB  50.0MB  50.0MB               primary       
+
+(parted) quit                                                             
+Information: Don't forget to update /etc/fstab, if necessary.             
+
+[root@centos5 ~]# ll /dev/sdb*
+brw-r----- 1 root disk 8, 16 Apr 13 01:40 /dev/sdb
+brw-r----- 1 root disk 8, 17 Apr 13 01:40 /dev/sdb1
+

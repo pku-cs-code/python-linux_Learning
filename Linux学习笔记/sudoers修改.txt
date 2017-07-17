@@ -1,0 +1,12 @@
+
+user  MACHINE=（角色） commands
+修改/etc/sudoers后普通用户的命令前需要加sudo才可以执行相应添加的命令
+
+vi /etc/sudoers 修改文件后可以w
+q！强制保存，此文件的权限较低
+生产环境中，我们一般设置禁止root远程登录，通过修改/etc/sudoers普通用户可以获取到root的某些权限。
+权限的集权管理
+
+将zhangcai用户设置成ALL=（ALL） NOPASSWD:ALL后zhangcai可以直接同sudo su -切换到root而不需要密码
+centos6.4将/sbin/添加到普通用户的环境变量中，而5.8中没有添加进去。
+

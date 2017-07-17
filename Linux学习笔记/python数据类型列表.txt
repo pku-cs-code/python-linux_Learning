@@ -1,0 +1,238 @@
+数字
+int
+float
+long 长整型
+
+32位-2**31~2**31-1
+64位-2**63~2**63-1
+
+跟c语言不同，Python的长整数没有指定位宽，没有限制长整数数值的大小
+
+python2.2起，如果超过整数溢出，将自动当做长整型处理
+>>> 2**31
+2147483648
+>>> 2**63
+9223372036854775808L
+
+yum provides */lsb_release
+yum install  -y  redhat-lsb
+>>> type(2.05)
+<type 'float'>
+>>> type(2)
+<type 'int'>
+
+float相当于c语言中的double类型类似，占8个字节
+字符编码
+
+布尔值
+
+>>> if True:
+...  print 1
+... 
+1
+>>> if 0:
+...  print 1
+... 
+>>> True
+True
+>>> False
+False
+
+>>> 1 == True
+True
+>>> 2 == True
+False
+
+字符串
+
+print("Information of []:" + name +"\nName:[]" + name +"\nAge:[]" + age +"\nJob:[]" + job +"")
+print("Information of %s:\nName:%s\nAge:%s\nJob:%s" %(name,name,age,job))
+
+不建议通过拼接的形式，因为每个都要占一个内存
+
+python中单引号和双引号没有区别
+三引号，三双引号一样，可以自己定义输出格式
+name = input("name:")
+age = input("age:")
+job = input("job:")
+
+print("Information of []:" + name +"\nName:[]" + name +"\nAge:[]" + age +"\nJob:[]" + job +"")
+msg = '''
+Information of %s:
+Name:%s
+Age:%s
+Job:%s
+'''%(name,name,age,job)
+print(msg)
+#print("Information of %s:\nName:%s\nAge:%s\nJob:%s" %(name,name,age,job))
+
+
+%d 数字
+%f 浮点
+
+拼接的类型需要一样，都是字符串或者整型等
+
+字符串功能
+ 移除空白
+ 分割
+ 长度
+ 索引
+ 切片
+ 直接
+ 删除
+ 循环
+ 包含
+
+列表：好处是可以存储多个信息
+>>> name_list = ["alex","65brother","tenglan"]
+>>> name_list
+['alex', '65brother', 'tenglan']
+>>> name_list[1]
+'65brother'
+>>> name_list[2]
+'tenglan'
+>>> name_list[5]
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+IndexError: list index out of range
+>>> name_list[0]
+'alex'
+>>> enumerate(name_list)
+<enumerate object at 0x7f366294e730>
+
+name_list[0]里面的0叫0元素
+>>> help(name_list)
+>>> dir(name_list)
+>>> name_list.append("ERIC")
+>>> name_list
+['alex', '65brother', 'tenglan', 'ERIC', 'ERIC']
+>>> name_list.index("ERIC")
+3
+>>> name_list.count("ERIC")
+2
+
+>>> name_list.insert(2,"66brother")
+>>> name_list       
+['alex', '65brother', '66brother', 'tenglan', 'ERIC', 'ERIC']
+>>> name_list.pop()
+'ERIC'
+>>> name_list
+['alex', '65brother', '66brother', 'tenglan', 'ERIC']
+>>> name_list.remove("66brother")
+>>> name_list
+['alex', '65brother', 'tenglan', 'ERIC']
+>>> name_list.reverse()
+>>> name_list
+['ERIC', 'tenglan', '65brother', 'alex']
+>>> name_list.sort()
+>>> name_list
+['65brother', 'ERIC', 'alex', 'tenglan']
+>>> name_list.append("*")
+>>> name_list.append("!")
+>>> name_list.append("_")
+>>> name_list.append("99")
+>>> name_list.append(55)
+>>> name_list           
+['65brother', 'ERIC', 'alex', 'tenglan', '*', '!', '_', '99', 55]
+>>> name_list.sort()
+>>> name_list
+[55, '!', '*', '65brother', '99', 'ERIC', '_', 'alex', 'tenglan']
+
+>>> name_list.insert(4,"65brother")
+>>> name_list.insert(2,"65brother")
+>>> name_list
+[55, '!', '65brother', '*', '65brother', '65brother', '99', 'ERIC', '_', 'alex', 'tenglan']
+>>> name_list       
+[55, '!', '65brother', '*', '65brother', '65brother', '99', 'ERIC', '_', 'alex', 'tenglan']
+>>> for i in range(name_list.count('65brother')):
+...     name_list.remove("65brother")
+... 
+>>> name_list
+[55, '!', '*', '99', 'ERIC', '_', 'alex', 'tenglan']
+
+切片，顾首不顾尾
+>>> a=[1,2,3,'a','b']
+>>> a
+[1, 2, 3, 'a', 'b']
+>>> a.sort()
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+TypeError: unorderable types: str() < int()
+>>> a[0:2]  
+[1, 2]
+>>> a.insert(1,6)
+>>> a[0:2]
+[1, 6]
+>>> a[0:5]
+[1, 6, 2, 4, 3]
+>>> a[1:5]
+[6, 2, 4, 3]
+>>> a[2:5]
+[2, 4, 3]
+>>> a[0:5:2]
+[1, 2, 3]
+>>> a
+[1, 6, 2, 4, 3, 'a', 'b']
+>>> a[-1]
+'b'
+>>> a[-2:-1]
+['a']
+>>> a[-2]
+'a'
+>>> a[0:3]
+[1, 6, 2]
+>>> a[:3]
+[1, 6, 2]
+>>> b=a[0:5]
+>>> b.sort()
+>>> b
+[1, 2, 3, 4, 6]
+
+还可以用key
+>>> a
+[1, 6, 2, 4, 3, 'a', 'b']
+>>> b
+[1, 2, 3, 4, 6]
+>>> a+b
+[1, 6, 2, 4, 3, 'a', 'b', 1, 2, 3, 4, 6]
+>>> a.extend(b)
+>>> a
+[1, 6, 2, 4, 3, 'a', 'b', 1, 2, 3, 4, 6]
+>>> name = "Alex Li"
+>>> a.extend(name)
+>>> a
+[1, 6, 2, 4, 3, 'a', 'b', 1, 2, 3, 4, 6, 'A', 'l', 'e', 'x', ' ', 'L', 'i']
+>>> range(1)
+range(0, 1)
+>>> range(10)
+range(0, 10)
+>>> d=range(10)
+>>> type(d)
+<class 'range'>
+
+#python2不同
+>>> range(10)
+[0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+
+>>> 4 in a
+True
+>>> if 4 in a:
+...     print("ddd")
+... 
+ddd
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="content-type" content="text/html;charset=utf-8">
+        <!--<meta http-equiv="Refresh" content="5; Url=http://www.etiantian.org">-->
+        <!--上面是5秒刷新自动跳转到指定页面-->
+        <!--<meta http-equiv="Refresh" content="2">-->
+        <meta name="keywords" content="开发者，博客园">
+        <!--关键字，便于被爬虫-->
+        <meta name="description" content="balabalah">
+        <!--网站介绍-->
+        <title>zhang</title>
+        <link rel="icon" href="favicon_1c83d380.ico" type="image/x-icon" />
+        <!--上面是属性、属性值-->
+        <!--css文件，css代码，js文件，js代码块-->
+    </head>
+    <body>
+        <h1>alex</h1>
+        <h1>alex</h1>
+        <div style="width: 200px;border: 1px solid red;word-break:break-all;">
+            <!--word-break:break-all;超过200px后自动换行-->
+            <p>jdkljdskjfksdfjkdjfksdjfkdsjfkjsdkfjkdsjfkdjfksdjfkdjfksldjfksdjfkdsjfkdsjjkjkjf</p>
+            <div>testek</br>jfkjfksdjfksdjf</div>
+            <!--/br是纯粹换行，p标签是带有样式的便签-->
+
+        </div>
+        <!--div不加任何内容，块级标签，可以另外自己设计css-->
+        <span>地方地方地方</span>
+        <p>jdkljdskjfksdfjkdjfksdjfkdsjfkjsdkfjkdsjfkdjfksdjfkdjfksldjfksdjfkdsjfkdsjjkjkjf</p>
+        <p>dfjdkjfksdjfk</p>
+        <a>eric</a>
+        <a href="http://www.baidu.com" target="_blank">百度</a>
+        <!--target="_blank"是新标签页调整-->
+        <a href="s2.html" target="_blank">s2</a>
+        <a href="#tt">锚，看第二章</a>
+        <div style="height:2000px;background-color:red">第一章</div>
+        <div id="tt" style="height:200px;background-color:blue">第二章</div>
+
+        <img title="wangfei" src="expires.jpg"style="height:500px;width:400px"/>
+        <select >
+            <option value="1">北京</option>
+            <option value="2" selected="selected">上海</option>
+            <option value="3">广州</option>
+            <option value="4">深圳</option>
+            <option value="5">成都</option>
+        </select>
+
+
+        <select size="4" multiple="multiple">
+                <!--size显示滚动项目数，multiple是按住ctrl可以多选-->
+            <option>北京</option>
+            <option>上海</option>
+            <option selected="selected">广州</option>
+            <option>深圳</option>
+            <option>成都</option>
+        </select>
+
+        <select>
+            <optgroup label="一线城市">
+                <!--分类-->
+            <option>北京</option>
+            <option>上海</option>
+            <option>广州</option>
+            <option>深圳</option>
+            <option>成都</option>
+            </optgroup>
+        </select>
+
+        <h1>input系列标签</h1>
+        <h4>checkbox</h4>
+        <input type="checkbox"/>
+        <input type="checkbox"/>
+
+        <!--复选-->
+        <h4>radio</h4>
+        <p>男：<input name="gender" type="radio"/></p>
+        <p>女：<input name="gender" type="radio"/></p>
+        <!--name值要相同，达到互斥的目的，才可以单选-->
+        <!--单选-->
+        <input type="text"/>
+        <input type="password"/>
+        <input type="button" value="btn"/>
+        <input type="submit" value="sub"/>
+        <hr/>
+        <!--hr输入一条长横线-->
+        <input type="file" />
+        <h2>Form</h2>
+        <form action="http://127.0.0.1:8000/django_form/">
+            <div>
+                主机名：<input name="host" type="text">
+            </div>
+            <div>
+                端口：<input name="port" type="text">
+            </div>
+            <div>
+                类型：<input name="types" type="text">
+            </div>
+            <div>
+                用户：<input name="user" type="text">
+            </div>
+
+            <input type="text">
+            <input type="button" value="but提交">
+            <input type="submit" value="sub提交">
+            <!--button和submit提交不同-->
+
+
+        </form>
+        <textarea>iii</textarea>
+        <input type="text" value="fdfdf">
+        <label for="cb1">zzz</label>
+        <input id="cb1" type="checkbox">
+        <hr/>
+        <ul>
+            <li>111</li>
+             <li>121</li>
+        </ul>
+
+        <ol>
+            <li>111</li>
+             <li>121</li>
+
+
+        </ol>
+
+        <dl>
+            <dt>标题</dt>
+            <dd>内容</dd>
+            <li>111</li>
+             <li>121</li>
+        </dl>
+        <table border="1">
+            <thead>
+                <tr>
+                    <th>第一列</th>
+                    <th>第二列</th>
+                    <th>第三列</th>
+
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td colspan="2">h1，h2</td>
+                    <!--<td>h2</td>-->
+                    <td>h3</td>
+
+                </tr>
+                <tr>
+                    <td rowspan="2">hh1,hg2</td>
+                    <td>hh2</td>
+                    <td>hh3</td>
+
+                </tr>
+                <tr>
+                    <!--<td>hg1</td>-->
+                    <td>hg2</td>
+                    <td>hg3</td>
+
+                </tr>
+            </tbody>
+        </table>
+    <table border="1">
+                <tr>
+                    <th>第一列</th>
+                    <th>第二列</th>
+                    <th>第三列</th>
+
+                </tr>
+                <tr>
+                    <td colspan="2">h1，h2</td>
+                    <!--<td>h2</td>-->
+                    <td>h3</td>
+
+                </tr>
+                <tr>
+                    <td rowspan="2">hh1,hg2</td>
+                    <td>hh2</td>
+                    <td>hh3</td>
+
+                </tr>
+                <tr>
+                    <!--<td>hg1</td>-->
+                    <td>hg2</td>
+                    <td>hg3</td>
+
+                </tr>
+        </table>
+        <fieldset>
+            <legend>登录</legend>
+            <p>用户名：</p>
+            <p>密码：</p>
+        </fieldset>
+        <input type="checkbox" checked="checked"/>
+        <input type="radio" name="gender" checked="checked"/>
+
+
+
+
+
+    </body>
+</html>
