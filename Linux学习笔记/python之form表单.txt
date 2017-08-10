@@ -1,0 +1,16 @@
+
+
+前端和后端都要做验证
+
+前端验证可以减轻后端压力
+前端用bootstrap validator
+
+django自身提供表单验证
+
+django form表单
+两种功能：
+输入html
+验证用户输入
+
+
+

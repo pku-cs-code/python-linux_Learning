@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        .form-control{
+            background-color: aquamarine;
+        }
+        .form-ele{
+            padding: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<form action="" method="post">{% csrf_token %}{#post方式要加这个csrf#}
+{#    {{ book_form }}#}
+{#    {{ book_form.publish_id }}#}
+
+    <div class="form-control">
+        {% for ele in book_form %}
+            <div class="form-ele">{{ ele.name }}{{ ele }}{{ ele.errors }}</div>
+        {% endfor %}
+    </div>
+    <input type="submit" value="创建图书">
+
+</form>
+{#<hr>#}
+{#{{ book_form.name }}#}
+
+
+
+</body>
+</html>

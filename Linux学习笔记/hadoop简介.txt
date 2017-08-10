@@ -1,0 +1,23 @@
+hadoop简介
+
+apache开源的分布式框架，源自google
+GFS，Big Table，MapReduce的论文
+
+HDFS
+hadoop分布式文件系统
+Hadoop Distributed File System
+
+NameNode，HDFS的命名服务器，负责与DataNode文件元信息保存
+DataNode，HDFS数据节点，负责存储数据存储并汇报给NameNode
+SecondaryNameNode，NameNode的镜像备份节点
+
+Map Reduce
+JobTracker，hadoop的Map/Reduce调度器，负责与TrackTracker通信分配任务并跟踪任务进度
+TaskTracker，启动和管理Map和Reduce的子任务的节点
+
+
+分布式资源管理系统
+YARN
+
+
+spark和storm

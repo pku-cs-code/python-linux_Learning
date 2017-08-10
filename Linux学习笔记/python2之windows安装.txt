@@ -1,0 +1,8 @@
+
+https://www.python.org/downloads/release/python-2713/
+
+Windows x86-64 MSI installer
+
+都默认安装
+因为之前有装过python2在c:\python27中，所以选择另外一个文件夹安装python2 GUI（IDLE）
+

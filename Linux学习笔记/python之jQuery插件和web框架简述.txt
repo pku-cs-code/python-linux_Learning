@@ -256,7 +256,7 @@ web框架
 
 		e、如果以post方式提交数据，需要操作settings.py csrf注释掉
 		
-	
+python manage.py shell
 	
 		
 

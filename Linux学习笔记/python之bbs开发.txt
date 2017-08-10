@@ -1,0 +1,57 @@
+python之bbs开发
+
+1 整体参考“抽屉新热榜”  虎嗅网
+2 实现不停论坛版块
+3 帖子列表展示
+4 帖子评论数、点赞数展示
+5 在线用户展示
+6 运行登录用户发帖、评论、点赞
+7 允许上传文件
+8 帖子可以被置顶
+9 可以进行多级评论
+10 
+
+知识必备
+1 django
+2 HTML、css、js
+3 bootstrap
+4 jquery
+
+先想好表结构
+
+null 是针对数据库而言，如果 null=True, 表示数据库的该字段可以为空。
+blank 是针对表单的，如果 blank=True，表示你的表单填写该字段的时候可以不填，比如 admin 界面下增加 model 一条记录的时候。直观的看到就是该字段不是粗体
+
+null表示什么都没有，blank表示空白，null=True表示允许什么都没有，blank=True表示允许空白，空白不代表什么都没有，空白字符串就是空白的值；
+
+
+头像
+安装pillow
+
+https://docs.djangoproject.com/en/1.11/ref/models/fields/
+
+
+D:\PycharmProjects\s12bbs>python3 manage.py makemigrations
+You are trying to add a non-nullable field 'head_img' to article without a default; we can't do that (the database needs something to populate existing rows).
+Please select a fix:
+ 1) Provide a one-off default now (will be set on all existing rows with a null value for this column)
+ 2) Quit, and let me add a default in models.py
+Select an option: 1
+Please enter the default value now, as valid Python
+The datetime and django.utils.timezone modules are available, so you can do e.g. timezone.now
+Type 'exit' to exit this prompt
+>>> 0
+Migrations for 'bbs':
+  bbs\migrations\0003_auto_20170810_2039.py
+    - Add field head_img to article
+    - Alter field comment_type on comment
+
+D:\PycharmProjects\s12bbs>python3 manage.py migrate
+Operations to perform:
+  Apply all migrations: admin, auth, bbs, contenttypes, sessions
+Running migrations:
+  Applying bbs.0003_auto_20170810_2039... OK
+
+
+  
+  

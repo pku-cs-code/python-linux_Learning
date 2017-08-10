@@ -1,0 +1,73 @@
+http://www.ihref.com/read-16377.html
+
+http://www.cnblogs.com/chuaWeb/p/github.html
+
+
+git pull origin master --allow-unrelated-histories
+
+
+主要参考文档
+http://www.jianshu.com/p/df7ce9f3a5cb
+http://xpower2888.pixnet.net/blog/post/222817756
+
+
+
+安装git客户端，以git-bash命令行的方式来使用git客户端
+
+先在git-bash命令端生成本机key，然后将key的pub中内容拷贝到网页github端的sshkey中添加一个，使本机有访问git服务器的权限
+
+
+如果是要把本地的代码开源，需要在网页git服务器端手动创建一个repository，然后再在此基础上自己传代码
+
+先在代码的路径下初始化git库
+git init
+这样就会在代码的路径下生成.git文件夹，里面包含一些git的配置信息，这些配置信息是需要使用git的文件的信息
+git add .
+添加当前路径下的所有文件到暂存库中，可以以将.换成特定文件名
+然后添加
+
+然后git commit一下，或者直接git commit -m 'commitinfo'添加commit信息
+
+git pull https://github.com/youraccount/yourproject.git  --allow-unrelated-histories
+然后将远程的空git项目pull下来，这样远程的空项目和本地项目就会有联系
+
+
+git remote add origin https://github.com/youraccount/yourproject.git
+然后在本地生成orgin分支端
+
+git push -u origin master
+然后将本地的origin分支push到远端master端
+
+
+
+
+在pull时可能报错
+From https://github.com/pku-cs-code/python-linux_Learning
+ * branch            master     -> FETCH_HEAD
+ * [new branch]      master     -> origin/master
+fatal: refusing to merge unrelated histories
+
+原因是新版本的git对代码的变化要求严格，需要加上
+--allow-unrelated-histories参数。如果不行，可以多试几次。
+ 
+命令为：git pull origin master --allow-unrelated-histories
+ 
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,91 @@
+{% extends 'base.html' %}
+{% load custom_tags %}
+{% block page-header %}
+客户信息列表
+{% endblock %}
+
+{% block page-content %}
+{#{{ customer_list }}#}
+<table class="table table-hover">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>QQ</th>
+            <th>姓名</th>
+            <th>渠道</th>
+            <th>咨询课程</th>
+            <th>课程类型</th>
+            <th>客户备注</th>
+            <th>状态</th>
+            <th>课程顾问</th>
+            <th>日期</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for customer in customer_list %}
+            <tr>
+{#            <td><a href="/crm/customers/{{ customer.id }}/">{{ customer.id }}</a></td>#}
+            <td><a href="{% url 'customer_detail' customer.id %}">{{ customer.id }}</a></td>
+
+            <td>{{ customer.qq }}</td>
+            <td>{{ customer.name }}</td>
+            <td>{{ customer.source }}</td>
+            <td>{{ customer.course }}</td>
+            <td>{{ customer.get_course_type_display }}</td>
+            <td>{{ customer.consult_memo |truncatechars:30}}</td>
+{#            <td class="{{ customer.status }}">{{ customer.get_status_display }}</td>#}
+            <td class="{{ customer.status }}">{{ customer.status|upper }}</td>
+
+            <td>{{ customer.consultant }}</td>
+            <td>{{ customer.date }}</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{#    {% for contact in contacts %}#}
+    {# Each "contact" is a Contact model object. #}
+{#    {{ contact.full_name|upper }}<br />#}
+{#    ...#}
+{#{% endfor %}#}
+    <div class="pagination">
+
+        <nav aria-label="...">
+          <ul class="pagination">
+              {% if customer_list.has_previous %}
+
+            <li class=""><a href="?page={{ customer_list.previous_page_number }}" aria-label="Previous"><span aria-hidden="true">&laquo;</span></a></li>
+          {% endif %}
+            {% for page_num in customer_list.paginator.page_range %}
+                {% guess_page customer_list.number page_num %}
+{#                {% if page_num == customer_list.number %}#}
+{#                    <li class="active"><a href="?page={{ page_num }}">{{ page_num }}</a></li>#}
+{#                {% else %}#}
+{#                    <li class=""><a href="?page={{ page_num }}">{{ page_num }}</a></li>#}
+{##}
+{#                {% endif %}#}
+            {% endfor %}
+            {% if customer_list.has_next %}
+
+              <li class=""><a href="?page={{ customer_list.next_page_number }}" aria-label="Next"><span aria-hidden="true">&raquo;</span></a></li>
+            {% endif %}
+          </ul>
+        </nav>
+
+
+
+{#        <span class="step-links">#}
+{#            {% if customer_list.has_previous %}#}
+{#                <a href="?page={{ customer_list.previous_page_number }}">previous</a>#}
+{#            {% endif %}#}
+{##}
+{#            <span class="current">#}
+{#                Page {{ customer_list.number }} of {{ customer_list.paginator.num_pages }}.#}
+{#            </span>#}
+{##}
+{#            {% if customer_list.has_next %}#}
+{#                <a href="?page={{ customer_list.next_page_number }}">next</a>#}
+{#            {% endif %}#}
+{#        </span>#}
+    </div>
+{% endblock %}

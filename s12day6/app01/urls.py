@@ -32,4 +32,6 @@ urlpatterns = [
     # url(r'^articles/([0-9]{4})/([0-9]{2})/$', views.month_archive),
     # url(r'^articles/([0-9]{4})/([0-9]{2})/([0-9]+)/$', views.article_detail),#这条放在前面不会会产生影响，因为这条不包含上条
     # url(r'^articles/([0-9]{4})/([0-9]{2})/([0-9]+).(\w+)/$', views.article_detail),
+    url(r'^book_form/$',views.book_form),
+    url(r'^book_modelform/$',views.book_modelform)
 ]

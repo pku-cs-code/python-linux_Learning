@@ -127,4 +127,31 @@ pip 9.0.1 from c:\program files\python35\lib\site-packages (python 3.5)
 所以还原python2的python.exe
 
 
+分别安装pip
+pip安装和linux下类似，需要装一个setuptools或者get-pip.py（https://bootstrap.pypa.io/get-pip.py）
 
+pip路径
+C:\Program Files\Python35\Scripts
+
+安装pip
+
+python get-pip.py
+
+D:\software>python -m pip install --upgrade pip
+Could not fetch URL https://pypi.python.org/simple/pip/: There was a problem confirming the ssl certificate: [Errno 2] No such file or directory - skipping
+Requirement already up-to-date: pip in c:\python27\lib\site-packages
+
+D:\software>
+D:\software>
+D:\software>pip -V
+pip 9.0.1 from c:\python27\lib\site-packages (python 2.7)
+
+D:\software>pip install --trusted-host pypi.python.org --upgrade pip
+Requirement already up-to-date: pip in c:\python27\lib\site-packages
+
+D:\software>
+D:\software>pip install --trusted-host pypi.python.org --upgrade django
+Collecting django
+  Downloading Django-1.11.4-py2.py3-none-any.whl (6.9MB)
+  
+  

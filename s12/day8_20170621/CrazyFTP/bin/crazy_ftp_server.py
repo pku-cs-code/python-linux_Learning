@@ -8,4 +8,4 @@ sys.path.append(BASE_DIR)
 from modules import main
 
 if __name__ == '__main__':
-    Entrypoint = main.ArgvHandler(sys.argv)
+    Entrypoint = main.ArgvHandler(sys.argv)#处理参数

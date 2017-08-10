@@ -1,0 +1,49 @@
+python之在django中引用bootstrap
+
+在对应的django工程中新建statics目录，把bootstrap目录拷贝到这个文件夹，然后把js文件拷贝到js文件夹中
+
+js2.9不支持IE6了
+
+然后下载http://v3.bootcss.com/examples/dashboard/页面全部保存
+Dashboard Template for Bootstrap.html就是基础模板，将它拷贝到templates里，修改文件名为base.html
+
+在系统urls.py中添加    url(r'^crm/', include('crm.urls')),
+将settings中的urls.py拷贝到crm文件夹中，因为格式一样
+然后自己定义访问的部分，二级分流url
+
+
+在templates文件夹中新建和小app同名的文件夹（这里是crm），便于存放和app项目一致的html文件，在app的views.py中的render文件就是这里的html
+在crm中新建dashboard.html文件，里面的内容继承base.html
+{% extends 'base.html' %}
+
+访问http://127.0.0.1:8000/crm/
+
+在settings中添加statics静态文件路径
+
+具体操作可以看
+https://docs.djangoproject.com/en/1.11/howto/static-files/
+settings末尾添加路径
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, "statics"),
+    #所有的静态文件都去找statics，或者后面的/var/www/static/等待，一个个找
+    #'/var/www/static/',
+]
+
+在base.html文件中的title后吗的linkref中修改成本地bootstrap文件路径
+下载dashboard.html文件时带了一个问价夹，文件夹中带有dashboard.css文件
+
+
+STATIC_URL = '/static/'
+这是别名，是STATICFILES_DIRS统一的别名，只要找static，就会找STATICFILES_DIRS下面的路径
+
+
+把bootstrap原有的dashboard删除
+创建customers.html文件，url，视图
+创建表头
+循环取值，改样式（新建custom.css文件并在）,自定义样式
+记得在base.html中导入新建的样式
+<link href="/static/bootstrap-3.3.7-dist/css/custom.css" rel="stylesheet">
+
+
+
+

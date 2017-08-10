@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+<form action="" method="post">{% csrf_token %}{#post方式要加这个csrf#}
+    {{ book_form }}
+{#    {{ book_form.publish_id }}#}
+
+    <select name="publisher_id">
+        {% for publisher in publishers  %}
+        <option value="{{ publisher.id  }}">{{ publisher.name }}</option>
+        {% endfor %}
+    </select>
+    <input type="submit" value="创建图书">
+
+</form>
+{#<hr>#}
+{#{{ book_form.name }}#}
+
+
+
+</body>
+</html>

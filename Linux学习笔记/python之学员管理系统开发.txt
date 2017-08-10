@@ -1,0 +1,202 @@
+python之学员管理系统开发
+
+
+用户认证
+
+http是短链接，无状态的
+请求完数据后就断开了
+服务器端认为是独立的请求，服务器通过记录一个session id值，返回的时候服务端把session发给客户端
+然后客户端再次访问时会把这个session返回给服务器端，服务端会根据session进行检测
+post方式后会进行加密，然后和服务器端存的加密值进行对比。不止做md5，因为容易被破解，撞库
+脱库
+在md5之后再进行反转加密等，之后可以重新组合回来，这个过程被称为加盐
+
+OneToOne 一对一 跟ForeignKey一样，但是只能对应一个，django自己定制的
+
+
+要创建自定制的user需要先创建一个django的user，然后自动关联
+class UserProfile(models.Model):
+    user = models.OneToOneField(User)
+    name = models.CharField(u'姓名',max_length=32)
+
+    def __unicode__(self):
+        return self.name
+		
+反向关联在django中默认是看不到的
+要想查看每个班有多少人上课出勤，可以在action里做动作
+
+教师权限在前端设置
+
+用户认证
+
+
+权限管理
+销售：
+	客户记录
+	能修改自己的记录 url post action=change
+	创建记录 url post action=add
+	不能修改别人的记录
+	可以看本校区的所有客户记录 url get school=333
+	
+老师：
+	创建上课记录，点名，批作业，管理班级
+
+学员：
+	查看自己的成绩
+	交作业
+	介绍学员
+	建议投诉
+	
+分页
+95条，每页20条
+
+django分页功能使用文档
+https://docs.djangoproject.com/en/1.11/topics/pagination/
+
+
+>>> from django.core.paginator import Paginator
+>>> objs = ['alex','1','2','3','4','5','6','7','8']
+>>> objs
+['alex', '1', '2', '3', '4', '5', '6', '7', '8']
+>>> p = Paginator(objs,3)
+>>> p.count
+9
+>>> p.num_pages
+3
+>>> p.page_range
+xrange(1, 4)
+>>> p1 = p.page(1)
+>>> p1
+<Page 1 of 3>
+>>> p1.object_list
+['alex', '1', '2']
+>>> p2 = p.page(2)
+>>> p2.object_list
+['3', '4', '5']
+>>> p2.has_next()
+True
+>>> p2.has_previous()
+True
+>>> p2.has_others_pages()
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+AttributeError: 'Page' object has no attribute 'has_others_pages'
+>>> p2.has_other_pages()
+True
+>>> p3 = p.page(3)
+>>> p3.object_list
+['6', '7', '8']
+>>> p3.has_next()
+False
+>>> dir(p)
+['__class__', '__delattr__', '__dict__', '__doc__', '__format__', '__getattribute__', '__hash__', '__init__', '__module__', '__new__', '__reduce__', '__reduce_ex__', '__repr__', '__setattr__', '__sizeof__', '__str__', '__subclasshook__', '__weakref__', '_check_object_list_is_ordered', '_get_page', 'allow_empty_first_page', 'count', 'num_pages', 'object_list', 'orphans', 'page', 'page_range', 'per_page', 'validate_number']
+>>> dir(p1)
+['__abstractmethods__', '__class__', '__contains__', '__delattr__', '__dict__', '__doc__', '__format__', '__getattribute__', '__getitem__', '__hash__', '__init__', '__iter__', '__len__', '__metaclass__', '__module__', '__new__', '__reduce__', '__reduce_ex__', '__repr__', '__reversed__', '__setattr__', '__sizeof__', '__str__', '__subclasshook__', '__weakref__', '_abc_cache', '_abc_negative_cache', '_abc_negative_cache_version', '_abc_registry', 'count', 'end_index', 'has_next', 'has_other_pages', 'has_previous', 'index', 'next_page_number', 'number', 'object_list', 'paginator', 'previous_page_number', 'start_index']
+>>>
+
+
+
+自定义模板标签
+abs显示标签页为中心的旁边分页按钮
+
+Custom template tags and filters¶
+
+https://docs.djangoproject.com/en/1.11/howto/custom-template-tags/
+
+在app01目录下新建Pythonpackage，名称一定要为templatetags，然后自定义custom_tags.py文件
+
+在templates文件夹中customers.html文件中extends下一句加入{% load custom_tags %}，就可以使用了
+<td class="{{ customer.status }}">{{ customer.status|upper }}</td>
+
+需要手动重启
+
+手动创建标签样式，stringfilter、simple_tag
+
+ <div class="pagination">
+        <nav aria-label="...">
+          <ul class="pagination">
+              {% if customer_list.has_previous %}
+
+            <li class=""><a href="?page={{ customer_list.previous_page_number }}" aria-label="Previous"><span aria-hidden="true">&laquo;</span></a></li>
+          {% endif %}
+            {% for page_num in customer_list.paginator.page_range %}
+                {% guess_page customer_list.number page_num %}
+            {% endfor %}
+            {% if customer_list.has_next %}
+
+              <li class=""><a href="?page={{ customer_list.next_page_number }}" aria-label="Next"><span aria-hidden="true">&raquo;</span></a></li>
+            {% endif %}
+          </ul>
+        </nav>
+
+</div>
+
+
+通用权限管理设计
+完全不用考虑业务逻辑，不做前后依赖
+
+
+django只能控制在表级别
+自定义权限
+https://docs.djangoproject.com/en/1.11/topics/auth/customizing/
+
+    class Meta:
+        permissions = (('can_del_customer',u'可以删除用户'),)
+		
+修改数据库后同步数据
+python manage.py makemigrations
+python manage.py migrate
+
+>>> from crm import models
+>>> u1 = models.U
+models.User(        models.UserProfile(
+>>> u1 = models.UserProfile.objects.la
+models.UserProfile.objects.last(   models.UserProfile.objects.latest(
+>>> u1 = models.UserProfile.objects.last()
+>>> u1
+<UserProfile: rain>
+>>> u1.user.has_perm('crm.can_del_customer')
+True
+>>> u1.user.has_perm('crm.can_')
+False
+
+加装饰器实现权限控制
+
+
+动作
+对应的权限
+有无对应权限执行该动作
+
+url别名在url.py中设置
+<td><a href="{% url 'customer_detail' customer.id %}">{{ customer.id }}</a></td>
+
+需要刷新才能修改
+
+第一步在userprofile中关联django的permission
+    class Meta:
+        permissions = (('view_customer_list', u'可以查看客户列表'),
+                       ('view_customer_info',u'可以查看客户详细信息'),
+                       ('edit_own_customer_info',u'可以修改自己的客户信息'),
+                       )
+
+					   
+第二步定义check_permission装饰器
+
+
+>>> from crm import models
+>>> u1 = models.U
+models.User(        models.UserProfile(
+>>> u1 = models.UserProfile.objects.la
+models.UserProfile.objects.last(   models.UserProfile.objects.latest(
+>>> u1 = models.UserProfile.objects.last()
+>>> u1
+<UserProfile: rain>
+>>> u1.user.has_perm('crm.can_del_customer')
+True
+>>> u1.user.has_perm('crm.can_')
+False
+
+
+
+
+

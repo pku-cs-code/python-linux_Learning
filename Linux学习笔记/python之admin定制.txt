@@ -1,0 +1,53 @@
+python之admin定制
+
+先在app01中admin.py中注册
+import models
+
+admin.site.register(models.Author)
+admin.site.register(models.Publisher)
+admin.site.register(models.Book)
+
+多行展示，自定制
+
+xadmin，很好的django定制
+
+
+django只适合内容管理，适合与内部系统，生产系统需要认真再定制
+
+
+添加出版状态，需要设置默认状态
+
+D:\PycharmProjects\s12day6>python  manage.py makemigrations
+You are trying to add a non-nullable field 'status' to book without a default; we can't do that (the database needs something to populate existing rows).
+Please select a fix:
+ 1) Provide a one-off default now (will be set on all existing rows with a null value for this column)
+ 2) Quit, and let me add a default in models.py
+Select an option: 2
+
+D:\PycharmProjects\s12day6>python  manage.py makemigrations
+Migrations for 'app01':
+  app01\migrations\0002_auto_20170803_1200.py
+    - Change Meta options on author
+    - Add field status to book
+    - Alter field country on publisher
+
+D:\PycharmProjects\s12day6>python  manage.py migrations
+Unknown command: 'migrations'
+Type 'manage.py help' for usage.
+
+D:\PycharmProjects\s12day6>python  manage.py migration
+Unknown command: 'migration'
+Type 'manage.py help' for usage.
+
+D:\PycharmProjects\s12day6>python  manage.py migrate
+Operations to perform:
+  Apply all migrations: admin, app01, auth, contenttypes, sessions
+Running migrations:
+  Applying app01.0002_auto_20170803_1200... OK
+  
+  
+
+  
+  
+admin actions
+

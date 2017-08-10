@@ -1,0 +1,3 @@
+python之属性、反射
+
+http://python.jobbole.com/80955/

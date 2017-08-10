@@ -1,0 +1,65 @@
+python之orm单表内查询
+
+
+pub_date__year=2006
+pub_date__gte=datetime.date.today()
+
+Entry.objects.all()[:5]查询前五条
+Entry.objects.all()[5:10]第五条到第十条
+
+对同一表不同字段进行对比查询
+
+from django.db.models import F
+models.Entry.objects.filter(n_comments__gt=F('n_pingbacks'))
+
+caching and quertsets
+缓存降低数据库的访问频率
+
+结果集：查询过的结果会被存到缓存里面
+
+数据一致性
+queryset=Entry.objects.all()#没有真正把数据全部取出来，只有当数据遍历时才会取出来
+print([p.headline for p in quertset])#第一次循环从数据库取
+print([p.pub_date for p in quertset])#第二次循环直接从内存取
+
+只取其中一个值的话不会缓存，如果重复打印两遍同样的数据，会从数据库取两次
+如果做遍历了，相当于从数据库把数据取出来了，已经缓存
+
+complex lookups with Q objects复杂查询
+
+and关系用filter
+or关系用Q
+from django.db.models import Q
+
+有Q的放前面，没Q的放后面
+objs = models.Entry.objects.filter(Q(n_comments__lte=F('n_pingbacks'))|Q(pub_date__gt='2017-08-05'，startwith='who'))
+
+Entry.objects.filter(pub_date__year=2007).update(headline='Everything is ok.')
+
+批量自增
+models.Entry.objects.update(n_pingbacks=F('n_pingbacks')+1)#统一自增，只能在Entry里自增，不能外键关联修改
+
+
+aggregation聚合
+from app01 import models as book_models
+pub_obj = book_models.Publisher.objects.last()
+print(pub_obj.name,pub_obj.book_set.select_related())#表结构在数据库里是小写的，book是表名，后面的set是反向查询自己带的
+#反向关联查询
+
+分类聚合
+pub_objs = book_models.Publisher.objects.annotate(book_nums=Count('book'))
+
+for publisher in pub_objs:
+    print publisher.book_nums
+	
+
+
+
+
+
+
+
+
+
+
+

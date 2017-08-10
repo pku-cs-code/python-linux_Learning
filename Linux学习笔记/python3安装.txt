@@ -1,0 +1,31 @@
+ 升级cenos系统后为centos6.9
+python版本依然是2.6
+不要更改原有的2.6版本，因为此centos版本的很多功能都依赖于python2.6
+python2.6一旦不存在，会发生灾难性的后果
+
+安装一些包
+yum  update
+yum install -y gcc make openssl-devel bzip2-devel expat-devel gdbm-devel readline-devel sqlite-devel
+make altinstall是为了避免覆盖掉原来的python2
+ln -s python3.3 python3
+ln -s /usr/local/python3/bin/python3 /usr/bin做链接为了可以直接输入python3可以使用
+
+
+参考文档
+http://blog.everlose.com/set-up-python-on-centos.html
+http://imxylz.com/blog/2013/11/05/install-python-3-on-centos-6/
+
+wget http://www.python.org/ftp/python/3.3.3/Python-3.3.3.tar.xz
+xz -d Python-3.3.3.tar.xz 
+tar -xvf Python-3.3.3.tar 
+cd Python-3.3.3
+./configure --prefix=/usr/local/python3
+make
+make altinstall
+cd /usr/local/python3/bin/
+ln -s python3.3 python3
+ln -s /usr/local/python3/bin/python3 /usr/bin
+python3 -V
+python3
+
+

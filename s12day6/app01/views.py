@@ -3,6 +3,8 @@
 
 
 from django.shortcuts import render,HttpResponse
+from app01 import forms,models
+
 
 # Create your views here.
 
@@ -47,6 +49,41 @@ def pay_by_cash(request):
 def special_case_2003(request,user):
     print('matched 2003',user)
     return HttpResponse('matched--->HttpResponse...')
+
+
+def book_form(request):
+    form = forms.BookForm()
+
+    if request.method  == "POST":
+        print(request)
+        form = forms.BookForm(request.POST)#验证
+        if form.is_valid():
+            print ("form is valid.")
+            print (form.cleaned_data)
+            form_data = form.cleaned_data
+            form_data['publisher_id'] = request.POST.get('publisher_id')
+            book_obj = models.Book(**form_data)
+            book_obj.save()
+        else:
+            print (form.errors)
+    publisher_list = models.Publisher.objects.all()
+
+    return render(request,'app01/book_form.html',{'book_form':form,
+                                                  "publishers":publisher_list})
+
+def book_modelform(request):
+    form = forms.BookModelForm()
+
+    if request.method == 'POST':
+        print (request.POST)
+        form = forms.BookModelForm(request.POST)#把值传过去
+        if form.is_valid():
+            print ('form is ok.')
+            print (form.cleaned_data)
+            form.save()#直接保存到数据库里
+
+    return render(request,'app01/book_modelform.html',{'book_form':form})
+
 
 def year_archive(request,year):#第二个参数给匹配到的值。会传给views
     #动态模糊的匹配，会把匹配的值当做一个参数传给函数
