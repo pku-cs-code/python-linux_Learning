@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% load template_tags %}
+{% block page-container %}
+    <div class="wrap-left">
+        <form method="post" enctype="multipart/form-data">{% csrf_token %}
+{#            django传文件一定要加这个参数enctype="multipart/form-data#}
+{#            <textarea id="article-content"></textarea>#}
+            {{ article_form }}
+            <input type="submit" value="发帖" class="btn btn-success pull-right">
+        </form>
+        <hr/>
+        <form method="post" enctype="multipart/form-data" action="{% url 'file_upload' %}">
+            <input name="filename" type="file">{% csrf_token %}
+            <input type="submit" value="上传">
+        </form>
+    </div>
+    <div class="wrap-right">right</div>
+    <div class="clear-both"></div>
+{#    <div class="footer">dddd</div>#}
+
+
+{% endblock %}
+
+{% block bottom-js %}
+<script src="/static/plugins/ckeditor/ckeditor.js"></script>
+{#    这里的static不能写成statics，因为全局settings中设置的是static，django只会人static#}
+    <script type="text/javascript">
+
+        CKEDITOR.replace('id_content');
+    </script>
+
+
+{% endblock %}

@@ -19,7 +19,7 @@ from app01 import views
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^$',views.index),
-    url(r'^accounts/login/$', views.acc_login),
+    url(r'^accountss/login/$', views.acc_login),
     url(r'^accounts/logout/$', views.acc_logout),
 
 ]

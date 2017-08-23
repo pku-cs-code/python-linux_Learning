@@ -1,0 +1,3 @@
+python之jquery重新认识
+
+jQuery.prev()，返回上一个兄弟节点，不是所有的兄弟节点

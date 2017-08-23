@@ -7,7 +7,7 @@ from app01 import models
 
 class BookForm(forms.Form):
     name = forms.CharField(max_length=10)
-    #publisher_id = forms.IntegerField(widget=forms.Select)
+    #publisher_id = forms.IntegerField(widget=forms.Select)#widget只是一个输入框
     publish_date = forms.DateField()
 
 

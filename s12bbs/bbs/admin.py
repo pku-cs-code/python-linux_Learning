@@ -9,7 +9,7 @@ class CommentAdmin(admin.ModelAdmin):
     list_display = ('article','parent_comment','comment_type','comment','user','date',)
 
 class CategoryAdmin(admin.ModelAdmin):
-    list_display = ('name','set_as_top_menu','postition_index',)
+    list_display = ('name','set_as_top_menu','position_index',)
 
 
 admin.site.register(models.Article,ArticleAdmin)

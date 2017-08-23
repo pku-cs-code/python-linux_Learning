@@ -57,12 +57,19 @@ def book_form(request):
     if request.method  == "POST":
         print(request)
         form = forms.BookForm(request.POST)#验证
+        print('form-->',form)
+        print('request.POST-->>',request.POST)
         if form.is_valid():
             print ("form is valid.")
             print (form.cleaned_data)
             form_data = form.cleaned_data
             form_data['publisher_id'] = request.POST.get('publisher_id')
+            #django会自动创建主键id
+            #从前端取到publisher_id赋值给数据
+            print('form_data-->>',form_data)
+
             book_obj = models.Book(**form_data)
+            print('book_obj publisher_id ->>',book_obj.publisher_id)
             book_obj.save()
         else:
             print (form.errors)

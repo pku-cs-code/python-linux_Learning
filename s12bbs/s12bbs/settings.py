@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'bbs.apps.BbsConfig',
+    'webchat',
 ]
 
 MIDDLEWARE = [
@@ -120,3 +121,13 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.11/howto/static-files/
 
 STATIC_URL = '/static/'
+
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, "statics"),
+    os.path.join(BASE_DIR, "uploads"),
+
+    #所有的静态文件都去找statics，或者后面的/var/www/static/等待，一个个找
+    #'/var/www/static/',
+]
+
+LOGIN_URL = '/login/'

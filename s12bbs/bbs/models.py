@@ -1,3 +1,7 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+
 from django.db import models
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
@@ -48,7 +52,9 @@ class Comment(models.Model):
 
 
     def __str__(self):
-        return '%s,P:%s,%s'%(self.article,self.parent_comment,self.comment)
+        # return '%s,P:%s,%s'%(self.article,self.parent_comment,self.comment)
+        return 'C:%s'%(self.comment)
+
     def clean(self):
         # if self.comment_type == 1 and self.comment is None:
         if self.comment_type == 1 and len(self.comment)==0:
@@ -61,7 +67,7 @@ class Category(models.Model):
     name = models.CharField(max_length=64,unique=True)
     brief = models.CharField(null=True,blank=True,max_length=255)
     set_as_top_menu = models.BooleanField(default=False)
-    postition_index = models.SmallIntegerField()
+    position_index = models.SmallIntegerField()
     admins = models.ManyToManyField('UserProfile',blank=True)
 
     def __str__(self):
@@ -73,6 +79,10 @@ class UserProfile(models.Model):
     name = models.CharField(max_length=32)
     signature = models.CharField(max_length=255,blank=True,null=True)
     head_img = models.ImageField(height_field=150,width_field=150,blank=True,null=True)
+
+    #for webchat
+    friends = models.ManyToManyField('self',related_name='my_friends',blank=True)
+
 
     def __str__(self):
         return self.name

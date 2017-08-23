@@ -1,0 +1,217 @@
+python之web聊天室项目开发
+
+参考alex博客
+http://www.cnblogs.com/alex3714/articles/5337630.html
+
+学员博客
+http://www.cnblogs.com/0zcl/p/6903017.html
+
+
+长链接web socket
+
+django只支持短链接
+
+服务器只能被动响应
+
+轮询，间隔减小会浪费资源
+
+comet长轮询 long-polling
+一分钟没有消息就挂起
+
+短轮询有延迟，长延迟没有延迟（由服务器控制延时）
+webqq用的长轮询,jd
+
+websocket
+建立连接之前有一个handshake
+关闭连接前也有一个handshake
+
+全双工
+时效性、省带宽
+h5中支持，好多浏览器不支持，chrome、火狐支持，IE不支持，django不支持
+
+前端可以用websocket，后端django不支持，tornado支持
+
+阿里旺旺：基于flash的websocket，之前还没有h5
+
+jd、微信、webqq用的长轮询
+
+字典和json字符串的区别
+python中字典是一个字典对象，json是字符串
+将字典转换成json用json.dumps()
+将json转换成字典用json.loads()
+
+http://qujunorz.blog.51cto.com/6378776/1775294
+
+
+    admins = models.ManyToManyField(UserProfile,blank=True)
+    members = models.ManyToManyField(UserProfile,blank=True)
+	
+两个关联的话需要加related_name
+
+反向关联，如果你是我的朋友，那么我就是你的朋友
+但是如果是像微博那样的话需要再写一张中间表
+
+margin外边距，可以设置上下左右
+元素到相邻元素的的边距
+padding内边距
+元素内容到元素边界的距离
+
+float根据设置高度和宽度，会影响周围元素的布局，硬生生地把周围元素挤走
+
+clear-both避免float之后的一些属性，比如背景颜色等不显示，而将其移除
+
+
+tab切换
+http://v3.bootcss.com/javascript/#tabs
+标签页中的Markup就是
+
+列表显示好友
+http://v3.bootcss.com/components/#list-group
+列表组  徽章  消息提醒
+
+在 HTML DOM (Document Object Model) 中, 每个东西都是 节点 :
+文档本身就是一个文档对象
+所有 HTML 元素都是元素节点
+所有 HTML 属性都是属性节点
+插入到 HTML 元素文本是文本节点
+注释是注释节点
+
+.html()
+
+$(".chat-box-title").html(chat_box_title_conttent);
+
+匹配或者设置html元素，chat-box-title里面的内容会被设置成chat_box_title_conttent变量的内容
+
+A function returning the HTML content to set. Receives the index position of the element in the set and the old HTML value as arguments. jQuery empties the element before calling the function; use the oldhtml argument to reference the previous content. Within the function, this refers to the current element in the set.
+
+http://api.jquery.com/html/
+
+.delegate()
+为指定的元素绑定事件
+
+$("body").delegate("p", "click", function(event){
+// 这里的this指向触发点击事件的p元素(Element)
+    alert( $(this).text() );
+});
+
+http://www.365mini.com/page/jquery-delegate.htm
+
+
+.which()
+
+which属性的返回值是Number类型，返回触发当前事件时按下的键盘按键或鼠标按钮。
+
+13	Enter键
+16	Shift键
+17	Ctrl键
+
+http://www.365mini.com/page/jquery-event-which.htm
+
+csrf问题解决
+https://docs.djangoproject.com/en/1.11/ref/csrf/
+
+json.parse把json变成字典
+stringfy 把字典变成json字符串  序列化  JSON.stringify
+
+
+animate使之有动画的效果，不能应用于background-color，可以设置时间
+http://api.jquery.com/animate/
+
+scrollTop  设置或者获取垂直滚动条的位置
+https://api.jquery.com/scrollTop/
+
+getBoundingClientRect
+https://developer.mozilla.org/zh-CN/docs/Web/API/Element/getBoundingClientRect
+
+scrollTop和scrollHeight
+https://stackoverflow.com/questions/2940006/can-someone-canonically-differentiate-between-scrolltop-and-scrollheight
+
+scrollHeight、ClientHeight、OffsetHeight
+http://harttle.com/2016/04/24/client-height-width.html
+
+取DOM元素
+http://www.cnblogs.com/snandy/archive/2011/06/08/2074086.html/
+
+find方法
+http://www.w3school.com.cn/jquery/traversing_find.asp
+
+
+$(".")和$("")  js加点号和不加点号的区别
+http://www.imooc.com/qadetail/88490
+
+text()方法
+text() 方法方法设置或返回被选元素的文本内容。
+返回文本内容
+当该方法用于返回一个值时，它会返回所有匹配元素的组合的文本内容（会删除 HTML 标记）。
+
+
+将当期对象传给onclick函数
+onclick="changeValue(this)"
+
+https://segmentfault.com/q/1010000005950288
+
+
+(2)jQuery对象转成DOM对象：
+$("#id") [0]：其中$("#id")是jQuery对象，$("#id") [0]是DOM对象，在后面加上[0]可以获取对应的DOM对象，或者使用$("#id").get(0)同样可以获取。
+
+http://www.jianshu.com/p/6e45e89bef7a
+
+jquery和DOM区别
+
+jquery是DOM封装的
+DOM是html和xml访问标准
+
+jquery和DOM对象的方法不能互用，需要转换
+
+参考文档
+http://www.jb51.net/article/17911.htm
+http://www.cnblogs.com/libinblog/p/4239258.html
+http://www.cnblogs.com/yellowapplemylove/archive/2011/04/19/2021583.html
+
+
+js是异步递归，一个结束另一个才开始
+和python不一样，python有999层递归的限制
+
+此类报错时编码错误
+File C:\Program Files\Python35\lib\wsgiref\handlers.py, line 344, in client_is_modern     return self.environ[SERVER_PROTOCOL].upper() != HTTP/0.9 TypeError: NoneType object is not subscriptable  During handling of the above exception, another exception occurred:
+
+需要在前面加上
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+如果两个客户端同时登陆，则消息第一条会发一个客户端，然后第二条又发给另一个客户端，如此反复
+
+以下错误原因可能是socket连接由于有存活时间，而浏览器在刷新时又连接会给服务器一个请求，之前的socket还在导致的。这是我的一个猜想
+
+
+ConnectionResetError: [WinError 10054] 远程主机强迫关闭了一个现有的连接。
+[22/Aug/2017 00:11:11] "GET /chat/new_msgs/ HTTP/1.1" 500 59
+Traceback (most recent call last):
+  File "C:\Program Files\Python35\lib\wsgiref\handlers.py", line 138, in run
+    self.finish_response()
+  File "C:\Program Files\Python35\lib\wsgiref\handlers.py", line 180, in finish_response
+    self.write(data)
+  File "C:\Program Files\Python35\lib\wsgiref\handlers.py", line 274, in write
+    self.send_headers()
+  File "C:\Program Files\Python35\lib\wsgiref\handlers.py", line 332, in send_headers
+    self.send_preamble()
+  File "C:\Program Files\Python35\lib\wsgiref\handlers.py", line 252, in send_preamble
+    self._write(('HTTP/%s %s\r\n' % (self.http_version,self.status)).encode('iso-8859-1'))
+  File "C:\Program Files\Python35\lib\wsgiref\handlers.py", line 453, in _write
+    result = self.stdout.write(data)
+  File "C:\Program Files\Python35\lib\socket.py", line 594, in write
+    return self._sock.send(b)
+ConnectionResetError: [WinError 10054] 远程主机强迫关闭了一个现有的连接。
+
+
+属性过滤选择器
+
+http://cw.hubwiz.com/card/c/5437538a032c781670afddbe/2/1/7/
+
+Uncaught Error: Syntax error, unrecognized expression: .list-group li[contact-type]='single'
+
+
+原因竟然是[contact-type]='single'的中括号要挪到后面[contact-type='single']
+囧，这个问题困扰了我两天
+
+

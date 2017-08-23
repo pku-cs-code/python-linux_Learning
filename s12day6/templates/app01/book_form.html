@@ -11,6 +11,8 @@
 {#    {{ book_form.publish_id }}#}
 
     <select name="publisher_id">
+{#        #好像一定要这么写，否则报错IntegrityError: (1048, "Column 'publisher_id' cannot be null")#}
+
         {% for publisher in publishers  %}
         <option value="{{ publisher.id  }}">{{ publisher.name }}</option>
         {% endfor %}

@@ -1,0 +1,17 @@
+python之django自动创建主键
+
+http://python.usyiyi.cn/translate/django_182/topics/db/models.html
+https://segmentfault.com/q/1010000007911560
+
+
+primary_key（主键）¶
+
+Field.primary_key¶
+若为 True, 则该字段会成为模型的主键字段。
+
+如果你没有在模型的任何字段上指定 primary_key=True, Django会自动添加一个 AutoField 字段来充当主键。 所以除非你想要覆盖默认的主键行为，否则不需要在任何字段上设定primary_key=True 。更多内容 请参考 Automatic primary key fields.
+primary_key=True 暗含着null=False 和unique=True. 一个对象上只能拥有一个主键.
+
+主键字段是只读的。如果你改变了一个已存在对象上的主键并且保存的话，会创建一个新的对象，而不是覆盖旧的.
+
+unique¶

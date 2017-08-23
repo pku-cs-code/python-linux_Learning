@@ -1,0 +1,113 @@
+python之django工程modelform和form用法
+
+modelform是定义显示样式的，定义model = models.Book的django显示样式
+class BookModelForm(forms.ModelForm):
+    class Meta:
+        model = models.Book
+        #fields = ('name','publish_date')
+        exclude = ()
+
+        # widgets = {
+        #     'name': forms.TextInput(attrs={'class':"form-control"}),
+        # }
+
+
+		
+
+ModelAdmin是设置在django中显示出的字段名和显示的形式
+
+class BookAdmin(admin.ModelAdmin):
+    list_display = ('id','name','publisher','publish_date','colored_status','status',)#横向显示
+    # list_display = ('id','name','publisher','publish_date','colored_status',)#横向显示
+
+    # list_display = ('name','publisher','authors','publish_date')#这里不能用authors，因为authors可能一行显示不了，
+    # 不能多对多，需要查询其他关联数据库
+
+    search_fields = ('name','publisher__name')#__是关联到另外一个表，搜索查询
+    list_filter = ('publisher','publish_date')#右侧过滤
+    list_editable = ('name','publish_date',)#list_display设置id后就可以改了，因为不设置那么name为主键，修改不了
+    list_per_page = 10   #每页显示多少
+    #list_select_related = ('publisher',)#没用过
+    filter_horizontal = ('authors',)#book进入选择更方便，for many to many
+    raw_id_fields = ('publisher',)#改publisher可以搜索， for 外键
+    actions = [make_forbidden,]
+admin.site.register(models.Book,BookAdmin) 		
+
+
+https://docs.djangoproject.com/en/1.11/topics/forms/modelforms/
+
+
+views.py中参数的传递
+默认httpresponse是第一个参数，一般设为request
+第二个参数是urls中匹配的内容，第三个类似，如果在urls中把参数设为类似
+url(r'^(?P<article_id>\d+)/$', views.detail, name='detail') 的形式，那么在视图中只能指定参数名为article_id，不过如果是
+url(r'^(\d+)/$', views.detail, name='detail')
+那么第二个参数可以随便命名了
+
+参考文档
+https://github.com/lzjun567/note/blob/master/note/python/django_url.md
+
+
+
+表单创建参考文档
+https://tutorial.djangogirls.org/zh/django_forms/
+
+实际上是自己创建了一个modelForm，可以自己定制显示的页面而不是django自带的页面
+但是需要为这个页面添加提交表单的功能，使经过POST后的数据能够存储到数据库中
+
+注意form_data['publisher_id'] = request.POST.get('publisher_id')
+中的publisher_id是在templates中必须要有的，是和publisher对应的
+
+    <select name="publisher_id">
+{#        #好像一定要这么写，否则报错IntegrityError: (1048, "Column 'publisher_id' cannot be null")#}
+
+        {% for publisher in publishers  %}
+        <option value="{{ publisher.id  }}">{{ publisher.name }}</option>
+        {% endfor %}
+    </select>
+	
+	
+
+def book_form(request):
+    form = forms.BookForm()
+
+    if request.method  == "POST":
+        print(request)
+        form = forms.BookForm(request.POST)#验证
+        if form.is_valid():
+            print ("form is valid.")
+            print (form.cleaned_data)
+            form_data = form.cleaned_data
+            form_data['publisher_id'] = request.POST.get('publisher_id')
+            book_obj = models.Book(**form_data)
+            book_obj.save()
+        else:
+            print (form.errors)
+    publisher_list = models.Publisher.objects.all()
+
+    return render(request,'app01/book_form.html',{'book_form':form,
+                                                  "publishers":publisher_list})
+
+def book_modelform(request):
+    form = forms.BookModelForm()
+
+    if request.method == 'POST':
+        print (request.POST)
+        form = forms.BookModelForm(request.POST)#把值传过去
+        if form.is_valid():
+            print ('form is ok.')
+            print (form.cleaned_data)
+            form.save()#直接保存到数据库里
+
+    return render(request,'app01/book_modelform.html',{'book_form':form})
+
+
+cleaned_data作用	
+
+参考文档https://www.rddoc.com/doc/Django-1.10.5/topics/forms/
+
+	
+无论使用表单提交的数据是什么，一旦通过调用 is_valid() 成功验证（并且 is_valid() 已返回 True），验证的表单数据将在 form.cleaned_data 字典中。这些数据将会很好地转换为Python类型。
+
+将html格式的数据提取出来，变成干净地数据
+

@@ -9,6 +9,8 @@ from django.contrib.auth import authenticate,login,logout
 @login_required#装饰器认证
 def index(request):
     return render(request,'index.html')
+#如果这样写会默认跳转到accountss/login/页面，这个是django写死了的，如果自己没有写这个accountss/login/对应urls，则会报错404
+#后面还会加一些url参数，例如http://127.0.0.1:8000/accounts/login/?next=/
 
 def acc_login(request):
     if request.method == 'POST':

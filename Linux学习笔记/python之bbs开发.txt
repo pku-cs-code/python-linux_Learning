@@ -53,5 +53,170 @@ Running migrations:
   Applying bbs.0003_auto_20170810_2039... OK
 
 
+ 
+如果认证成功，那么名称显示出来
+
+{% if request.user.is_authenticated %}
+<li class="active"><a href="#">{{ request.user.userprofile.name }}</a></li>
+{% else %}
+<li class="active"><a href="{% url 'login' %}">登录/注册</a></li>
+{#                <li class="active"><a href="#">登录/注册</a></li>#}
+
+
+{% endif %} 
   
+
+url(r'^logout/$',views.acc_logout,name='acc_logout'), ####添加name作用是在前端使用{% url 'acc_logout' %}
+
+
+url(r'^login/', views.acc_login,name='loginn'),
+url(r'^logout/', views.acc_logout, name='logout'),
+#这里设置的name='loginn' name='logout'是给base.html前端使用的，使前端能够识别到这个变量
+
+{% if request.user.is_authenticated %}
+<li class="active"><a href="#">{{ request.user.userprofile.name }}</a></li>
+<li class="active"><a href="{% url 'logout' %}">注销</a></li>
+
+{% else %}
+<li class="active"><a href="{% url 'loginn' %}">登录/注册</a></li>
+{#                <li class="active"><a href="#">登录/注册</a></li>#}
+
+
+{% endif %}
+	  
+	  
+@login_required#装饰器认证
+def index(request):
+    return render(request,'index.html')
+#如果这样写会默认跳转到accountss/login/页面，这个是django写死了的，如果自己没有写这个accountss/login/对应urls，则会报错404
+#后面还会加一些url参数，例如http://127.0.0.1:8000/accounts/login/?next=/
+
+1.如果用户还没有登录，默认会跳转到‘/accounts/login/’。这个值可以在settings文件中通过LOGIN_URL参数来设定。（后面还会自动加上你请求的url作为登录后跳转的地址，如： /accounts/login/?next=/polls/3/ 登录完成之后，会去请求/poll/3）
+
+参考文档：
+http://blog.csdn.net/feng88724/article/details/7262514
+
+
+自己写admin
+
+return img_url.split('/',maxsplit=1)[-1] 
+
+切片
+[2:5]第二到第四个数
+[1:-1]第一到倒数第二个数
+参考文档：http://blog.tingyun.com/web/article/detail/1080
+
+
+切片
+print('request url-->',request)
+print('request split-->',request.path.split('/'))
+base_url = "/".join(request.path.split('/')[0:-2])#最后一个不要
+#(u'request split-->', [u'', u'crm', u'customers', u'1', u''])
+
+用'/'符号分割后，/前面的和/后面的都为一个空字符
+
+
+<form class="form-horizontal" method="post">{% csrf_token %}
+    {% for field in customer_form %}
+        <div class="form-group">
+            {% if field.field.required %}
+            <label  class="col-sm-2 control-label">*{{ field.label }}</label>
+            {% else %}
+            <label  style="font-weight: normal" class="col-sm-2 control-label">{{ field.label }}</label>
+            {% endif %}
+			
+			
+form 带有输入框的
+
+样式float后其他的标签会挤上去
+
+为了不使自己的页面看起来比较生硬，多用灰色
+
+CSRF Cross Site Request Forgery
+跨域请求伪造
+
+cookie是不能跨网站保存的
+
+session+cookie
+钓鱼网站不能获取你的cookie
+
+post时，
+django服务器端会给你返回一个csrf token
+服务器端对上就验证成功了
+
+ajax
+
+
+
+可以写在base.html全局body下
+  <body style=""> {% csrf_token %}
+
   
+  <script>
+    function getCsrf() {
+        return $("input[name='csrfmiddlewaretoken']").val();
+    }
+    $(document).ready(function () {
+        $('.comment-box button').click(function () {
+            var comment_text = $(".comment-box textarea").val();
+            if (comment_text.trim().length < 5){
+                alert('评论不能少于5个字');
+            }else {
+                //post
+
+                $.post("{% url 'post-comment' %}",
+                    {
+                        'comment_type':1,
+                        article_id:"{{ article_obj.id }}",
+                        parent_comment_id:null,
+                        'comment':comment_text.trim(),
+                        'csrfmiddlewaretoken':getCsrf()
+                    },//end post args
+                    function(callback){
+                    console.log(callback);
+                });//ajax引用模板要加双引号
+            }
+        });//end button click
+    });
+{#    把所有的文档树加载完毕#}
+</script>
+
+
+父文本编辑器
+
+ueditor （百度的）支持php、asp、.NET，不支持django
+http://ueditor.baidu.com/website/
+
+
+ckeditor
+https://ckeditor.com/
+
+
+上传文件
+template form表单
+<form enctype="multipart/form-data"  action="{% url 'new_article' %}" method="post">{% csrf_token %}
+ 
+            上传标题图片:<input  type="file" name="head_img" >
+      
+            <button type="submit" class="btn btn-success pull-right">提交</button>
+ 
+</form>
+
+
+后端
+from django import forms
+ 
+class UploadFileForm(forms.Form):
+    title = forms.CharField(max_length=50)
+    file = forms.FileField()
+	
+上传进度条用ajax来写，后端边写到内存边写到磁盘
+
+
+jQuery 属性操作 - toggleClass() 方法
+
+对设置和移除所有 <p> 元素的 "main" 类进行切换：
+http://www.w3school.com.cn/jquery/attributes_toggleclass.asp
+
+
+
