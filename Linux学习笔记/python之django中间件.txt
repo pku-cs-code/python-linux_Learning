@@ -1,0 +1,41 @@
+python之django中间件
+
+1.11
+https://docs.djangoproject.com/en/1.11/topics/http/middleware/
+
+1.9
+https://docs.djangoproject.com/en/1.9/topics/http/middleware/
+
+全局性控制的用中间件
+
+session
+csrf
+
+所有的请求都会请求中间件
+
+如果中间件效率不高不要用，用的话要慎重
+
+MIDDLEWARE = [
+    'django.middleware.security.SecurityMiddleware',
+    'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.common.CommonMiddleware',
+    'django.middleware.csrf.CsrfViewMiddleware',
+    'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django.contrib.messages.middleware.MessageMiddleware',
+    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+]
+
+先一个个执行process_request()
+然后执行process——view()
+
+process_template_response()¶
+视图执行完了之后还可以调用，必须返回一个对象
+可以修改response
+
+process_response()¶
+
+process_response() is called on all responses before they’re returned to the browser.
+
+
+
+

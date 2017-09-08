@@ -88,3 +88,118 @@ __metaclass__最底层创建类的，一般涉及不到
 type创造了类
 
 
+
+@staticmethod或@classmethod
+http://blog.csdn.net/handsomekang/article/details/9615239
+
+https://taizilongxu.gitbooks.io/stackoverflow-about-python/content/14/README.html
+http://www.wklken.me/posts/2013/12/22/difference-between-staticmethod-and-classmethod-in-python.html
+
+@staticmethod像是一个类的函数，调用类不用实例化便可以使用这个函数，可以不传参数
+实例和类方法都可以调用
+
+@classmethod是类的一个方法，需要传递cls函数给这个方法，当类实例化后第一个参数默认为这个类的实例变量，其他变量依次传递给这个类方法的参数
+
+https://taizilongxu.gitbooks.io/stackoverflow-about-python/content/14/README.html
+
+
+class A(object):
+    def foo(self,x):
+        print "executing foo(%s,%s)"%(self,x)
+
+    @classmethod
+    def class_foo(cls,x):
+        print "executing class_foo(%s,%s)"%(cls,x)
+
+    @staticmethod
+    def static_foo(x):
+        print "executing static_foo(%s)"%x
+    @staticmethod
+    def static_foo2():
+        print "'test static_foo2"
+
+a=A()
+#class_foo(A,'test')
+a.class_foo('class_foo test')
+a.static_foo('stattic_method_test_without_class')
+A.static_foo('test_static_method')
+a.static_foo('test')
+a.static_foo2()
+A.static_foo2()
+
+property属性
+http://python.jobbole.com/80955/
+
+
+class Person(object):
+    """"""
+
+    # ----------------------------------------------------------------------
+    def __init__(self, first_name, last_name):
+        """Constructor"""
+        self.first_name = first_name
+        self.last_name = last_name
+
+    # ----------------------------------------------------------------------
+    @property
+    def full_name(self):
+        """
+        Return the full name
+        """
+       # return "%s %s" % (self.first_name, self.last_name)
+
+        print "%s %s" % (self.first_name, self.last_name)
+
+
+person = Person('zhagn','cai')
+person.full_name
+person.first_name = 'zzz'
+person.full_name
+
+可以通过直接调用而不用写括号调用方法
+
+python中的下划线
+
+http://lib.csdn.net/article/python/1685
+_user前面带有一个下划线是私有的函数或者属性
+
+1.  前带_的变量:  标明是一个私有变量, 只用于标明, 外部类还是可以访问到这个变量
+
+两个下划线表示私有变量和方法，是为了避免和子类的方法冲突，实际上子类也是可以访问的
+
+https://foofish.net/python.html
+
+  print Foo.__boo
+  
+  AttributeError: type object 'Foo' has no attribute '__boo'
+  
+  要换成这样
+      print Foo._Foo__boo
+
+https://michaelyou.github.io/2015/05/05/Python-%E4%B8%AD%E7%9A%84%E4%B8%8B%E5%88%92%E7%BA%BF%E5%91%BD%E5%90%8D%E8%A7%84%E5%88%99/
+
+这种用法表示Python中特殊的方法名。其实，这只是一种惯例，对Python系统来说，这将确保不会与用户自定义的名称冲突。通常，你将会覆写这些方法，并在里面实现你所需要的功能，以便Python调用它们。例如，当定义一个类时，你经常会覆写“__init__”方法。
+
+range和xrange
+http://www.cnblogs.com/zhangjing0502/archive/2012/05/16/2503880.html
+
+
+前者会生成一个列表，熟悉与list类型
+而xrange是迭代器类型，在调用时才会去到内存中运行，相比range更节省资源，运算更快
+
+a = range(100)
+
+print('type of a=range(100):',type(a))
+print("value of a=range(100)",a)
+print ("value of a[0]:%s,a[1]:%s") %(a[0],a[1])
+
+a = xrange(100)
+
+print('type of a=range(100):',type(a))
+print("value of a=range(100)",a)
+print ("value of a[0]:%s,a[1]:%s") %(a[0],a[1])
+
+
+
+
+	  

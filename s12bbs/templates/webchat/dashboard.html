@@ -2,6 +2,14 @@
 
 {% block page-container %}
 {#<h1>web chat room</h1>#}
+<div class="progress_div">
+    <div class="progress hide">
+      <div class="progress-bar" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 0%;">
+        0%
+      </div>
+    </div>
+ </div>
+
 <div class="chat-container">
     <div class="left-contact-panel">
         contacts
@@ -34,7 +42,22 @@
         </ul>
     </div>
     <div role="tabpanel" class="tab-pane" id="group-tab">
-        group
+              <ul class="list-group ">
+        {% for group   in request.user.userprofile.group_members.select_related %}
+{#            {% for group   in request.user.userprofile.group_owner.select_related %}#}
+{#                    admins = models.ManyToManyField(UserProfile,related_name='group_admins',blank=True) 这里models的related_name就是前端调用需要的#}
+
+{#            查询关联的组#}
+{#          <li contact-type="single" contact-id="{{ friend.id }}" class="list-group-item " onclick="OpenChatWindow(this);">#}
+{#            <span class="badge hide">0</span>#}
+{#            <span class="contact-name">{{ friend.name }}</span>#}
+{#          </li>#}
+                  <li contact-type="group" contact-id="{{ group.id }}" class="list-group-item " onclick="OpenChatWindow(this);">
+            <span class="badge hide">0</span>
+            <span class="contact-name">{{ group.name }}</span>
+          </li>
+        {% endfor %}
+        </ul>
     </div>
   </div>
 
@@ -50,7 +73,16 @@
             window
         </div>
         <div class="chat-box-emoj">
-            emoj
+{#            emoj#}
+            <div class="col-md-3">
+                <input id="file_upload" type="file">
+        </div>
+            <div class="col-md-2">
+                <span class="glyphicon glyphicon-upload" onclick="FileUpload()"></span>
+            </div>
+
+
+{#            <span class="glyphicon glyphicon-picture"></span>#}
         </div>
         <div class="chat-box-msg-box">
             <textarea id="msg" class="wrap-left" style="height: 90px"></textarea>
@@ -134,7 +166,7 @@ GLOBAL_CHAT_RECORD_DIC ={
             }else {
                         alert("请输入要发送的消息")}
             //no wait the send_msg's call confirm msg
-            AddSentMsgIntoBox(msg_text);
+            AddSentMsgIntoBox(msg_text,'text');
             $("textarea").val('');
 
         }
@@ -148,6 +180,7 @@ GLOBAL_CHAT_RECORD_DIC ={
         if (contact_type && contact_id){
             var msg_item = {
             'from':"{{ request.user.userprofile.id }}",
+            'from_name':"{{ request.user.userprofile.name }}",
             'to':contact_id,
             'type':contact_type,
             'msg':msg_text
@@ -162,11 +195,85 @@ GLOBAL_CHAT_RECORD_DIC ={
 
     }
 
-    function AddSentMsgIntoBox(msg_text) {
-        var new_msg_ele = "<div class='msg-item'>"+
+    
+    function FileUpload() {
+        var formData = new FormData();
+        //console.log($('#file_upload')[0].files[0]);
+        //console.log("typeof $('#file_upload') and it's value:",typeof $('#file_upload'),$('#file_upload'));
+        //console.log("typeof $('#file_upload')[0] and it's value: ",typeof $('#file_upload')[0],$('#file_upload')[0]);
+          //      console.log("typeof $('#file_upload')[0].files[0] and it's value:",typeof $('#file_upload')[0].files[0],$('#file_upload')[0].files[0]);
+
+
+
+        formData.append('file',$('#file_upload')[0].files[0]);
+
+        $.ajax({
+                url:"{%  url 'file_upload'%}",
+                type:'POST',
+                data:formData,
+                processData:false,//tell jquery not to process the data
+            contentType:false,//tell jquery not to set contentType
+            success:function (data) {
+                console.log(data);
+            }
+            }
+
+        );//end ajax
+           // AddSentMsgIntoBox()
+
+        $(".progress").removeClass("hide");
+
+        GetFileUploadProgress($("#file_upload")[0].files[0]);
+
+    }
+
+    function GetFileUploadProgress(file_obj) {
+        var UpLoadProgressRefresh = setInterval(function () {
+         $.getJSON("{% url 'file_progress' %}",{filename:file_obj.name},function(callback){
+             console.log("upload progress:",callback.recv_size);
+             console.log("typeof callback.recv.size:",typeof callback.recv_size);
+             if (file_obj.size == callback.recv_size){
+                 //upload done
+                 clearInterval(UpLoadProgressRefresh);
+
+                 AddSentMsgIntoBox(file_obj.name,'image');
+                 $.get("{% url 'delete_cache_key' %}",{cache_key:file_obj.name},function(){
+                     console.log(callback);
+                 });
+                 alert('上传完成');
+             }
+{#                              $.get("{% url 'delete_cache_key' %}",{cache_key:file_obj.name},function(){#}
+{#                     console.log(callback);#}
+
+             var current_percent = parseInt((callback.recv_size/file_obj.size)*100) +"%";
+             $(".progress-bar").css('width',current_percent);
+             $(".progress-bar").text(current_percent);
+         })
+        },1000);
+
+    }
+    function AddSentMsgIntoBox(msg_text,msg_type) {
+        if(msg_type == 'text'){
+                    var new_msg_ele = "<div class='msg-item'>"+
                 "<span>" + "{{ request.user.userprofile.name }}" + "</span>"+
                 "<span>" + new Date().toLocaleTimeString()+ "</span>"+
                 "<div class='msg-text'>" + msg_text + "</div>" + "</div>"
+
+        }else  if(msg_type.startsWith('image')) {
+                    var new_msg_ele = "<div class='msg-item'>"+
+                "<span>" + "{{ request.user.userprofile.name }}" + "</span>"+
+                "<span>" + new Date().toLocaleTimeString()+ "</span>"+
+                "<div class='msg-text'> <img width='300px' src='/static/"+"{{ request.user.userprofile.id }}/"+msg_text+"'/>"+ "</div>" + "</div>"
+        }else {
+             var new_msg_ele = "<div class='msg-item'>"+
+                "<span>" + "{{ request.user.userprofile.name }}" + "</span>"+
+                "<span>" + new Date().toLocaleTimeString()+ "</span>"+
+                "<div class='msg-text'> <a href='/static/"+"{{ request.user.userprofile.id }}/"+msg_text+"' target=_blank/></a>"+ "请打开链接下载"+"</div>" + "</div>"
+//这里的msg_text是文件名
+
+        }
+
+
             $(".chat-box-window").append(new_msg_ele);
         $(".chat-box-window").animate({
             scrollTop:$('.chat-box-window')[0].scrollHeight},500);
@@ -185,17 +292,36 @@ GLOBAL_CHAT_RECORD_DIC ={
         var contact_name = $(ele).find(".contact-name").text();
         var contact_type = $(ele).attr("contact-type");
 
-        //在切换之前把聊天记录归档
+        //console.log("value of contact_id",contact_id);
+        //console.log("value of contact_name",contact_name);
+        //console.log("value of contact_type",contact_type);
 
-        var current_session_id = $(".chat-box-title").attr("contact-id")
-        var current_session_type = $(".chat-box-title").attr("contact-type")
+                //在切换之前把聊天记录归档
 
-        if ($(".chat-box-title").attr("contact-id")){
+        var current_session_id = $(".chat-box-title").attr("contact-id");
+        var current_session_type = $(".chat-box-title").attr("contact-type");
+{##}
+{#        var current_session_id = $(this).find(".chat-box-title").attr("contact-id");#}
+{#        var current_session_type = $(this).find(".chat-box-title").attr("contact-type");#}
+
+        //console.log("OpenChatWindow-->typeof current_session_type",typeof current_session_type);
+        //console.log('OpenChatWindow-->value of current_session_type', current_session_type);
+        //console.log('OpenChatWindow-->typeof current_session_id',typeof current_session_id);
+        //console.log('OpenChatWindow-->value of current_session_id',current_session_id);
+        //console.log("bool value of current_session_id",Boolean(current_session_id));
+{#        if ($(".chat-box-title").attr("contact-id")){#}
+        if (current_session_id){
+
             //has session
             //do switch
-            GLOBAL_CHAT_RECORD_DIC[current_session_type][current_session_id] = $('.chat-box-window').html()
+            GLOBAL_CHAT_RECORD_DIC[current_session_type][current_session_id] = $('.chat-box-window').html();
 
-        }
+        }//这里如果openboxwindow已经被加载过了的话，也就是session值已经生成了的话，在parsemsgs里面满足
+        // callback[i].from == current_session_id &&  current_session_type == callback[i].type条件
+        //这时再次打开的聊天框的内容里就会有上次消息发送方字典里暂存的数据，因为GetMsgs是一一直在执行的，可以理解为
+        // 一直在取后台queue里返回的数据，当打开这个对话框时满足了
+        //前面的条件，所以需要把这些消息再次存储，作为此聊天对象的缓存
+
 {#            var chat_record = GLOBAL_CHAT_RECORD_DIC[contact_type][contact_id];#}
 {#            console.log(chat_record,typeof chat_record);#}
 {#            if (typeof chat_record == "undefined"){#}
@@ -206,17 +332,19 @@ GLOBAL_CHAT_RECORD_DIC ={
 {#            console.log("haha>>", chat_record)#}
 {#            }#}
 
+
         var chat_box_title_conttent = "正在跟" + contact_name +"聊天";
         $(".chat-box-title").html(chat_box_title_conttent);
         $(".chat-box-title").attr("contact-id",contact_id);
         $(".chat-box-title").attr("contact-type",contact_type);
 
-        var new_contact_chat_record = GLOBAL_CHAT_RECORD_DIC[contact_type][contact_id];
-        console.log('typeof new_contact_chat_record:-->',typeof new_contact_chat_record);
+
+        var new_contact_chat_record = GLOBAL_CHAT_RECORD_DIC[contact_type][contact_id];//这里面存的是消息
+        //console.log('typeof new_contact_chat_record:-->',typeof new_contact_chat_record);
         if (typeof new_contact_chat_record ==   'undefined'){
             $(".chat-box-window").html("");
-        }
-        $('.chat-box-window').html(new_contact_chat_record);
+        }else{
+        $('.chat-box-window').html(new_contact_chat_record);}
 
         //hide new msg notifier badge
 {#        var contact_elem = $(".list-group li[contact-type='"+ contact_type +"']").filter("li[contact-id]='"+ contact_id +"'")[0];#}
@@ -243,43 +371,75 @@ GLOBAL_CHAT_RECORD_DIC ={
     function ParseNewMsgs(callback) {
         var current_session_type = $(".chat-box-title").attr("contact-type");
         var current_session_id = $(".chat-box-title").attr("contact-id");
+        //console.log("typeof current_session_type",typeof current_session_type);
+        //console.log('value of current_session_type', current_session_type);
+        //console.log('typeof current_session_id',typeof current_session_id);
+        //console.log('value of current_session_id',current_session_id)
 
-        for(var i in callback){
-            console.log(callback[i]);
+
+        for(var i in callback){//这里的i对应后台que中取出数据msg_list的索引值
+            //console.log(callback[i]);
+            //console.log("callback[i].from:",callback[i].from);
+            //console.log('value of i:-->',i);
+            //console.log("callback[i].type",callback[i].type);
+
+            if (callback[i].type == 'single'){
+                var msg_from_contact_id = callback[i].from;
+
+            }else{
+                var msg_from_contact_id = callback[i].to;
+            }
+
+
             var msg_item_ele = "<div class='msg-item'>"+
-                "<span>" + callback[i]['from'] + "</span>"+
+                "<span>" + callback[i]['from_name'] + "</span>"+
                 "<span>" + callback[i].timestamp+ "</span>"+
                 "<div class='msg-text'>" + callback[i].msg + "</div>" + "</div>";
-            if (callback[i].from == current_session_id &&  current_session_type == callback[i].type){
+            console.log('value of msg_item_ele',msg_item_ele);
+            if (msg_from_contact_id == current_session_id &&  current_session_type == callback[i].type){
 {#                if (callback[i]['from'] == current_session_id && callback[i]['type'] == current_session_type){#}
 
                 //此消息的发送方当前正在跟我聊天
 
-                $(".chat-box-window").append(msg_item_ele);
+                $(".chat-box-window").append(msg_item_ele);//这里如果当前窗口已经被加载过，也就是contact-id和contact-type已经被OpenBoxWindow设置过了
+                //那么直接添加队列里的消息到html中
+                //如果if括号里的条件成立，代表消息接收者已经打开过对应的聊天框了，这时需要将字典里的数据返回给它
 
             }else {
                 console.log("save msg first...");
 
                 //此消息发送者当前没打开聊天框，消息暂存内存
-                if (GLOBAL_CHAT_RECORD_DIC[callback[i].type][callback[i].from]){//如果字典存在则追加
-                    GLOBAL_CHAT_RECORD_DIC[callback[i].type][callback[i].from] += msg_item_ele;
+{#                if (GLOBAL_CHAT_RECORD_DIC[callback[i].type][callback[i].from]){//如果字典存在则追加#}
+                    if (GLOBAL_CHAT_RECORD_DIC[callback[i].type][msg_from_contact_id]){//如果字典存在则追加
+
+                    //这种情况对应的是消息接收的人呢没有打开对应的聊天框，导致前面if括号里面两个条件不成立，那么暂存消息到字典里
+{#                    GLOBAL_CHAT_RECORD_DIC[callback[i].type][callback[i].from] += msg_item_ele;#}
+                    GLOBAL_CHAT_RECORD_DIC[callback[i].type][msg_from_contact_id] += msg_item_ele;
+
+                    console.log("字典存在追加后存储的消息",GLOBAL_CHAT_RECORD_DIC[callback[i].type][msg_from_contact_id]);
 
                 }else{
-                    if(GLOBAL_CHAT_RECORD_DIC[callback[i].type][callback[i].from]=='undifined')
-                    {
-                        GLOBAL_CHAT_RECORD_DIC[callback[i].type][callback[i].from] = msg_item_ele;
-
-                    }else{
-                        GLOBAL_CHAT_RECORD_DIC[callback[i].type][callback[i].from] += msg_item_ele;
-
-                    }
+{#                    if(GLOBAL_CHAT_RECORD_DIC[callback[i].type][callback[i].from]=='undifined')#}
+{#                    {#}
+                        GLOBAL_CHAT_RECORD_DIC[callback[i].type][msg_from_contact_id] = msg_item_ele;
+{#                        console.log('msg_item_ele when GLOBAL_CHAT_DIC is undifined:',msg_item_ele)#}
+{#                        console.log("字典不存在追加后存储的消息",GLOBAL_CHAT_RECORD_DIC[callback[i].type][callback[i].from]);#}
+{##}
+{##}
+{#                    }else{#}
+{#                        GLOBAL_CHAT_RECORD_DIC[callback[i].type][callback[i].from] += msg_item_ele;#}
+{#                        console.log('msg_item_ele when GLBAL_CHAT_DIC is not undifined:',msg_item_ele)#}
+{#                    console.log("字典不存在（再次）追加后存储的消息",GLOBAL_CHAT_RECORD_DIC[callback[i].type][callback[i].from]);#}
+{##}
+{##}
+{#                    }#}
 
                 }//end if
 
                 //新消息提醒
 {#                var contact_ele = $(".list-group li\\[contact-type='"+ callback[i].type +"'\\]").filter("li\\[contact-id\\]='"+ callback[i].from +"'")[0];#}
 
-                var contact_ele = $(".list-group li[contact-type='"+ callback[i]['type'] +"']").filter("li[contact-id='"+ callback[i]['from'] +"']")[0];
+                var contact_ele = $(".list-group li[contact-type='"+ callback[i]['type'] +"']").filter("li[contact-id='"+ msg_from_contact_id +"']")[0];
                 var current_new_msg_num = $(contact_ele).find(".badge").text();
                 $(contact_ele).find(".badge").removeClass("hide");
 

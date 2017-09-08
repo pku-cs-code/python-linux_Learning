@@ -1,0 +1,8 @@
+python之文件操作
+
+https://www.oschina.net/question/149123_26242
+
+import os 
+os.path.isfile('test.txt') #如果不存在就返回False 
+os.path.exists(directory) #如果目录不存在就返回False
+

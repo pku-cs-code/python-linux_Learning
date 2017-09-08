@@ -49,6 +49,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    #'webchat.custom_middleware.MyCustomMiddleware',
 ]
 
 ROOT_URLCONF = 's12bbs.urls'

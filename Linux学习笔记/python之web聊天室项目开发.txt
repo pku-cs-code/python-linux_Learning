@@ -215,3 +215,24 @@ Uncaught Error: Syntax error, unrecognized expression: .list-group li[contact-ty
 囧，这个问题困扰了我两天
 
 
+进度条
+
+
+upload的图片超过2.5M存到硬盘，小于存在内存
+
+
+将jquery对象转换成DOM对象
+https://stackoverflow.com/questions/24049337/what-does-the-0-do-in-id0
+
+http://www.cnblogs.com/565261641-fzh/p/5906741.html
+
+a标签中的target=_blank表示在新的标签页 窗口中打开标签
+http://bbs.csdn.net/topics/30079742
+
+target预定义的值有四个
+如果设置成其他的值，比如blank，那么相当于定义新的框架
+https://segmentfault.com/q/1010000004433585
+
+django的cache机制
+http://python.usyiyi.cn/translate/django_182/topics/cache.html
+

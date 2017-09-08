@@ -277,6 +277,99 @@ vars	dir返回的的是key，vars返回keys和vlues
 zip  第一个元素和第一个元素结合，类似第二个、第三个……
 	形成新的列表
 
+>>> f =lambda x,y:x+y
+>>> reduce(f,range(1,10))
+45
+>>> map(f,a,b)
+<map object at 0x000001A7BADB8400>
+>>> list(map(f,a,b))
+[2, 4, 6, 8]
+
+filter只接受两个参数，返回为True则返回，返回为False不返回
+
+
+装饰器
+def login_required(func)
+	def wrapper(*args,**kwargs)
 	
+		return func(*arg,**kwargs)
+	
+	reuturn wrapper
+
+	
+生成器是在调用生成器函数的时候，例如func.next(),碰到yield函数便暂停函数的执行
+继续执行下一个函数，然后在func.send(i)调用生成器再再参数返回到原来yield函数暂停执行的地方，执行生成器函数
+当生成器函数调用next()方法时，生成器函数才会真正被执行
+
+>>> a = [1,2,3,4,5]
+>>> y = iter(a)
+>>> z =iter(a)
+>>> y.next()
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+AttributeError: 'list_iterator' object has no attribute 'next'
+>>> next(y)
+1
+>>> next(y)
+2
+>>> next(z)
+1
+>>> next(z)
+2
+>>> next(z)
+3
+>>> next(z)
+4
+>>> next(z)
+5
+>>> next(z)
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+StopIteration
+
+生成器表达式是列表推倒式的生成器版本，看起来像列表推导式，但是它返回的是一个生成器对象而不是列表对象。
+
+>>> a = (x*x for x in range(10))
+>>> a
+<generator object <genexpr> at 0x401f08>
+>>> sum(a)
+285
+
+>>> a = (x*x for x in range(5))
+>>> sum(a)
+30
+>>> range(5)
+range(0, 5)
+>>> for i in range(5):
+...     print(i)
+...
+0
+1
+2
+3
+4
+
+
+>>> def gensquares(N):
+...     res = []
+...     for i in range(N):
+...             res.append(i*i)
+...     return res
+...
+>>> for item in gensquares(5):
+...     print(item)
+...
+0
+1
+4
+9
+16
+
+
+首先，生成器的好处是延迟计算，一次返回一个结果。也就是说，它不会一次生成所有的结果，这对于大数据量处理，将会非常有用。
+https://www.zhihu.com/question/20829330
+
+因此，生成器的唯一注意事项就是：生成器只能遍历一次。
+
 
 

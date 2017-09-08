@@ -64,7 +64,60 @@ This is the 4th line
 >>> f.close
 <built-in method close of file object at 0x7f41f4573c00>
 
+>>> f = open('t2文件ftp.txt','r');
+>>> print(f);
+<open file 't2\xce\xc4\xbc\xfeftp.txt', mode 'r' at 0x02DFD078>
+>>> f.read();
+'ftp://192.168.31.253:3721/'
+>>> f.read(1);
+''
+>>> f.read(2);
+''
+>>> f.read();
+''
+>>> f.close()
+>>> f = open('t2文件ftp.txt','r');
+>>> f.read(2)
+'ft'
+>>> f.read(3)
+'p:/'
+>>> f.read(4)
+'/192'
+>>> f.read()
+'.168.31.253:3721/'
 
 
+r+读写
 
+
+truncate的用法
+https://www.tutorialspoint.com/python/file_truncate.htm
+
+如果truncate是截取n个字符，如果不加n，默认是截取后面所有的字符
+>>> f=open('foo.txt','r+')
+>>> f.readline()
+'# This is 1st line\n'
+>>> f.truncate()
+>>> f.readline()
+''
+>>> f.close()
+
+查看文件后发现文件内容只剩下# This is 1st line\n了
+
+再次打开文件
+>>> f=open('foo.txt','r+')
+>>> f.truncate(2)
+>>> f.read()
+'# '
+>>> f.close()
+截取之后只剩下# 了，是以为truncate只截取了2个字符
+
+with open('/tmp/workfile', 'r') as f:
+https://www.kancloud.cn/thinkphp/python-tutorial/37769
+
+
+f.truncate()
+
+注意：仅当以 "r+"   "rb+"    "w"   "wb" "wb+"等以可写模式打开的文件才可以执行该功能。
+https://my.oschina.net/u/2252538/blog/332757
 

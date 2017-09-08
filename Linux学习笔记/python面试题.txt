@@ -1,0 +1,28 @@
+python实现tail -f的功能
+
+
+https://github.com/shengxinjing/my_blog/issues/11
+
+
+range和xrange（生成器）的区别
+http://ciniao.legu.cc/article.php?id=17
+都可以迭代，不同的是range立马会返回一个结果，而xrange只有在使用的时候才会返回结果，更节省资源
+
+range会生成列表，而xrange结果是生成器xrange类型，两者不同
+
+lambda表达式
+m = lambda x,y,z: (x-y)*z
+print m(3,1,2)
+
+>>> g= lambda x,y,z:x+1
+>>> g(1)
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+TypeError: <lambda>() takes exactly 3 arguments (1 given)
+>>> g(1,0,0)
+2
+
+
+http://www.cnblogs.com/wanpython/archive/2010/11/01/1865919.html
+
+map迭代

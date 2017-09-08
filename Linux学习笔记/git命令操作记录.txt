@@ -1,0 +1,354 @@
+git之revert reset rebase
+https://www.awaimai.com/1336.html
+revert是回退commit操作，但是这个这个回退操作本身会被记录在本地仓库里面，通过git log可以看到revert的内容，也就是记录了整个回退操作
+rebase是退回到某个commit版本之前，执行git rebase -i id时会提示你删除的具体内容，你只需要把对应的行删除掉即可删除到指定的几个commit
+相当于删除指定的某个或者多个commit
+reset 执行git reset id是直接回退到这个id对应的本地仓库版本，而之前的更改都是unstaged状态.git reset --hard id对将工作区也就是我们能够看到的文件内容也恢复到对应的commit状态的内容
+
+
+
+git之checkout
+http://blog.jobbole.com/87700/
+
+
+cai@DESKTOP-HOLTCSQ MINGW64 /d/gittest
+$ git init
+Initialized empty Git repository in D:/gittest/.git/
+
+cai@DESKTOP-HOLTCSQ MINGW64 /d/gittest (master)
+$ ls
+
+cai@DESKTOP-HOLTCSQ MINGW64 /d/gittest (master)
+$ ls
+
+cai@DESKTOP-HOLTCSQ MINGW64 /d/gittest (master)
+$ ls -a
+./  ../  .git/
+
+cai@DESKTOP-HOLTCSQ MINGW64 /d/gittest (master)
+$ git status
+On branch master
+
+Initial commit
+
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+
+        gittest.txt
+
+nothing added to commit but untracked files present (use "git add" to track)
+
+cai@DESKTOP-HOLTCSQ MINGW64 /d/gittest (master)
+$ git add gittest.txt
+
+cai@DESKTOP-HOLTCSQ MINGW64 /d/gittest (master)
+$ git status
+On branch master
+
+Initial commit
+
+Changes to be committed:
+  (use "git rm --cached <file>..." to unstage)
+
+        new file:   gittest.txt
+
+
+cai@DESKTOP-HOLTCSQ MINGW64 /d/gittest (master)
+$ git commit -m 'first commit of gittest'
+[master (root-commit) bd36906] first commit of gittest
+ 1 file changed, 1 insertion(+)
+ create mode 100644 gittest.txt
+
+cai@DESKTOP-HOLTCSQ MINGW64 /d/gittest (master)
+$ git log
+commit bd3690690dcc37a9cc74b563322d442e4fb4b5f0 (HEAD -> master)
+Author: zhangcai <414220021@qq.com>
+Date:   Fri Sep 8 13:28:15 2017 +0800
+
+    first commit of gittest
+
+cai@DESKTOP-HOLTCSQ MINGW64 /d/gittest (master)
+$ git commit -m 'second commit of gittest without modifying gittest.txt'
+On branch master
+nothing to commit, working tree clean
+
+cai@DESKTOP-HOLTCSQ MINGW64 /d/gittest (master)
+$ git log
+commit bd3690690dcc37a9cc74b563322d442e4fb4b5f0 (HEAD -> master)
+Author: zhangcai <414220021@qq.com>
+Date:   Fri Sep 8 13:28:15 2017 +0800
+
+    first commit of gittest
+
+cai@DESKTOP-HOLTCSQ MINGW64 /d/gittest (master)
+$ git status
+On branch master
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git checkout -- <file>..." to discard changes in working directory)
+
+        modified:   gittest.txt
+
+no changes added to commit (use "git add" and/or "git commit -a")
+
+cai@DESKTOP-HOLTCSQ MINGW64 /d/gittest (master)
+$ git add gittest.txt
+
+cai@DESKTOP-HOLTCSQ MINGW64 /d/gittest (master)
+$ git status
+On branch master
+Changes to be committed:
+  (use "git reset HEAD <file>..." to unstage)
+
+        modified:   gittest.txt
+
+
+cai@DESKTOP-HOLTCSQ MINGW64 /d/gittest (master)
+$ git log
+commit bd3690690dcc37a9cc74b563322d442e4fb4b5f0 (HEAD -> master)
+Author: zhangcai <414220021@qq.com>
+Date:   Fri Sep 8 13:28:15 2017 +0800
+
+    first commit of gittest
+
+cai@DESKTOP-HOLTCSQ MINGW64 /d/gittest (master)
+$ git commit -m 'second commit of gittest.txt after modifying for the second time'
+[master e29ab06] second commit of gittest.txt after modifying for the second time
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+cai@DESKTOP-HOLTCSQ MINGW64 /d/gittest (master)
+$ git status
+On branch master
+nothing to commit, working tree clean
+
+cai@DESKTOP-HOLTCSQ MINGW64 /d/gittest (master)
+$ git log
+commit e29ab06d3e3e0826a1037689cb6faf742934cf33 (HEAD -> master)
+Author: zhangcai <414220021@qq.com>
+Date:   Fri Sep 8 13:43:24 2017 +0800
+
+    second commit of gittest.txt after modifying for the second time
+
+commit bd3690690dcc37a9cc74b563322d442e4fb4b5f0
+Author: zhangcai <414220021@qq.com>
+Date:   Fri Sep 8 13:28:15 2017 +0800
+
+    first commit of gittest
+
+cai@DESKTOP-HOLTCSQ MINGW64 /d/gittest (master)
+$ git status
+On branch master
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git checkout -- <file>..." to discard changes in working directory)
+
+        modified:   gittest.txt
+
+no changes added to commit (use "git add" and/or "git commit -a")
+
+cai@DESKTOP-HOLTCSQ MINGW64 /d/gittest (master)
+$ git commit -m 'third commit of gittest.txt after modifying for the second time'
+On branch master
+Changes not staged for commit:
+        modified:   gittest.txt
+
+no changes added to commit
+
+cai@DESKTOP-HOLTCSQ MINGW64 /d/gittest (master)
+$ git add gittest.txt
+
+cai@DESKTOP-HOLTCSQ MINGW64 /d/gittest (master)
+$ git commit -m 'third commit of gittest.txt after modifying for the second time'
+[master 6ab7a8b] third commit of gittest.txt after modifying for the second time
+ 1 file changed, 1 insertion(+)
+
+cai@DESKTOP-HOLTCSQ MINGW64 /d/gittest (master)
+$ git log
+commit 6ab7a8b9fe4ea4a76cc5525a930f9b73af5711f1 (HEAD -> master)
+Author: zhangcai <414220021@qq.com>
+Date:   Fri Sep 8 14:00:56 2017 +0800
+
+    third commit of gittest.txt after modifying for the second time
+
+commit e29ab06d3e3e0826a1037689cb6faf742934cf33
+Author: zhangcai <414220021@qq.com>
+Date:   Fri Sep 8 13:43:24 2017 +0800
+
+    second commit of gittest.txt after modifying for the second time
+
+commit bd3690690dcc37a9cc74b563322d442e4fb4b5f0
+Author: zhangcai <414220021@qq.com>
+Date:   Fri Sep 8 13:28:15 2017 +0800
+
+    first commit of gittest
+
+cai@DESKTOP-HOLTCSQ MINGW64 /d/gittest (master)
+$ git status
+On branch master
+nothing to commit, working tree clean
+
+cai@DESKTOP-HOLTCSQ MINGW64 /d/gittest (master)
+$ git revert 6ab7a8b9fe4ea4a76cc5525a930f9b73af5711f1
+[master 6f9775b] revert operation test. Revert "third commit of gittest.txt after modifying for the second time"
+ 1 file changed, 1 deletion(-)
+
+cai@DESKTOP-HOLTCSQ MINGW64 /d/gittest (master)
+$ git status
+On branch master
+nothing to commit, working tree clean
+
+cai@DESKTOP-HOLTCSQ MINGW64 /d/gittest (master)
+$ git log
+commit 6f9775b872f527ea6f9d89b521a45a47c0d18aa5 (HEAD -> master)
+Author: zhangcai <414220021@qq.com>
+Date:   Fri Sep 8 14:02:01 2017 +0800
+
+    revert operation test.
+    Revert "third commit of gittest.txt after modifying for the second time"
+
+    This reverts commit 6ab7a8b9fe4ea4a76cc5525a930f9b73af5711f1.
+
+commit 6ab7a8b9fe4ea4a76cc5525a930f9b73af5711f1
+Author: zhangcai <414220021@qq.com>
+Date:   Fri Sep 8 14:00:56 2017 +0800
+
+    third commit of gittest.txt after modifying for the second time
+
+commit e29ab06d3e3e0826a1037689cb6faf742934cf33
+Author: zhangcai <414220021@qq.com>
+Date:   Fri Sep 8 13:43:24 2017 +0800
+
+    second commit of gittest.txt after modifying for the second time
+
+commit bd3690690dcc37a9cc74b563322d442e4fb4b5f0
+Author: zhangcai <414220021@qq.com>
+Date:   Fri Sep 8 13:28:15 2017 +0800
+
+    first commit of gittest
+
+cai@DESKTOP-HOLTCSQ MINGW64 /d/gittest (master)
+$ git rebase -i ^C
+
+cai@DESKTOP-HOLTCSQ MINGW64 /d/gittest (master)
+$ git rebase -i e29ab06d3e3e0826a1037689cb6faf742934cf33
+Successfully rebased and updated refs/heads/master.
+
+cai@DESKTOP-HOLTCSQ MINGW64 /d/gittest (master)
+$ git status
+On branch master
+nothing to commit, working tree clean
+
+cai@DESKTOP-HOLTCSQ MINGW64 /d/gittest (master)
+$ git log
+commit 6f9775b872f527ea6f9d89b521a45a47c0d18aa5 (HEAD -> master)
+Author: zhangcai <414220021@qq.com>
+Date:   Fri Sep 8 14:02:01 2017 +0800
+
+    revert operation test.
+    Revert "third commit of gittest.txt after modifying for the second time"
+
+    This reverts commit 6ab7a8b9fe4ea4a76cc5525a930f9b73af5711f1.
+
+commit 6ab7a8b9fe4ea4a76cc5525a930f9b73af5711f1
+Author: zhangcai <414220021@qq.com>
+Date:   Fri Sep 8 14:00:56 2017 +0800
+
+    third commit of gittest.txt after modifying for the second time
+
+commit e29ab06d3e3e0826a1037689cb6faf742934cf33
+Author: zhangcai <414220021@qq.com>
+Date:   Fri Sep 8 13:43:24 2017 +0800
+
+    second commit of gittest.txt after modifying for the second time
+
+commit bd3690690dcc37a9cc74b563322d442e4fb4b5f0
+Author: zhangcai <414220021@qq.com>
+Date:   Fri Sep 8 13:28:15 2017 +0800
+
+    first commit of gittest
+
+cai@DESKTOP-HOLTCSQ MINGW64 /d/gittest (master)
+$ git rebase -i e29ab06d3e3e0826a1037689cb6faf742934cf33
+Successfully rebased and updated refs/heads/master.
+
+cai@DESKTOP-HOLTCSQ MINGW64 /d/gittest (master)
+$ git log
+commit 6ab7a8b9fe4ea4a76cc5525a930f9b73af5711f1 (HEAD -> master)
+Author: zhangcai <414220021@qq.com>
+Date:   Fri Sep 8 14:00:56 2017 +0800
+
+    third commit of gittest.txt after modifying for the second time
+
+commit e29ab06d3e3e0826a1037689cb6faf742934cf33
+Author: zhangcai <414220021@qq.com>
+Date:   Fri Sep 8 13:43:24 2017 +0800
+
+    second commit of gittest.txt after modifying for the second time
+
+commit bd3690690dcc37a9cc74b563322d442e4fb4b5f0
+Author: zhangcai <414220021@qq.com>
+Date:   Fri Sep 8 13:28:15 2017 +0800
+
+    first commit of gittest
+
+cai@DESKTOP-HOLTCSQ MINGW64 /d/gittest (master)
+$ git reset 6ab7a8b9fe4ea4a76cc5525a930f9b73af5711f1
+
+cai@DESKTOP-HOLTCSQ MINGW64 /d/gittest (master)
+$ git log
+commit 6ab7a8b9fe4ea4a76cc5525a930f9b73af5711f1 (HEAD -> master)
+Author: zhangcai <414220021@qq.com>
+Date:   Fri Sep 8 14:00:56 2017 +0800
+
+    third commit of gittest.txt after modifying for the second time
+
+commit e29ab06d3e3e0826a1037689cb6faf742934cf33
+Author: zhangcai <414220021@qq.com>
+Date:   Fri Sep 8 13:43:24 2017 +0800
+
+    second commit of gittest.txt after modifying for the second time
+
+commit bd3690690dcc37a9cc74b563322d442e4fb4b5f0
+Author: zhangcai <414220021@qq.com>
+Date:   Fri Sep 8 13:28:15 2017 +0800
+
+    first commit of gittest
+
+cai@DESKTOP-HOLTCSQ MINGW64 /d/gittest (master)
+$
+
+cai@DESKTOP-HOLTCSQ MINGW64 /d/gittest (master)
+$ git reset e29ab06d3e3e0826a1037689cb6faf742934cf33
+Unstaged changes after reset:
+M       gittest.txt
+
+cai@DESKTOP-HOLTCSQ MINGW64 /d/gittest (master)
+$ git log
+commit e29ab06d3e3e0826a1037689cb6faf742934cf33 (HEAD -> master)
+Author: zhangcai <414220021@qq.com>
+Date:   Fri Sep 8 13:43:24 2017 +0800
+
+    second commit of gittest.txt after modifying for the second time
+
+commit bd3690690dcc37a9cc74b563322d442e4fb4b5f0
+Author: zhangcai <414220021@qq.com>
+Date:   Fri Sep 8 13:28:15 2017 +0800
+
+    first commit of gittest
+
+cai@DESKTOP-HOLTCSQ MINGW64 /d/gittest (master)
+$
+
+$ git status
+On branch master
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git checkout -- <file>..." to discard changes in working directory)
+
+        modified:   gittest.txt
+
+no changes added to commit (use "git add" and/or "git commit -a")
+
+cai@DESKTOP-HOLTCSQ MINGW64 /d/gittest (master)
+
+

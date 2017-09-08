@@ -1,0 +1,64 @@
+python之CMDB项目
+
+Configuration Management Database
+
+
+ITIL
+Internet Technology Infrastructure Library
+
+规范
+
+1，事件管理 Incident Management
+2，问题管理 Problem Management
+3，配置管理 Configuration Mangement
+4，变更管理 Change Management
+5，发布管理	Release Management
+
+
+资产
+可维护的
+
+资产ID
+sn可能重复，虚拟机sn不要录进来可以避免重复。通过sn反查资产ID
+不要指望资产ID来区别设备，不要赋予资产ID意义
+
+OneToOneField只是在一个class里面不能再次关联
+
+自定义django admin管理
+https://docs.djangoproject.com/en/1.11/topics/auth/customizing/
+
+AUTH_USER_MODEL = 'customauth.MyUser'
+
+
+    'Wolf',
+    'Arya.apps.AryaConfig',
+    # 'Sansa',
+	先注释Sansa的app，然后生成管理用户表
+
+报错
+django.db.migrations.exceptions.InconsistentMigrationHistory: Migration admin.0001_initial is applied before its dependency Wolf.0001_initial on database 'default'.
+
+
+http://www.cnblogs.com/zhangjpn/articles/6694480.html
+
+AUTH_USER_MODEL = 'Wolf.UserProfile'
+这句话需要在makemirations和migrate之后再加上就好了
+
+
+python3 manage.py makemigrations
+时报错，是以为Sansa的models里的表UserProfile不能为字符串，要为变量，不加引号
+
+Sansa.Tag.creater: (fields.E300) Field defines a relation with model 'UserProfile', which is either not installed, or is abstract.
+Sansa.Tag.creater: (fields.E307) The field Sansa.Tag.creater was declared with a lazy reference to 'Sansa.userprofile', but app 'Sansa' doesn't provide model 'userprofile'.
+
+
+CMDB博客
+http://www.cnblogs.com/hetan/p/5793971.html
+http://www.tqcto.com/article/db/43165.html
+http://www.cnblogs.com/python-way/p/6075942.html
+
+alex
+https://github.com/triaquae/MadKing/blob/master/assets/admin.py
+
+数据库变动之后需要makemigration和migrate一下
+

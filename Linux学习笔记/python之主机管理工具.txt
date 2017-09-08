@@ -1,0 +1,84 @@
+python之主机管理工具
+
+配置管理：
+	1，装上nginx，mysql
+	2，nginx用指定的配置文件
+	3，mysql用户建立
+	4，设置一个默认的数据库访问权限
+	5，启动mysql and nginx
+
+基础方案问题
+	1，脚本 执行出错
+	2，客户端环境不同
+	3, 重复脚本内容
+	4，无法实现状态管理和检测
+	5，不标准化
+
+解决：
+1，标准化
+2，客户端最好有个守护进程
+
+
+https://docs.saltstack.com/en/getstarted/
+
+
+自己写一个salt
+
+sudo salt 'minion1' state.apply  -h "ubuntu,centos" 
+								 -g "web,db" 
+								 -f examples 
+
+								 
+字典遍历时无序的
+>>> a = {'a':1,'b':2,'c':3,}
+>>> for i in a:
+...     print(i)
+...
+c
+a
+b
+>>> a = {'a':1,'b':2,'c':3,'d':4,'e':5,}
+>>> for i in a:
+...     print(i)
+...
+e
+c
+a
+b
+d
+>>>
+
+
+
+sys.argv[0]是指的python之后接的一个参数，也就是Arya\salt.py，
+sys.argv[1]才是应该判断的参数
+
+python3 Arya\salt.py
+
+print(self.argvs)返回的是python之后的所有参数
+
+
+os.path
+http://xpleaf.blog.51cto.com/9315560/1736956
+
+
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "Stark.settings")作用
+设置环境中的变量为Stark.settings中的变量，有点像导入
+
+
+https://stackoverflow.com/questions/8047204/django-script-to-access-model-objects-without-using-manage-py-shell?answertab=votes
+有价值的评论
+http://michal.karzynski.pl/blog/2013/09/14/django-in-virtualenv-on-webfactions-apache-with-mod-wsgi/
+
+django.setup()，这里standalone的script就可以调用django的里的东西了
+https://docs.djangoproject.com/en/1.11/topics/settings/
+
+http://eldarion.com/blog/2013/02/14/entry-point-hook-django-projects/
+
+避免注册应用时出现错误
+http://python.usyiyi.cn/translate/django_182/ref/applications.html
+
+This function is called automatically:
+
+When running an HTTP server via Django’s WSGI support.
+When invoking a management command.
