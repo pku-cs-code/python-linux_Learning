@@ -6,6 +6,102 @@ rebase是退回到某个commit版本之前，执行git rebase -i id时会提示你删除的具体内容，
 reset 执行git reset id是直接回退到这个id对应的本地仓库版本，而之前的更改都是unstaged状态.git reset --hard id对将工作区也就是我们能够看到的文件内容也恢复到对应的commit状态的内容
 
 
+git clone 会将包含每一个文件的所有历史版本的整个项目下载下来。
+https://git-scm.com/book/zh/v1/Git-%E5%86%85%E9%83%A8%E5%8E%9F%E7%90%86-%E7%BB%B4%E6%8A%A4%E5%8F%8A%E6%95%B0%E6%8D%AE%E6%81%A2%E5%A4%8D
+
+
+$ git checkout branchtest
+后分支切换到branchtest，此时.git/HEAD文件中的内容从原来的master变为了ref: refs/heads/branchtest
+
+删分支
+$ git branch -d iss53
+
+git clone和pull的区别
+clone是本地没有仓库的。pull是本地有仓库的，pull将远程的仓库新的改动下载下来，并且与本地merge
+https://www.zhihu.com/question/39595933
+
+手动建立追踪关系
+git branch --set-upstream master origin/next
+
+本地建立仓库之后，然后添加git remote add origin https://github.com/pku-cs-code/gittest
+就可以git push了
+如果远程本来存在仓库记录，那么可能存在冲突
+
+如果要git push新的内容，需要本地仓库的文件确定
+
+
+git fork贡献开源代码
+想要参与开源项目的开发，需要先在自己github服务器端fork一下开源项目到自己的github服务器端，然后你如果要参与开发，可以把刚刚fork的项目像平常自己开发一样，先git clone一下到自己的本地，然后自己开发，但是由于我们想要贡献代码到开源项目github端，我们需要在自己git push到自己的github端后在自己的github服务器端pull request将自己的代码贡献提交给开源项目的维护者。因为可能出现自己开发的初始版本和此时开源项目的代码版本不一致，所以需要与开源项目的版本保持一致，此时需要我们使用fetch的方式来实现，具体操作为
+ git remote add upstream https://github.com/CatchChat/Yep.git
+ 上面的命令为自己的本地仓库添加开源项目到自己的上游，
+ git fetch upstream
+ git checkout master，再执行合并 git merge upstream/master
+ 或者直接git pull upstream/master master（我自己猜猜测的）
+ 在之前git clone时会产生master分支，为了区别我们自己开发的分支和和开源项目保持一致，我们特别地使用master分支来与开源项目保持一致，然后自己在本地新建一个develop（这个名称可以自己起）来作为开发的分支，如果想要提交自己的代码，可以先在master分支使用git fetch和gitmerge去和开源项目的版本保持一致，然后本地的master和develop进行合并，再将自己修改过的代码git push到自己的github服务器对应的远程仓库中，然后使用pull request将自己代码贡献给开源项目管理者去批准是否使用代码或者merger等等。
+ 
+ 以下文章为主要参考
+ https://github.com/nixzhu/dev-blog/blob/master/2016-02-17-contribute-on-github.md
+ 这篇也很好
+ http://lafwind.github.io/blog/contributing-to-open-source-on-github.html
+ 这篇很全很好
+ https://www.zybuluo.com/coder-pig/note/581320
+ 
+ 
+https://linux.cn/article-4292-1-rss.html
+https://github.com/nixzhu/dev-blog/blob/master/2016-02-17-contribute-on-github.md
+
+
+
+cai@DESKTOP-HOLTCSQ MINGW64 /d/pycharmprojects (master)
+$ git status
+On branch master
+Your branch is ahead of 'origin/master' by 1 commit.
+  (use "git push" to publish your local commits)
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git checkout -- <file>..." to discard changes in working directory)
+  (commit or discard the untracked or modified content in submodules)
+
+        modified:   MadKing (modified content)
+
+no changes added to commit (use "git add" and/or "git commit -a")
+
+
+Your branch is ahead of 'origin/master' by 1 commit.
+这是因为commit之后没有push的缘故
+
+git pull和fetch clone
+https://ruby-china.org/topics/15729
+
+git reflog
+git会记录所有的git checkout、git reset过的内容
+
+$ git branch
+  branchtest
+* master
+
+cai@DESKTOP-HOLTCSQ MINGW64 /d/gittest (master)
+$ cat .git/HEAD
+ref: refs/heads/master
+
+cai@DESKTOP-HOLTCSQ MINGW64 /d/gittest (master)
+$ git checkout branchtest
+Switched to branch 'branchtest'
+
+cai@DESKTOP-HOLTCSQ MINGW64 /d/gittest (branchtest)
+$ git branch
+* branchtest
+  master
+
+cai@DESKTOP-HOLTCSQ MINGW64 /d/gittest (branchtest)
+$ git checkout master
+Switched to branch 'master'
+
+
+
+
+
+
 
 git之checkout
 http://blog.jobbole.com/87700/
@@ -350,5 +446,137 @@ Changes not staged for commit:
 no changes added to commit (use "git add" and/or "git commit -a")
 
 cai@DESKTOP-HOLTCSQ MINGW64 /d/gittest (master)
+
+
+$ git log -g
+commit 6f9775b872f527ea6f9d89b521a45a47c0d18aa5 (HEAD -> master)
+Reflog: HEAD@{0} (zhangcai <414220021@qq.com>)
+Reflog message: checkout: moving from branchtest to master
+Author: zhangcai <414220021@qq.com>
+Date:   Fri Sep 8 14:02:01 2017 +0800
+
+    revert operation test.
+    Revert "third commit of gittest.txt after modifying for the second time"
+
+    This reverts commit 6ab7a8b9fe4ea4a76cc5525a930f9b73af5711f1.
+
+commit e29ab06d3e3e0826a1037689cb6faf742934cf33 (branchtest)
+Reflog: HEAD@{1} (zhangcai <414220021@qq.com>)
+Reflog message: checkout: moving from master to branchtest
+Author: zhangcai <414220021@qq.com>
+Date:   Fri Sep 8 13:43:24 2017 +0800
+
+    second commit of gittest.txt after modifying for the second time
+
+commit 6f9775b872f527ea6f9d89b521a45a47c0d18aa5 (HEAD -> master)
+Reflog: HEAD@{2} (zhangcai <414220021@qq.com>)
+Reflog message: reset: moving to 6f9775b
+Author: zhangcai <414220021@qq.com>
+Date:   Fri Sep 8 14:02:01 2017 +0800
+
+    revert operation test.
+    Revert "third commit of gittest.txt after modifying for the second time"
+
+    This reverts commit 6ab7a8b9fe4ea4a76cc5525a930f9b73af5711f1.
+
+commit bd3690690dcc37a9cc74b563322d442e4fb4b5f0
+Reflog: HEAD@{3} (zhangcai <414220021@qq.com>)
+Reflog message: reset: moving to HEAD~1
+Author: zhangcai <414220021@qq.com>
+Date:   Fri Sep 8 13:28:15 2017 +0800
+
+    first commit of gittest
+
+commit e29ab06d3e3e0826a1037689cb6faf742934cf33 (branchtest)
+Reflog: HEAD@{4} (zhangcai <414220021@qq.com>)
+Reflog message: reset: moving to e29ab06d3e3e0826a1037689cb6faf742934cf33
+Author: zhangcai <414220021@qq.com>
+Date:   Fri Sep 8 13:43:24 2017 +0800
+
+    second commit of gittest.txt after modifying for the second time
+
+commit 6ab7a8b9fe4ea4a76cc5525a930f9b73af5711f1
+Reflog: HEAD@{5} (zhangcai <414220021@qq.com>)
+Reflog message: reset: moving to 6ab7a8b9fe4ea4a76cc5525a930f9b73af5711f1
+Author: zhangcai <414220021@qq.com>
+Date:   Fri Sep 8 14:00:56 2017 +0800
+
+    third commit of gittest.txt after modifying for the second time
+
+commit 6ab7a8b9fe4ea4a76cc5525a930f9b73af5711f1
+Reflog: HEAD@{6} (zhangcai <414220021@qq.com>)
+Reflog message: rebase -i (finish): returning to refs/heads/master
+Author: zhangcai <414220021@qq.com>
+Date:   Fri Sep 8 14:00:56 2017 +0800
+
+    third commit of gittest.txt after modifying for the second time
+
+commit 6ab7a8b9fe4ea4a76cc5525a930f9b73af5711f1
+Reflog: HEAD@{7} (zhangcai <414220021@qq.com>)
+Reflog message: rebase -i (start): checkout e29ab06d3e3e0826a1037689cb6faf742934cf33
+Author: zhangcai <414220021@qq.com>
+Date:   Fri Sep 8 14:00:56 2017 +0800
+
+    third commit of gittest.txt after modifying for the second time
+
+commit 6f9775b872f527ea6f9d89b521a45a47c0d18aa5 (HEAD -> master)
+Reflog: HEAD@{8} (zhangcai <414220021@qq.com>)
+Reflog message: rebase -i (finish): returning to refs/heads/master
+Author: zhangcai <414220021@qq.com>
+Date:   Fri Sep 8 14:02:01 2017 +0800
+
+    revert operation test.
+    Revert "third commit of gittest.txt after modifying for the second time"
+
+    This reverts commit 6ab7a8b9fe4ea4a76cc5525a930f9b73af5711f1.
+
+commit 6f9775b872f527ea6f9d89b521a45a47c0d18aa5 (HEAD -> master)
+Reflog: HEAD@{9} (zhangcai <414220021@qq.com>)
+Reflog message: rebase -i (start): checkout e29ab06d3e3e0826a1037689cb6faf742934cf33
+Author: zhangcai <414220021@qq.com>
+Date:   Fri Sep 8 14:02:01 2017 +0800
+
+    revert operation test.
+    Revert "third commit of gittest.txt after modifying for the second time"
+
+    This reverts commit 6ab7a8b9fe4ea4a76cc5525a930f9b73af5711f1.
+
+commit 6f9775b872f527ea6f9d89b521a45a47c0d18aa5 (HEAD -> master)
+Reflog: HEAD@{10} (zhangcai <414220021@qq.com>)
+Reflog message: revert: revert operation test.
+Author: zhangcai <414220021@qq.com>
+Date:   Fri Sep 8 14:02:01 2017 +0800
+
+    revert operation test.
+    Revert "third commit of gittest.txt after modifying for the second time"
+
+    This reverts commit 6ab7a8b9fe4ea4a76cc5525a930f9b73af5711f1.
+
+commit 6ab7a8b9fe4ea4a76cc5525a930f9b73af5711f1
+Reflog: HEAD@{11} (zhangcai <414220021@qq.com>)
+Reflog message: commit: third commit of gittest.txt after modifying for the second time
+Author: zhangcai <414220021@qq.com>
+Date:   Fri Sep 8 14:00:56 2017 +0800
+
+    third commit of gittest.txt after modifying for the second time
+
+commit e29ab06d3e3e0826a1037689cb6faf742934cf33 (branchtest)
+Reflog: HEAD@{12} (zhangcai <414220021@qq.com>)
+Reflog message: commit: second commit of gittest.txt after modifying for the second time
+Author: zhangcai <414220021@qq.com>
+Date:   Fri Sep 8 13:43:24 2017 +0800
+
+    second commit of gittest.txt after modifying for the second time
+
+commit bd3690690dcc37a9cc74b563322d442e4fb4b5f0
+Reflog: HEAD@{13} (zhangcai <414220021@qq.com>)
+Reflog message: commit (initial): first commit of gittest
+Author: zhangcai <414220021@qq.com>
+Date:   Fri Sep 8 13:28:15 2017 +0800
+
+    first commit of gittest
+
+cai@DESKTOP-HOLTCSQ MINGW64 /d/gittest (master)
+$
 
 
