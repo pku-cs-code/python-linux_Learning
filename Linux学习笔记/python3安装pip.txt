@@ -153,5 +153,30 @@ D:\software>
 D:\software>pip install --trusted-host pypi.python.org --upgrade django
 Collecting django
   Downloading Django-1.11.4-py2.py3-none-any.whl (6.9MB)
+
+
+安装软件时报错
+Command python setup.py egg_info failed with error code 1 in c:\users\cai\appdata\local\temp\pip-build-vmhg5d\redis-helper\
+
+原因可能是setuptools版本过低，解决方案
+pip2 install --upgrade setuptools --trusted-host pypi.python.org
+
+
+
+上面的get-pip.py不靠谱。真正的是应该这样
+
   
+http://www.cnblogs.com/yuanzm/p/4089856.html
+
+
+setuptools是用easy_install命令需要安装的工具，这个工具的缺点是如果腰卸载安装包，需要执行卸载命令后再手动删除相关文件
+会自动寻找官方的源
+http://blog.yangyubo.com/2012/07/27/python-packaging/
+http://www.yeolar.com/note/2012/08/18/setuptools-pip-virtualenv/
+
+pip
+
+redis是python3才有的，不是pip的问题
+
+
   

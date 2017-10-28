@@ -1,0 +1,12 @@
+参考网站
+https://ccie.lol/blog/2016/12/07/securecrt-for-windows/
+
+注意下载好这个文件后解压，\SecureCRT v8.0 安装程序+注册机文件夹中的scrt80-x64.exe和scrt80-x86.exe是安装secureCRT的文件
+keygen是生成注册码的文件。
+
+记得安装好后，如果secureCRT正在运行请先关闭它。将keygen.exe拷贝到secureCRT的安装目录中，以管理员身份运行这个文件，打开软件后，
+点击软件弹出框里面的patch按钮，会让你选择文件，你选择SecureCRT.exe这个文件，然后确定。随之会弹出另一个框让你选择另一个文件，选择LicenseHelper.exe这个文件
+然后就会提示成功。此时打开secureCRT软件，点击enter a license key之类的一个框，点开之后是两行什么东西，先不要输入，点下一步，把keygen.exe页面的name company
+输入进去，点击下一步输入serial number和key，需要的信息参考生成的信息输入就可以了。
+
+

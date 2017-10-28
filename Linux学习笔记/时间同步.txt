@@ -6,4 +6,8 @@
 #实时查看时间
 watch -n 1 "date +%T"
 
+同步时间
+
+ntpq -p
+
 

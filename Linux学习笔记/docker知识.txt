@@ -1,0 +1,868 @@
+docker知识
+
+
+[root@localhost ~]# docker container ls
+CONTAINER ID        IMAGE                                                                                      COMMAND                  CREATED             STATUS              PORTS               NAMES
+e39e6dfbf030        ubuntu                                                                                     "/bin/bash"              23 seconds ago      Up 21 seconds                           priceless_brown
+953e2bdccfd8        caizhang/testtag@sha256:0d33bee5f70787ad05950024def472995604a4b3508f8a8974aa4d1bec463636   "python app.py"          11 minutes ago      Up 11 minutes       80/tcp              getstartedlab_web.3.v7acqxbrupg44sj4pws91y78f
+34380b81850b        redis@sha256:07e7b6cb753f8d06a894e22af30f94e04844461ab6cb002c688841873e5e5116              "docker-entrypoint..."   11 minutes ago      Up 11 minutes       6379/tcp            getstartedlab_redis.1.sb9fd0llxmy8vgs2gks1yh31x
+39ac3577922f        caizhang/testtag@sha256:0d33bee5f70787ad05950024def472995604a4b3508f8a8974aa4d1bec463636   "python app.py"          11 minutes ago      Up 11 minutes       80/tcp              getstartedlab_web.2.7bqs30cdj5fbssicyy99z3zj5
+499b2d8645f6        caizhang/testtag@sha256:0d33bee5f70787ad05950024def472995604a4b3508f8a8974aa4d1bec463636   "python app.py"          11 minutes ago      Up 11 minutes       80/tcp              getstartedlab_web.1.muystke6q7kmz6x8l327d0wd8
+03c89f481c96        gitlab/gitlab-runner:latest                                                                "/usr/bin/dumb-ini..."   2 weeks ago         Up 2 hours                              gitlab-runner
+[root@localhost ~]# docker container ls
+CONTAINER ID        IMAGE                                                                                      COMMAND                  CREATED             STATUS              PORTS               NAMES
+953e2bdccfd8        caizhang/testtag@sha256:0d33bee5f70787ad05950024def472995604a4b3508f8a8974aa4d1bec463636   "python app.py"          11 minutes ago      Up 11 minutes       80/tcp              getstartedlab_web.3.v7acqxbrupg44sj4pws91y78f
+34380b81850b        redis@sha256:07e7b6cb753f8d06a894e22af30f94e04844461ab6cb002c688841873e5e5116              "docker-entrypoint..."   11 minutes ago      Up 11 minutes       6379/tcp            getstartedlab_redis.1.sb9fd0llxmy8vgs2gks1yh31x
+39ac3577922f        caizhang/testtag@sha256:0d33bee5f70787ad05950024def472995604a4b3508f8a8974aa4d1bec463636   "python app.py"          11 minutes ago      Up 11 minutes       80/tcp              getstartedlab_web.2.7bqs30cdj5fbssicyy99z3zj5
+499b2d8645f6        caizhang/testtag@sha256:0d33bee5f70787ad05950024def472995604a4b3508f8a8974aa4d1bec463636   "python app.py"          11 minutes ago      Up 11 minutes       80/tcp              getstartedlab_web.1.muystke6q7kmz6x8l327d0wd8
+03c89f481c96        gitlab/gitlab-runner:latest                                                                "/usr/bin/dumb-ini..."   2 weeks ago   
+
+
+在 docker run -it ubuntu /bin/bash后会生成一个container，但是如果输入exit退出则container会stop。
+the container stops but is not removed. You can start it again or remove it.
+
+
+
+[root@localhost ~]# docker network ls
+NETWORK ID          NAME                   DRIVER              SCOPE
+173646112e97        bridge                 bridge              local
+jk5qslwgqw71        bridge                 bridge              swarm
+ff06e695b247        docker_gwbridge        bridge              local
+ks6ej27luqng        getstartedlab_webnet   overlay             swarm
+b10961a30481        host                   host                local
+7m0c4pyv61n8        host                   host                swarm
+iaweapeyrx3h        ingress                overlay             swarm
+2c511b16f8b5        my_bridge              bridge              local
+0da5f58ef22a        none                   null                local
+[root@localhost ~]# docker attach nonenetcontainer
+Error: No such container: nonenetcontainer
+[root@localhost ~]# docker network inspect
+"docker network inspect" requires at least 1 argument(s).
+See 'docker network inspect --help'.
+
+Usage:  docker network inspect [OPTIONS] NETWORK [NETWORK...]
+
+Display detailed information on one or more networks
+[root@localhost ~]# docker network inspect bridge
+[
+    {
+        "Name": "bridge",
+        "Id": "173646112e973a01016355c21c5926014b20bff04d64de3dcd83bdb53e46a912",
+        "Created": "2017-10-26T22:58:14.546769233+08:00",
+        "Scope": "local",
+        "Driver": "bridge",
+        "EnableIPv6": false,
+        "IPAM": {
+            "Driver": "default",
+            "Options": null,
+            "Config": [
+                {
+                    "Subnet": "172.17.0.0/16",
+                    "Gateway": "172.17.0.1"
+                }
+            ]
+        },
+        "Internal": false,
+        "Attachable": false,
+        "Containers": {
+            "03c89f481c96bb5e436a326028d30138ab594821675777733811b020758bf318": {
+                "Name": "gitlab-runner",
+                "EndpointID": "5e07fc5e3a477b57eaf917ea5bb67286fb6d466a4ccdfcb22679ffb2c5455228",
+                "MacAddress": "02:42:ac:11:00:02",
+                "IPv4Address": "172.17.0.2/16",
+                "IPv6Address": ""
+            },
+            "f8fa23784b3ac244077de4fab7baa47ce71f6975ce64317ed1718c4ecb82ba3f": {
+                "Name": "practical_lamport",
+                "EndpointID": "f33750e803c12efe87a97ddacee974212cc38ff88fb0b46ffbae0838ee2be2e5",
+                "MacAddress": "02:42:ac:11:00:03",
+                "IPv4Address": "172.17.0.3/16",
+                "IPv6Address": ""
+            }
+        },
+        "Options": {
+            "com.docker.network.bridge.default_bridge": "true",
+            "com.docker.network.bridge.enable_icc": "true",
+            "com.docker.network.bridge.enable_ip_masquerade": "true",
+            "com.docker.network.bridge.host_binding_ipv4": "0.0.0.0",
+            "com.docker.network.bridge.name": "docker0",
+            "com.docker.network.driver.mtu": "1500"
+        },
+        "Labels": {}
+    }
+]
+[root@localhost ~]# docker run -itd --name=container1 busybox
+Unable to find image 'busybox:latest' locally
+latest: Pulling from library/busybox
+03b1be98f3f9: Pull complete 
+Digest: sha256:3e8fa85ddfef1af9ca85a5cfb714148956984e02f00bec3f7f49d3925a91e0e7
+Status: Downloaded newer image for busybox:latest
+8dc9f0023eaff74a3b70796ee8f8b6090aec80eb1293eb19bde31158dc04fb4d
+[root@localhost ~]# docker run -itd --name=container2 busybox
+18e1f25e31d4457ba376f3e7fd58d8470cfd7328f011a65e267c11858b71f169
+[root@localhost ~]# docker network inspect bridge
+[
+    {
+        "Name": "bridge",
+        "Id": "173646112e973a01016355c21c5926014b20bff04d64de3dcd83bdb53e46a912",
+        "Created": "2017-10-26T22:58:14.546769233+08:00",
+        "Scope": "local",
+        "Driver": "bridge",
+        "EnableIPv6": false,
+        "IPAM": {
+            "Driver": "default",
+            "Options": null,
+            "Config": [
+                {
+                    "Subnet": "172.17.0.0/16",
+                    "Gateway": "172.17.0.1"
+                }
+            ]
+        },
+        "Internal": false,
+        "Attachable": false,
+        "Containers": {
+            "03c89f481c96bb5e436a326028d30138ab594821675777733811b020758bf318": {
+                "Name": "gitlab-runner",
+                "EndpointID": "5e07fc5e3a477b57eaf917ea5bb67286fb6d466a4ccdfcb22679ffb2c5455228",
+                "MacAddress": "02:42:ac:11:00:02",
+                "IPv4Address": "172.17.0.2/16",
+                "IPv6Address": ""
+            },
+            "18e1f25e31d4457ba376f3e7fd58d8470cfd7328f011a65e267c11858b71f169": {
+                "Name": "container2",
+                "EndpointID": "3bb1654b3c4c26c360ba30cceb88286276ca79094cf951bb7edc8c890117f1a0",
+                "MacAddress": "02:42:ac:11:00:05",
+                "IPv4Address": "172.17.0.5/16",
+                "IPv6Address": ""
+            },
+            "8dc9f0023eaff74a3b70796ee8f8b6090aec80eb1293eb19bde31158dc04fb4d": {
+                "Name": "container1",
+                "EndpointID": "2752a0307c66dcb6a96a5f87cbc2a7bc2d7ed9ca8f8fc490b03bffeeb75ec7cb",
+                "MacAddress": "02:42:ac:11:00:04",
+                "IPv4Address": "172.17.0.4/16",
+                "IPv6Address": ""
+            },
+            "f8fa23784b3ac244077de4fab7baa47ce71f6975ce64317ed1718c4ecb82ba3f": {
+                "Name": "practical_lamport",
+                "EndpointID": "f33750e803c12efe87a97ddacee974212cc38ff88fb0b46ffbae0838ee2be2e5",
+                "MacAddress": "02:42:ac:11:00:03",
+                "IPv4Address": "172.17.0.3/16",
+                "IPv6Address": ""
+            }
+        },
+        "Options": {
+            "com.docker.network.bridge.default_bridge": "true",
+            "com.docker.network.bridge.enable_icc": "true",
+            "com.docker.network.bridge.enable_ip_masquerade": "true",
+            "com.docker.network.bridge.host_binding_ipv4": "0.0.0.0",
+            "com.docker.network.bridge.name": "docker0",
+            "com.docker.network.driver.mtu": "1500"
+        },
+        "Labels": {}
+    }
+]
+
+
+container中没有运行的getstartedlab中包括的container
+
+
+[root@localhost ~]# docker attach container1
+/ # ip -4 addr
+1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue qlen 1
+    inet 127.0.0.1/8 scope host lo
+       valid_lft forever preferred_lft forever
+199: eth0@if200: <BROADCAST,MULTICAST,UP,LOWER_UP,M-DOWN> mtu 1500 qdisc noqueue 
+    inet 172.17.0.4/16 scope global eth0
+       valid_lft forever preferred_lft forever
+	   
+	   
+	   
+	   
+	   [root@localhost ~]# docker attach container1
+/ # ip -4 addr
+1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue qlen 1
+    inet 127.0.0.1/8 scope host lo
+       valid_lft forever preferred_lft forever
+199: eth0@if200: <BROADCAST,MULTICAST,UP,LOWER_UP,M-DOWN> mtu 1500 qdisc noqueue 
+    inet 172.17.0.4/16 scope global eth0
+       valid_lft forever preferred_lft forever
+/ # ping 172.17.0.5
+PING 172.17.0.5 (172.17.0.5): 56 data bytes
+64 bytes from 172.17.0.5: seq=0 ttl=64 time=0.303 ms
+64 bytes from 172.17.0.5: seq=1 ttl=64 time=0.232 ms
+^C
+--- 172.17.0.5 ping statistics ---
+2 packets transmitted, 2 packets received, 0% packet loss
+round-trip min/avg/max = 0.232/0.267/0.303 ms
+/ # cat /etc/hosts
+127.0.0.1	localhost
+::1	localhost ip6-localhost ip6-loopback
+fe00::0	ip6-localnet
+ff00::0	ip6-mcastprefix
+ff02::1	ip6-allnodes
+ff02::2	ip6-allrouters
+172.17.0.4	8dc9f0023eaf
+/ # 
+/ # ping 172.17.0.5[root@localhost ~]# 
+[root@localhost ~]# 
+[root@localhost ~]# docker network inspect bridge
+[
+    {
+        "Name": "bridge",
+        "Id": "173646112e973a01016355c21c5926014b20bff04d64de3dcd83bdb53e46a912",
+        "Created": "2017-10-26T22:58:14.546769233+08:00",
+        "Scope": "local",
+        "Driver": "bridge",
+        "EnableIPv6": false,
+        "IPAM": {
+            "Driver": "default",
+            "Options": null,
+            "Config": [
+                {
+                    "Subnet": "172.17.0.0/16",
+                    "Gateway": "172.17.0.1"
+                }
+            ]
+        },
+        "Internal": false,
+        "Attachable": false,
+        "Containers": {
+            "03c89f481c96bb5e436a326028d30138ab594821675777733811b020758bf318": {
+                "Name": "gitlab-runner",
+                "EndpointID": "5e07fc5e3a477b57eaf917ea5bb67286fb6d466a4ccdfcb22679ffb2c5455228",
+                "MacAddress": "02:42:ac:11:00:02",
+                "IPv4Address": "172.17.0.2/16",
+                "IPv6Address": ""
+            },
+            "18e1f25e31d4457ba376f3e7fd58d8470cfd7328f011a65e267c11858b71f169": {
+                "Name": "container2",
+                "EndpointID": "3bb1654b3c4c26c360ba30cceb88286276ca79094cf951bb7edc8c890117f1a0",
+                "MacAddress": "02:42:ac:11:00:05",
+                "IPv4Address": "172.17.0.5/16",
+                "IPv6Address": ""
+            },
+            "8dc9f0023eaff74a3b70796ee8f8b6090aec80eb1293eb19bde31158dc04fb4d": {
+                "Name": "container1",
+                "EndpointID": "2752a0307c66dcb6a96a5f87cbc2a7bc2d7ed9ca8f8fc490b03bffeeb75ec7cb",
+                "MacAddress": "02:42:ac:11:00:04",
+                "IPv4Address": "172.17.0.4/16",
+                "IPv6Address": ""
+            },
+            "f8fa23784b3ac244077de4fab7baa47ce71f6975ce64317ed1718c4ecb82ba3f": {
+                "Name": "practical_lamport",
+                "EndpointID": "f33750e803c12efe87a97ddacee974212cc38ff88fb0b46ffbae0838ee2be2e5",
+                "MacAddress": "02:42:ac:11:00:03",
+                "IPv4Address": "172.17.0.3/16",
+                "IPv6Address": ""
+            }
+        },
+        "Options": {
+            "com.docker.network.bridge.default_bridge": "true",
+            "com.docker.network.bridge.enable_icc": "true",
+            "com.docker.network.bridge.enable_ip_masquerade": "true",
+            "com.docker.network.bridge.host_binding_ipv4": "0.0.0.0",
+            "com.docker.network.bridge.name": "docker0",
+            "com.docker.network.driver.mtu": "1500"
+        },
+        "Labels": {}
+    }
+]
+[root@localhost ~]# docker attach container2
+/ # ip addr
+1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue qlen 1
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+    inet 127.0.0.1/8 scope host lo
+       valid_lft forever preferred_lft forever
+    inet6 ::1/128 scope host 
+       valid_lft forever preferred_lft forever
+201: eth0@if202: <BROADCAST,MULTICAST,UP,LOWER_UP,M-DOWN> mtu 1500 qdisc noqueue 
+    link/ether 02:42:ac:11:00:05 brd ff:ff:ff:ff:ff:ff
+    inet 172.17.0.5/16 scope global eth0
+       valid_lft forever preferred_lft forever
+    inet6 fe80::42:acff:fe11:5/64 scope link 
+       valid_lft forever preferred_lft forever
+/ # ping 172.17.0.3
+PING 172.17.0.3 (172.17.0.3): 56 data bytes
+64 bytes from 172.17.0.3: seq=0 ttl=64 time=0.446 ms
+^C
+--- 172.17.0.3 ping statistics ---
+1 packets transmitted, 1 packets received, 0% packet loss
+round-trip min/avg/max = 0.446/0.446/0.446 ms
+/ # 
+/ # exit
+[root@localhost ~]# docekr
+-bash: docekr: command not found
+[root@localhost ~]# 
+[root@localhost ~]# 
+[root@localhost ~]# 
+[root@localhost ~]# 
+[root@localhost ~]# 
+[root@localhost ~]# 
+[root@localhost ~]# 
+[root@localhost ~]# 
+[root@localhost ~]# docker network inspect bridge
+[
+    {
+        "Name": "bridge",
+        "Id": "173646112e973a01016355c21c5926014b20bff04d64de3dcd83bdb53e46a912",
+        "Created": "2017-10-26T22:58:14.546769233+08:00",
+        "Scope": "local",
+        "Driver": "bridge",
+        "EnableIPv6": false,
+        "IPAM": {
+            "Driver": "default",
+            "Options": null,
+            "Config": [
+                {
+                    "Subnet": "172.17.0.0/16",
+                    "Gateway": "172.17.0.1"
+                }
+            ]
+        },
+        "Internal": false,
+        "Attachable": false,
+        "Containers": {
+            "03c89f481c96bb5e436a326028d30138ab594821675777733811b020758bf318": {
+                "Name": "gitlab-runner",
+                "EndpointID": "5e07fc5e3a477b57eaf917ea5bb67286fb6d466a4ccdfcb22679ffb2c5455228",
+                "MacAddress": "02:42:ac:11:00:02",
+                "IPv4Address": "172.17.0.2/16",
+                "IPv6Address": ""
+            },
+            "8dc9f0023eaff74a3b70796ee8f8b6090aec80eb1293eb19bde31158dc04fb4d": {
+                "Name": "container1",
+                "EndpointID": "2752a0307c66dcb6a96a5f87cbc2a7bc2d7ed9ca8f8fc490b03bffeeb75ec7cb",
+                "MacAddress": "02:42:ac:11:00:04",
+                "IPv4Address": "172.17.0.4/16",
+                "IPv6Address": ""
+            },
+            "f8fa23784b3ac244077de4fab7baa47ce71f6975ce64317ed1718c4ecb82ba3f": {
+                "Name": "practical_lamport",
+                "EndpointID": "f33750e803c12efe87a97ddacee974212cc38ff88fb0b46ffbae0838ee2be2e5",
+                "MacAddress": "02:42:ac:11:00:03",
+                "IPv4Address": "172.17.0.3/16",
+                "IPv6Address": ""
+            }
+        },
+        "Options": {
+            "com.docker.network.bridge.default_bridge": "true",
+            "com.docker.network.bridge.enable_icc": "true",
+            "com.docker.network.bridge.enable_ip_masquerade": "true",
+            "com.docker.network.bridge.host_binding_ipv4": "0.0.0.0",
+            "com.docker.network.bridge.name": "docker0",
+            "com.docker.network.driver.mtu": "1500"
+        },
+        "Labels": {}
+    }
+]
+
+
+
+按住ctrl+p然后ctrl+q就可以退出container还不stop此container让其running
+对比container1是按住ctrl+p再ctrl+q退出后还能看到container1，container2是exit直接退出，会相应地stop container2
+
+
+[root@localhost ~]# docker network create --driver isolated_nw
+"docker network create" requires exactly 1 argument(s).
+See 'docker network create --help'.
+
+Usage:  docker network create [OPTIONS] NETWORK
+
+Create a network
+[root@localhost ~]# docker network ls
+NETWORK ID          NAME                   DRIVER              SCOPE
+173646112e97        bridge                 bridge              local
+jk5qslwgqw71        bridge                 bridge              swarm
+ff06e695b247        docker_gwbridge        bridge              local
+ks6ej27luqng        getstartedlab_webnet   overlay             swarm
+b10961a30481        host                   host                local
+7m0c4pyv61n8        host                   host                swarm
+iaweapeyrx3h        ingress                overlay             swarm
+2c511b16f8b5        my_bridge              bridge              local
+0da5f58ef22a        none                   null                local
+[root@localhost ~]# docker network ls
+NETWORK ID          NAME                   DRIVER              SCOPE
+jk5qslwgqw71        bridge                 bridge              swarm
+173646112e97        bridge                 bridge              local
+ff06e695b247        docker_gwbridge        bridge              local
+ks6ej27luqng        getstartedlab_webnet   overlay             swarm
+7m0c4pyv61n8        host                   host                swarm
+b10961a30481        host                   host                local
+iaweapeyrx3h        ingress                overlay             swarm
+2c511b16f8b5        my_bridge              bridge              local
+0da5f58ef22a        none                   null                local
+[root@localhost ~]# docker network create --driver bridge isolated_nw
+2b4f1235e2928c44104750f98b78a39e1eb0bc06333acf312e8e2dc94f164fe3
+[root@localhost ~]# docker network inspect isolated_nw
+[
+    {
+        "Name": "isolated_nw",
+        "Id": "2b4f1235e2928c44104750f98b78a39e1eb0bc06333acf312e8e2dc94f164fe3",
+        "Created": "2017-10-27T03:18:18.978131831+08:00",
+        "Scope": "local",
+        "Driver": "bridge",
+        "EnableIPv6": false,
+        "IPAM": {
+            "Driver": "default",
+            "Options": {},
+            "Config": [
+                {
+                    "Subnet": "172.20.0.0/16",
+                    "Gateway": "172.20.0.1"
+                }
+            ]
+        },
+        "Internal": false,
+        "Attachable": false,
+        "Containers": {},
+        "Options": {},
+        "Labels": {}
+    }
+]
+[root@localhost ~]# docker network ls
+NETWORK ID          NAME                   DRIVER              SCOPE
+jk5qslwgqw71        bridge                 bridge              swarm
+173646112e97        bridge                 bridge              local
+ff06e695b247        docker_gwbridge        bridge              local
+ks6ej27luqng        getstartedlab_webnet   overlay             swarm
+7m0c4pyv61n8        host                   host                swarm
+b10961a30481        host                   host                local
+iaweapeyrx3h        ingress                overlay             swarm
+2b4f1235e292        isolated_nw            bridge              local
+2c511b16f8b5        my_bridge              bridge              local
+0da5f58ef22a        none                   null                local
+
+
+You cannot specify the port to map to on the host machine when you build the image (in the Dockerfile), because there is no way to guarantee that the port will be available on the host machine where you run the image.
+
+
+
+报错
+[root@localhost ~]# docker service ls
+Error response from daemon: rpc error: code = 4 desc = context deadline exceeded
+
+
+
+
+docker registry
+
+[root@localhost zhangcai]# docker push localhost:5000/myfirstimage
+The push refers to a repository [localhost:5000/myfirstimage]
+Put http://localhost:5000/v1/repositories/myfirstimage/: dial tcp [::1]:5000: getsockopt: connection refused
+[root@localhost zhangcai]# docker push localhost:5000/myfirstimage
+The push refers to a repository [localhost:5000/myfirstimage]
+Put http://localhost:5000/v1/repositories/myfirstimage/: dial tcp [::1]:5000: getsockopt: connection refused
+[root@localhost zhangcai]# docker container ls
+CONTAINER ID        IMAGE                                                                                      COMMAND                  CREATED             STATUS                  PORTS               NAMES
+8bf2fa3da5e3        caizhang/testtag@sha256:0d33bee5f70787ad05950024def472995604a4b3508f8a8974aa4d1bec463636   "python app.py"          41 minutes ago      Up 41 minutes           80/tcp              getstartedlab_web.5.mqhol4adzu46xukpsw4mol1jd
+83d3492a970f        caizhang/testtag@sha256:0d33bee5f70787ad05950024def472995604a4b3508f8a8974aa4d1bec463636   "python app.py"          41 minutes ago      Up 41 minutes           80/tcp              getstartedlab_web.1.scepcklhffyfe67rrtmmso2ba
+c6ad11572159        caizhang/testtag@sha256:0d33bee5f70787ad05950024def472995604a4b3508f8a8974aa4d1bec463636   "python app.py"          41 minutes ago      Up 41 minutes           80/tcp              getstartedlab_web.3.92x0k5atmzf81rgqvrhi4nki1
+d536c46f2b42        redis@sha256:07e7b6cb753f8d06a894e22af30f94e04844461ab6cb002c688841873e5e5116              "docker-entrypoint..."   41 minutes ago      Up 41 minutes           6379/tcp            getstartedlab_redis.1.d1tr6jwhswjve6kk7iml7jrku
+03c89f481c96        gitlab/gitlab-runner:latest                                                                "/usr/bin/dumb-ini..."   2 weeks ago         Up Less than a second                       gitlab-runner
+[root@localhost zhangcai]# docker run -d -p 5000:5000 --name registry registry:2
+docker: Error response from daemon: Conflict. The container name "/registry" is already in use by container 6ca90fc5c512f319e62958785bcbe463654240a4ada70c4dbc6a37365912802b. You have to remove (or rename) that container to be able to reuse that name..
+See 'docker run --help'.
+[root@localhost zhangcai]# docker tag ubuntu localhost:5000/myfirstimage
+[root@localhost zhangcai]# docker push localhost:5000/myfirstimage
+The push refers to a repository [localhost:5000/myfirstimage]
+Put http://localhost:5000/v1/repositories/myfirstimage/: dial tcp [::1]:5000: getsockopt: connection refused
+[root@localhost zhangcai]# ping www.google.com
+PING www.google.com (199.59.150.49) 56(84) bytes of data.
+^C
+--- www.google.com ping statistics ---
+407 packets transmitted, 0 received, 100% packet loss, time 407139ms
+
+[root@localhost zhangcai]# curl http://localhost:5000 and copy the output 
+curl: (7) Failed connect to localhost:5000; Connection refused
+  rl: (6) Could not resolve host: and; Name or service not known
+▽rl: (6) Could not resolve host: copy; Name or service not known
+curl: (6) Could not resolve host: the; Name or service not known
+curl: (6) Could not resolve host: output; Name or service not known
+
+
+ubuntu
+
+zhangcai@ubuntu:~$ sudo vim /lib/systemd/system/docker.service 
+
+zhangcai@ubuntu:~$ vim /etc/default/docker 
+
+
+
+只有http://10.10.1.115:8081/才有页面，不是ubuntu的10.10.1.169的页面。很纳闷，为什么会这样。而且visualizer（8080端口）还上不了
+
+zhangcai@ubuntu:~$ netstat -lnt
+Active Internet connections (only servers)
+Proto Recv-Q Send-Q Local Address           Foreign Address         State      
+tcp        0      0 0.0.0.0:22              0.0.0.0:*               LISTEN     
+tcp6       0      0 :::5000                 :::*                    LISTEN     
+tcp6       0      0 :::2377                 :::*                    LISTEN     
+tcp6       0      0 :::7946                 :::*                    LISTEN     
+tcp6       0      0 :::6379                 :::*                    LISTEN     
+tcp6       0      0 :::8080                 :::*                    LISTEN     
+tcp6       0      0 :::8081                 :::*                    LISTEN     
+tcp6       0      0 :::22                   :::*                    LISTEN    
+
+
+[root@localhost home]# docker stack deploy -c docker-compose.yml getstartedlab
+Updating service getstartedlab_web (id: wynkv3yptyfv4pnjqwjxf9tpq)
+Updating service getstartedlab_visualizer (id: wwj8c77obvcpj3mhx8dcytlnf)
+Updating service getstartedlab_redis (id: vmi6pcaytd1r77a5k9xqgvrtq)
+[root@localhost home]# docker service ls
+ID            NAME                      MODE        REPLICAS  IMAGE
+vmi6pcaytd1r  getstartedlab_redis       replicated  1/1       redis:latest
+wwj8c77obvcp  getstartedlab_visualizer  replicated  1/1       dockersamples/visualizer:stable
+wynkv3yptyfv  getstartedlab_web         replicated  5/5       caizhang/testtag:v0.1
+[root@localhost home]# docker service ls
+ID            NAME                      MODE        REPLICAS  IMAGE
+vmi6pcaytd1r  getstartedlab_redis       replicated  1/1       redis:latest
+wwj8c77obvcp  getstartedlab_visualizer  replicated  1/1       dockersamples/visualizer:stable
+wynkv3yptyfv  getstartedlab_web         replicated  5/5       caizhang/testtag:v0.1
+[root@localhost home]# netstat -lnt
+Active Internet connections (only servers)
+Proto Recv-Q Send-Q Local Address           Foreign Address         State      
+tcp        0      0 0.0.0.0:3306            0.0.0.0:*               LISTEN     
+tcp        0      0 0.0.0.0:22              0.0.0.0:*               LISTEN     
+tcp        0      0 127.0.0.1:25            0.0.0.0:*               LISTEN     
+tcp6       0      0 :::7946                 :::*                    LISTEN     
+tcp6       0      0 :::6379                 :::*                    LISTEN     
+tcp6       0      0 :::8081                 :::*                    LISTEN     
+tcp6       0      0 :::22                   :::*                    LISTEN     
+tcp6       0      0 ::1:25                  :::*                    LISTEN     
+tcp6       0      0 :::2377                 :::*                    LISTEN     
+
+
+zhangcai@ubuntu:~$ sudo pull ubuntu
+[sudo] password for zhangcai: 
+sudo: pull: command not found
+zhangcai@ubuntu:~$ sudo docker pull ubuntu 
+Using default tag: latest
+latest: Pulling from library/ubuntu
+ae79f2514705: Downloading  2.457MB/47.62MB
+5ad56d5fc149: Download complete 
+ae79f2514705: Downloading  6.389MB/47.62MB
+395460e233f5: Download complete 
+6f01dc62e444: Download complete 
+ae79f2514705: Downloading  9.338MB/47.62MB
+
+
+
+
+ae79f2514705: Downloading   11.8MB/47.62MB
+
+
+
+
+
+ae79f2514705: Downloading  360.1kB/35.8MB
+
+ae79f2514705: Downloading  1.441MB/35.8MB
+
+
+ae79f2514705: Downloading  3.604MB/35.8MB
+
+
+ae79f2514705: Downloading  6.848MB/35.8MB
+
+
+ae79f2514705: Downloading  9.371MB/35.8MB
+
+
+ae79f2514705: Downloading  9.732MB/35.8MB
+
+
+ae79f2514705: Downloading  10.81MB/35.8MB
+
+ae79f2514705: Downloading  11.53MB/35.8MB
+
+
+ae79f2514705: Downloading  20.55MB/35.8MB
+ae79f2514705: Downloading   29.2MB/35.8MB
+
+
+
+
+
+
+ae79f2514705: Downloading  34.24MB/35.8MB
+
+ae79f2514705: Extracting  17.69MB/47.62MB
+ae79f2514705: Pull complete 
+5ad56d5fc149: Pull complete 
+170e558760e8: Pull complete 
+395460e233f5: Pull complete 
+6f01dc62e444: Pull complete 
+Digest: sha256:506e2d5852de1d7c90d538c5332bd3cc33b9cbd26f6ca653875899c505c82687
+Status: Downloaded newer image for ubuntu:latest
+zhangcai@ubuntu:~$ 
+zhangcai@ubuntu:~$ sudo docker tag ubuntu localhost:5000/myfirstimage
+[sudo] password for zhangcai: 
+zhangcai@ubuntu:~$ sudo docker push localhost:5000/myfirstimage
+The push refers to a repository [localhost:5000/myfirstimage]
+49907af65b0a: Pushed 
+4589f96366e6: Pushed 
+b97229212d30: Pushed 
+cd181336f142: Pushed 
+0f5ff0cf6a1c: Pushed 
+lates: digest: sha256:550f6e26da4b4cb8655a96dd6458ea01e2fb3dcb99d24e6dc427c08ea42c9785 size: 1357
+
+zhangcai@ubuntu:~$ sudo docker stop registry && sudo docker rm -v registry
+registry
+registry
+zhangcai@ubuntu:~$ 
+
+zhangcai@ubuntu:~$ docker pull localhost:5000/myfirstimage
+Using default tag: latest
+Got permission denied while trying to connect to the Docker daemon socket at unix:///var/run/docker.sock: Post http://%2Fvar%2Frun%2Fdocker.sock/v1.33/images/create?fromImage=localhost%3A5000%2Fmyfirstimage&tag=latest: dial unix /var/run/docker.sock: connect: permission denied
+zhangcai@ubuntu:~$ sudo docker pull localhost:5000/myfirstimage
+Using default tag: latest
+Error response from daemon: manifest for localhost:5000/myfirstimage:latest not found
+zhangcai@ubuntu:~$ sudo docker push localhost:5000/myfirstimage
+The push refers to a repository [localhost:5000/myfirstimage]
+49907af65b0a: Pushed 
+4589f96366e6: Pushed 
+b97229212d30: Pushed 
+cd181336f142: Pushed 
+0f5ff0cf6a1c: Pushed 
+latest: digest: sha256:550f6e26da4b4cb8655a96dd6458ea01e2fb3dcb99d24e6dc427c08ea42c9785 size: 1357
+zhangcai@ubuntu:~$ sudo docker pull localhost:5000/myfirstimage
+Using default tag: latest
+latest: Pulling from myfirstimage
+Digest: sha256:550f6e26da4b4cb8655a96dd6458ea01e2fb3dcb99d24e6dc427c08ea42c9785
+Status: Image is up to date for localhost:5000/myfirstimage:latest
+zhangcai@ubuntu:~$ docker stop registry && docker rm -v registry
+Got permission denied while trying to connect to the Docker daemon socket at unix:///var/run/docker.sock: Post http://%2Fvar%2Frun%2Fdocker.sock/v1.33/containers/registry/stop: dial unix /var/run/docker.sock: connect: permission denied
+zhangcai@ubuntu:~$ sudo docker stop registry && docker rm -v registry
+registry
+Got permission denied while trying to connect to the Docker daemon socket at unix:///var/run/docker.sock: Delete http://%2Fvar%2Frun%2Fdocker.sock/v1.33/containers/registry?v=1: dial unix /var/run/docker.sock: connect: permission denied
+zhangcai@ubuntu:~$ sudo docker stop registry && sudo docker rm -v registry
+registry
+registry
+
+
+
+zhangcai@ubuntu:~$ sudo docker  pull ubuntu:16.04
+Error response from daemon: Get https://registry-1.docker.io/v2/library/ubuntu/manifests/16.04: Get https://auth.docker.io/token?scope=repository%3Alibrary%2Fubuntu%3Apull&service=registry.docker.io: net/http: request canceled while waiting for connection (Client.Timeout exceeded while awaiting headers)
+zhangcai@ubuntu:~$ sudo docker  pull ubuntu:16.04
+Error response from daemon: Get https://registry-1.docker.io/v2/: net/http: request canceled while waiting for connection (Client.Timeout exceeded while awaiting headers)
+zhangcai@ubuntu:~$ sudo docker  pull ubuntu:16.04
+
+
+
+16.04: Pulling from library/ubuntu
+
+
+Digest: sha256:506e2d5852de1d7c90d538c5332bd3cc33b9cbd26f6ca653875899c505c82687
+Status: Downloaded newer image for ubuntu:16.04
+zhangcai@ubuntu:~$ 
+zhangcai@ubuntu:~$ 
+zhangcai@ubuntu:~$ 
+zhangcai@ubuntu:~$ 
+zhangcai@ubuntu:~$ 
+zhangcai@ubuntu:~$ sudo docker run -d -p 5000:5000 --restart=always --name registry registry:2
+99eca81b32299155f1b5f3940a12c471a1006e78b0c9c0469ac741910101c999
+zhangcai@ubuntu:~$ sudo docker tag ubuntu:16.04 localhost:5000/my-ubuntu
+zhangcai@ubuntu:~$ docker push localhost:5000/my-ubuntu
+Got permission denied while trying to connect to the Docker daemon socket at unix:///var/run/docker.sock: Post http://%2Fvar%2Frun%2Fdocker.sock/v1.33/images/localhost:5000/my-ubuntu/push?tag=: dial unix /var/run/docker.sock: connect: permission denied
+zhangcai@ubuntu:~$ sudo docker push localhost:5000/my-ubuntu 
+The push refers to a repository [localhost:5000/my-ubuntu]
+49907af65b0a: Pushed 
+4589f96366e6: Pushed 
+b97229212d30: Pushed 
+cd181336f142: Pushed 
+0f5ff0cf6a1c: Pushed 
+latest: digest: sha256:550f6e26da4b4cb8655a96dd6458ea01e2fb3dcb99d24e6dc427c08ea42c9785 size: 1357
+zhangcai@ubuntu:~$ sudo docker image ls
+REPOSITORY                    TAG                 IMAGE ID            CREATED             SIZE
+registry                      2                   2ba7189700c8        30 hours ago        33.3MB
+caizhang/testtag              v0.1                8519ea07ed26        6 days ago          195MB
+ubuntu                        16.04               747cb2d60bbe        2 weeks ago         122MB
+ubuntu                        latest              747cb2d60bbe        2 weeks ago         122MB
+localhost:5000/my-ubuntu      latest              747cb2d60bbe        2 weeks ago         122MB
+localhost:5000/myfirstimage   latest              747cb2d60bbe        2 weeks ago         122MB
+redis                         latest              1fb7b6c8c0d0        2 weeks ago         107MB
+gitlab/gitlab-runner          latest              fa332bc1925c        3 weeks ago         371MB
+hello-world                   latest              05a3bd381fc2        6 weeks ago         1.84kB
+dockersamples/visualizer      stable              8dbf7c60cf88        2 months ago        148MB
+zhangcai@ubuntu:~$ sudo docker remove ubuntu:16.04
+docker: 'remove' is not a docker command.
+See 'docker --help'
+zhangcai@ubuntu:~$ sudo docker image remove ubuntu:16.04
+Untagged: ubuntu:16.04
+zhangcai@ubuntu:~$ sudo docker image ls                 
+REPOSITORY                    TAG                 IMAGE ID            CREATED             SIZE
+registry                      2                   2ba7189700c8        30 hours ago        33.3MB
+caizhang/testtag              v0.1                8519ea07ed26        6 days ago          195MB
+ubuntu                        latest              747cb2d60bbe        2 weeks ago         122MB
+localhost:5000/my-ubuntu      latest              747cb2d60bbe        2 weeks ago         122MB
+localhost:5000/myfirstimage   latest              747cb2d60bbe        2 weeks ago         122MB
+redis                         latest              1fb7b6c8c0d0        2 weeks ago         107MB
+gitlab/gitlab-runner          latest              fa332bc1925c        3 weeks ago         371MB
+hello-world                   latest              05a3bd381fc2        6 weeks ago         1.84kB
+dockersamples/visualizer      stable              8dbf7c60cf88        2 months ago        148MB
+zhangcai@ubuntu:~$ docker image remove localhost:5000/my-ubuntu
+Got permission denied while trying to connect to the Docker daemon socket at unix:///var/run/docker.sock: Delete http://%2Fvar%2Frun%2Fdocker.sock/v1.33/images/localhost:5000/my-ubuntu: dial unix /var/run/docker.sock: connect: permission denied
+zhangcai@ubuntu:~$ sudo docker image remove localhost:5000/my-ubuntu
+Untagged: localhost:5000/my-ubuntu:latest
+Untagged: localhost:5000/my-ubuntu@sha256:550f6e26da4b4cb8655a96dd6458ea01e2fb3dcb99d24e6dc427c08ea42c9785
+zhangcai@ubuntu:~$ sudo docker image ls                             
+REPOSITORY                    TAG                 IMAGE ID            CREATED             SIZE
+registry                      2                   2ba7189700c8        30 hours ago        33.3MB
+caizhang/testtag              v0.1                8519ea07ed26        6 days ago          195MB
+ubuntu                        latest              747cb2d60bbe        2 weeks ago         122MB
+localhost:5000/myfirstimage   latest              747cb2d60bbe        2 weeks ago         122MB
+redis                         latest              1fb7b6c8c0d0        2 weeks ago         107MB
+gitlab/gitlab-runner          latest              fa332bc1925c        3 weeks ago         371MB
+hello-world                   latest              05a3bd381fc2        6 weeks ago         1.84kB
+dockersamples/visualizer      stable              8dbf7c60cf88        2 months ago        148MB
+zhangcai@ubuntu:~$ sudo docker pull localhost:5000/my-ubuntu
+Using default tag: latest
+latest: Pulling from my-ubuntu
+Digest: sha256:550f6e26da4b4cb8655a96dd6458ea01e2fb3dcb99d24e6dc427c08ea42c9785
+Status: Downloaded newer image for localhost:5000/my-ubuntu:latest
+zhangcai@ubuntu:~$ sudo docker image ls
+REPOSITORY                    TAG                 IMAGE ID            CREATED             SIZE
+registry                      2                   2ba7189700c8        30 hours ago        33.3MB
+caizhang/testtag              v0.1                8519ea07ed26        6 days ago          195MB
+localhost:5000/my-ubuntu      latest              747cb2d60bbe        2 weeks ago         122MB
+localhost:5000/myfirstimage   latest              747cb2d60bbe        2 weeks ago         122MB
+ubuntu                        latest              747cb2d60bbe        2 weeks ago         122MB
+redis                         latest              1fb7b6c8c0d0        2 weeks ago         107MB
+gitlab/gitlab-runner          latest              fa332bc1925c        3 weeks ago         371MB
+hello-world                   latest              05a3bd381fc2        6 weeks ago         1.84kB
+dockersamples/visualizer      stable              8dbf7c60cf88        2 months ago        148MB
+zhangcai@ubuntu:~$ 
+
+
+
+zhangcai@ubuntu:~$ sudo docker stop registry
+registry
+zhangcai@ubuntu:~$ sudo docker  stop registry &&sudo rm -v registry
+registry
+rm: cannot remove 'registry': No such file or directory
+zhangcai@ubuntu:~$ sudo docker  stop registry &&sudo rm -v registry
+registry
+rm: cannot remove 'registry': No such file or directory
+zhangcai@ubuntu:~$ sudo docker  stop registry &&sudo docker rm -v registry
+registry
+
+
+zhangcai@ubuntu:~$ sudo docker run -d -p 5000:5000 --restart=always --name registry registry:2
+6a365b8da8181e15cb65a70f2733fef610816fc9718476a4515c026c47cbec59
+zhangcai@ubuntu:~$ sudo docker run -d -p 5001:5000 --name registry-test registry:2 
+1cf74054e2ca504e7c7f472577c905d6d6354cc8a51d10a5b33571a4e7b62257
+zhangcai@ubuntu:~$ docker run -d -e REGISTRY_HTTP_ADDR=0.0.0.0:5001 -p 5001:5001 --name registry-test2 registry:2
+docker: Got permission denied while trying to connect to the Docker daemon socket at unix:///var/run/docker.sock: Post http://%2Fvar%2Frun%2Fdocker.sock/v1.33/containers/create?name=registry-test2: dial unix /var/run/docker.sock: connect: permission denied.
+See 'docker run --help'.
+zhangcai@ubuntu:~$ sudo docker run -d -e REGISTRY_HTTP_ADDR=0.0.0.0:5001 -p 5001:5001 --name registry-test2 registry:2
+4dec725242de0472257284db9c5a53f737200a0da50422250468dfa18ce0f8bd
+docker: Error response from daemon: driver failed programming external connectivity on endpoint registry-test2 (fcb12ffbb3fb8709e50b9814ffc21a8a5681cf49a837a95deae3985ca8b13c5c): Bind for 0.0.0.0:5001 failed: port is already allocated.
+zhangcai@ubuntu:~$ netstat -lnt
+Active Internet connections (only servers)
+Proto Recv-Q Send-Q Local Address           Foreign Address         State      
+tcp        0      0 0.0.0.0:22              0.0.0.0:*               LISTEN     
+tcp6       0      0 :::5000                 :::*                    LISTEN     
+tcp6       0      0 :::5001                 :::*                    LISTEN     
+tcp6       0      0 :::2377                 :::*                    LISTEN     
+tcp6       0      0 :::7946                 :::*                    LISTEN     
+tcp6       0      0 :::6379                 :::*                    LISTEN     
+tcp6       0      0 :::8080                 :::*                    LISTEN     
+tcp6       0      0 :::8081                 :::*                    LISTEN     
+tcp6       0      0 :::22                   :::*                    LISTEN     
+zhangcai@ubuntu:~$ sudo docker run -d -e REGISTRY_HTTP_ADDR=0.0.0.0:5001 -p 5002:5001 --name registry-test2 registry:2 
+docker: Error response from daemon: Conflict. The container name "/registry-test2" is already in use by container "4dec725242de0472257284db9c5a53f737200a0da50422250468dfa18ce0f8bd". You have to remove (or rename) that container to be able to reuse that name.
+See 'docker run --help'.
+zhangcai@ubuntu:~$ docker service ls
+Got permission denied while trying to connect to the Docker daemon socket at unix:///var/run/docker.sock: Get http://%2Fvar%2Frun%2Fdocker.sock/v1.33/services: dial unix /var/run/docker.sock: connect: permission denied
+zhangcai@ubuntu:~$ sudo docker service ls
+ID                  NAME                       MODE                REPLICAS            IMAGE                             PORTS
+vmi6pcaytd1r        getstartedlab_redis        replicated          1/1                 redis:latest                      *:6379->6379/tcp
+wwj8c77obvcp        getstartedlab_visualizer   replicated          1/1                 dockersamples/visualizer:stable   *:8080->8080/tcp
+wynkv3yptyfv        getstartedlab_web          replicated          5/5                 caizhang/testtag:v0.1             *:8081->80/tcp
+zhangcai@ubuntu:~$ sudo docker container ls
+CONTAINER ID        IMAGE                             COMMAND                  CREATED             STATUS              PORTS                    NAMES
+1cf74054e2ca        registry:2                        "/entrypoint.sh /e..."   3 minutes ago       Up 3 minutes        0.0.0.0:5001->5000/tcp   registry-test
+6a365b8da818        registry:2                        "/entrypoint.sh /e..."   4 minutes ago       Up 4 minutes        0.0.0.0:5000->5000/tcp   registry
+e5c707e0e898        caizhang/testtag:v0.1             "python app.py"          3 hours ago         Up 3 hours          80/tcp                   getstartedlab_web.2.0nfz4roqm80asyqxxlvk1f9wg
+59d720a64b2d        caizhang/testtag:v0.1             "python app.py"          3 hours ago         Up 3 hours          80/tcp                   getstartedlab_web.4.k849xnzkgr8o3fkvoh62xhz7v
+0979b0adbe11        dockersamples/visualizer:stable   "npm start"              3 hours ago         Up 3 hours          8080/tcp                 getstartedlab_visualizer.1.8dzsn38uzywi1snwedmyn88hh
+694d1c625fe2        gitlab/gitlab-runner:latest       "/usr/bin/dumb-ini..."   8 days ago          Up 7 hours                                   gitlab-runner
+zhangcai@ubuntu:~$ sudo docker container ps -a
+CONTAINER ID        IMAGE                             COMMAND                  CREATED             STATUS                      PORTS                    NAMES
+4dec725242de        registry:2                        "/entrypoint.sh /e..."   3 minutes ago       Created                                              registry-test2
+1cf74054e2ca        registry:2                        "/entrypoint.sh /e..."   4 minutes ago       Up 4 minutes                0.0.0.0:5001->5000/tcp   registry-test
+6a365b8da818        registry:2                        "/entrypoint.sh /e..."   6 minutes ago       Up 6 minutes                0.0.0.0:5000->5000/tcp   registry
+e5c707e0e898        caizhang/testtag:v0.1             "python app.py"          3 hours ago         Up 3 hours                  80/tcp                   getstartedlab_web.2.0nfz4roqm80asyqxxlvk1f9wg
+59d720a64b2d        caizhang/testtag:v0.1             "python app.py"          3 hours ago         Up 3 hours                  80/tcp                   getstartedlab_web.4.k849xnzkgr8o3fkvoh62xhz7v
+0979b0adbe11        dockersamples/visualizer:stable   "npm start"              3 hours ago         Up 3 hours                  8080/tcp                 getstartedlab_visualizer.1.8dzsn38uzywi1snwedmyn88hh
+3051ac5f410a        dockersamples/visualizer:stable   "npm start"              4 hours ago         Exited (0) 4 hours ago                               getstartedlab_visualizer.1.77c88dfhqh3d4mf1ab9b6mc8f
+b3cbd02bc55a        caizhang/testtag:v0.1             "python app.py"          6 hours ago         Exited (137) 4 hours ago                             getstartedlab_web.5.w13nsf0iotctwu0j1exfozoir
+11983e6d4ca2        caizhang/testtag:v0.1             "python app.py"          6 hours ago         Exited (137) 4 hours ago                             getstartedlab_web.2.nexkd3y6985vdtiogpv21dfoo
+a079b2a02e13        dockersamples/visualizer:stable   "npm start"              6 hours ago         Exited (0) 4 hours ago                               getstartedlab_visualizer.1.3hdugqfgwbkf1gdqsovp2ot15
+665c1a96a9f8        dockersamples/visualizer:stable   "npm start"              7 hours ago         Exited (0) 5 hours ago                               getstartedlab_visualizer.1.q7wbbknrs35m7ammb3ct7xx55
+7574a96c76fa        caizhang/testtag:v0.1             "python app.py"          7 hours ago         Exited (137) 5 hours ago                             getstartedlab_web.5.q4vxkx8i7oq6e9ht17jjfdx2i
+b252c6ae1e7b        caizhang/testtag:v0.1             "python app.py"          7 hours ago         Exited (137) 5 hours ago                             getstartedlab_web.2.esji89dg6dfi9cg8qjz8x6vd0
+dffe71cbb2c1        dockersamples/visualizer:stable   "npm start"              8 hours ago         Created                                              getstartedlab_visualizer.1.ivkv29jdpetojhx6m1jlayruq
+7c61f1d3928d        caizhang/testtag:v0.1             "python app.py"          8 hours ago         Created                                              getstartedlab_web.1.ogf1lhx0h7med38t5bjqo7239
+4a624f27292d        caizhang/testtag:v0.1             "python app.py"          8 hours ago         Created                     80/tcp                   getstartedlab_web.5.607qyh45k00iy6urxw9vtqccz
+43adc11b8f3a        caizhang/testtag:v0.1             "python app.py"          32 hours ago        Exited (137) 31 hours ago                            getstartedlab_web.1.k30zc5z4l5r1ova60y95d3hl3
+8d5cdea7958b        caizhang/testtag:v0.1             "python app.py"          32 hours ago        Exited (137) 31 hours ago                            getstartedlab_web.3.90xvuwh7b9q8l75qwxg33cjtf
+9f4a15690e13        caizhang/testtag:v0.1             "python app.py"          32 hours ago        Exited (137) 31 hours ago                            getstartedlab_web.4.nv41dp0lavvcvfnfg2t3qaw9l
+b534a295708e        caizhang/testtag:v0.1             "python app.py"          32 hours ago        Exited (137) 31 hours ago                            getstartedlab_web.2.saw2ae7mx66pj03rht62ajrij
+92feef844147        caizhang/testtag:v0.1             "python app.py"          2 days ago          Exited (137) 2 days ago                              getstartedlab_web.10.6g0wqug4eqjzz4fxflwg7a4ur
+8391d4c3cb1e        caizhang/testtag:v0.1             "python app.py"          2 days ago          Exited (137) 2 days ago                              getstartedlab_web.8.sj1ox9d9p8ocj7um8w62ci6cb
+993851225ac5        hello-world                       "/hello"                 2 days ago          Exited (0) 2 days ago                                vibrant_bohr
+694d1c625fe2        gitlab/gitlab-runner:latest       "/usr/bin/dumb-ini..."   8 days ago          Up 7 hours                                           gitlab-runner
+zhangcai@ubuntu:~$ sudo docker run -d -e REGISTRY_HTTP_ADDR=0.0.0.0:5001 -p 5002:5001 --name registry-test2 registry:2
+docker: Error response from daemon: Conflict. The container name "/registry-test2" is already in use by container "4dec725242de0472257284db9c5a53f737200a0da50422250468dfa18ce0f8bd". You have to remove (or rename) that container to be able to reuse that name.
+See 'docker run --help'.
+zhangcai@ubuntu:~$ sudo docker container ps -a
+CONTAINER ID        IMAGE                             COMMAND                  CREATED             STATUS                      PORTS                    NAMES
+4dec725242de        registry:2                        "/entrypoint.sh /e..."   4 minutes ago       Created                                              registry-test2
+1cf74054e2ca        registry:2                        "/entrypoint.sh /e..."   5 minutes ago       Up 5 minutes                0.0.0.0:5001->5000/tcp   registry-test
+6a365b8da818        registry:2                        "/entrypoint.sh /e..."   7 minutes ago       Up 7 minutes                0.0.0.0:5000->5000/tcp   registry
+e5c707e0e898        caizhang/testtag:v0.1             "python app.py"          3 hours ago         Up 3 hours                  80/tcp                   getstartedlab_web.2.0nfz4roqm80asyqxxlvk1f9wg
+59d720a64b2d        caizhang/testtag:v0.1             "python app.py"          3 hours ago         Up 3 hours                  80/tcp                   getstartedlab_web.4.k849xnzkgr8o3fkvoh62xhz7v
+0979b0adbe11        dockersamples/visualizer:stable   "npm start"              3 hours ago         Up 3 hours                  8080/tcp                 getstartedlab_visualizer.1.8dzsn38uzywi1snwedmyn88hh
+3051ac5f410a        dockersamples/visualizer:stable   "npm start"              4 hours ago         Exited (0) 4 hours ago                               getstartedlab_visualizer.1.77c88dfhqh3d4mf1ab9b6mc8f
+b3cbd02bc55a        caizhang/testtag:v0.1             "python app.py"          6 hours ago         Exited (137) 4 hours ago                             getstartedlab_web.5.w13nsf0iotctwu0j1exfozoir
+11983e6d4ca2        caizhang/testtag:v0.1             "python app.py"          6 hours ago         Exited (137) 4 hours ago                             getstartedlab_web.2.nexkd3y6985vdtiogpv21dfoo
+a079b2a02e13        dockersamples/visualizer:stable   "npm start"              6 hours ago         Exited (0) 4 hours ago                               getstartedlab_visualizer.1.3hdugqfgwbkf1gdqsovp2ot15
+665c1a96a9f8        dockersamples/visualizer:stable   "npm start"              7 hours ago         Exited (0) 5 hours ago                               getstartedlab_visualizer.1.q7wbbknrs35m7ammb3ct7xx55
+7574a96c76fa        caizhang/testtag:v0.1             "python app.py"          7 hours ago         Exited (137) 5 hours ago                             getstartedlab_web.5.q4vxkx8i7oq6e9ht17jjfdx2i
+b252c6ae1e7b        caizhang/testtag:v0.1             "python app.py"          7 hours ago         Exited (137) 5 hours ago                             getstartedlab_web.2.esji89dg6dfi9cg8qjz8x6vd0
+dffe71cbb2c1        dockersamples/visualizer:stable   "npm start"              8 hours ago         Created                                              getstartedlab_visualizer.1.ivkv29jdpetojhx6m1jlayruq
+7c61f1d3928d        caizhang/testtag:v0.1             "python app.py"          8 hours ago         Created                                              getstartedlab_web.1.ogf1lhx0h7med38t5bjqo7239
+4a624f27292d        caizhang/testtag:v0.1             "python app.py"          8 hours ago         Created                     80/tcp                   getstartedlab_web.5.607qyh45k00iy6urxw9vtqccz
+43adc11b8f3a        caizhang/testtag:v0.1             "python app.py"          32 hours ago        Exited (137) 31 hours ago                            getstartedlab_web.1.k30zc5z4l5r1ova60y95d3hl3
+8d5cdea7958b        caizhang/testtag:v0.1             "python app.py"          32 hours ago        Exited (137) 31 hours ago                            getstartedlab_web.3.90xvuwh7b9q8l75qwxg33cjtf
+9f4a15690e13        caizhang/testtag:v0.1             "python app.py"          32 hours ago        Exited (137) 31 hours ago                            getstartedlab_web.4.nv41dp0lavvcvfnfg2t3qaw9l
+b534a295708e        caizhang/testtag:v0.1             "python app.py"          32 hours ago        Exited (137) 31 hours ago                            getstartedlab_web.2.saw2ae7mx66pj03rht62ajrij
+92feef844147        caizhang/testtag:v0.1             "python app.py"          2 days ago          Exited (137) 2 days ago                              getstartedlab_web.10.6g0wqug4eqjzz4fxflwg7a4ur
+8391d4c3cb1e        caizhang/testtag:v0.1             "python app.py"          2 days ago          Exited (137) 2 days ago                              getstartedlab_web.8.sj1ox9d9p8ocj7um8w62ci6cb
+993851225ac5        hello-world                       "/hello"                 2 days ago          Exited (0) 2 days ago                                vibrant_bohr
+694d1c625fe2        gitlab/gitlab-runner:latest       "/usr/bin/dumb-ini..."   8 days ago          Up 7 hours                                           gitlab-runner
+zhangcai@ubuntu:~$ sudo docker run -d -e REGISTRY_HTTP_ADDR=0.0.0.0:5001 -p 5002:5001 --name registry-test3 registry:2
+5cc9a490af2b9945907467a57459cc593c27c040333824e2abbc99a3f5b183dc
+
+
+
+
+zhangcai@ubuntu:~$ sudo curl -L https://github.com/docker/compose/releases/download/1.16.1/docker-compose-`uname -s`-`uname -m` -o /usr/local/bin/docker-compose
+[sudo] password for zhangcai: 
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+100   617    0   617    0     0    147      0 --:--:--  0:00:04 --:--:--   147
+100 8648k  100 8648k    0     0  62402      0  0:02:21  0:02:21 --:--:-- 48424
+zhangcai@ubuntu:~$ sudo chmod +x /usr/local/bin/docker-compose
+zhangcai@ubuntu:~$ docker-compose --version
+docker-compose version 1.16.1, build 6d1ac21
+
+
+
+
+
+
+
+
+

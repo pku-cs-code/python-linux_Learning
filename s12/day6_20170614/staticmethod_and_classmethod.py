@@ -3,6 +3,8 @@
 
 
 class A(object):
+    def __init__(self,name):
+        self.name = name
     def foo(self,x):
         print "executing foo(%s,%s)"%(self,x)
 
@@ -15,7 +17,9 @@ class A(object):
         print "executing static_foo(%s)"%x
     @staticmethod
     def static_foo2():
-        print "'test static_foo2"
+        print "'test static_foo2 %s" #静态方法不能使用实例和列的方法%self.name,参数里面也不能有self.name等
+
+
 
 # A.static_foo2()
 a=A()

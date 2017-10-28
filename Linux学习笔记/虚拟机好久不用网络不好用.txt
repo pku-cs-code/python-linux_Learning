@@ -1,0 +1,4 @@
+虚拟机好久不用网络不好用
+destination host unreachable
+只要在vmware 编辑->网络首选项 里还原网络设置即可。可能是由于太多的centos主机和clone之后mac冲突，多次删除了persistent-rules之后网络混乱的缘故。还原之后就好了。这个问题还困扰我两三天
+

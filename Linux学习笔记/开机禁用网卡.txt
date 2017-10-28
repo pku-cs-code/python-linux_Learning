@@ -1,0 +1,144 @@
+开机禁用网卡
+
+在/etc/sysconfig/network-scripts/ifcfg-ens37中onboot设置为no没用
+
+[root@localhost ~]# ifdown ens37
+Could not load file '/etc/sysconfig/network-scripts/ifcfg-ens37'
+Could not load file '/etc/sysconfig/network-scripts/ifcfg-ens37'
+Could not load file '/etc/sysconfig/network-scripts/ifcfg-ens37'
+Could not load file '/etc/sysconfig/network-scripts/ifcfg-ens37'
+[root@localhost ~]# ifconfig
+docker0: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
+        inet 172.17.0.1  netmask 255.255.0.0  broadcast 0.0.0.0
+        inet6 fe80::42:8ff:fe4f:4fe2  prefixlen 64  scopeid 0x20<link>
+        ether 02:42:08:4f:4f:e2  txqueuelen 0  (Ethernet)
+        RX packets 102  bytes 6016 (5.8 KiB)
+        RX errors 0  dropped 0  overruns 0  frame 0
+        TX packets 100  bytes 9672 (9.4 KiB)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+
+docker_gwbridge: flags=4099<UP,BROADCAST,MULTICAST>  mtu 1500
+        inet 172.18.0.1  netmask 255.255.0.0  broadcast 0.0.0.0
+        ether 02:42:14:f5:fb:db  txqueuelen 0  (Ethernet)
+        RX packets 551  bytes 42298 (41.3 KiB)
+        RX errors 0  dropped 5  overruns 0  frame 0
+        TX packets 239  bytes 35786 (34.9 KiB)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+
+ens33: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
+        inet 10.10.1.115  netmask 255.255.255.0  broadcast 10.10.1.255
+        inet6 fe80::a4d2:5e6c:a935:ea3a  prefixlen 64  scopeid 0x20<link>
+        ether 00:0c:29:d8:82:0a  txqueuelen 1000  (Ethernet)
+        RX packets 551  bytes 42298 (41.3 KiB)
+        RX errors 0  dropped 5  overruns 0  frame 0
+        TX packets 239  bytes 35786 (34.9 KiB)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+
+lo: flags=73<UP,LOOPBACK,RUNNING>  mtu 65536
+        inet 127.0.0.1  netmask 255.0.0.0
+        inet6 ::1  prefixlen 128  scopeid 0x10<host>
+        loop  txqueuelen 1  (Local Loopback)
+        RX packets 0  bytes 0 (0.0 B)
+        RX errors 0  dropped 0  overruns 0  frame 0
+        TX packets 0  bytes 0 (0.0 B)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+
+veth4ddacc2: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
+        inet6 fe80::5090:eeff:fe13:91ff  prefixlen 64  scopeid 0x20<link>
+        ether 52:90:ee:13:91:ff  txqueuelen 0  (Ethernet)
+        RX packets 102  bytes 7444 (7.2 KiB)
+        RX errors 0  dropped 0  overruns 0  frame 0
+        TX packets 108  bytes 10320 (10.0 KiB)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+		
+		
+
+
+
+[root@localhost ~]# ifconfig
+docker0: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
+        inet 172.17.0.1  netmask 255.255.0.0  broadcast 0.0.0.0
+        inet6 fe80::42:4cff:fe25:5fef  prefixlen 64  scopeid 0x20<link>
+        ether 02:42:4c:25:5f:ef  txqueuelen 0  (Ethernet)
+        RX packets 339  bytes 19820 (19.3 KiB)
+        RX errors 0  dropped 0  overruns 0  frame 0
+        TX packets 338  bytes 33168 (32.3 KiB)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+
+docker_gwbridge: flags=4099<UP,BROADCAST,MULTICAST>  mtu 1500
+        inet 172.18.0.1  netmask 255.255.0.0  broadcast 0.0.0.0
+        ether 02:42:c4:2f:1e:89  txqueuelen 0  (Ethernet)
+        RX packets 1713  bytes 130619 (127.5 KiB)
+        RX errors 0  dropped 
+		4  overruns 0  frame 0
+        TX packets 656  bytes 88956 (86.8 KiB)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+
+ens33: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
+        inet 10.10.1.115  netmask 255.255.255.0  broadcast 10.10.1.255
+        inet6 fe80::a4d2:5e6c:a935:ea3a  prefixlen 64  scopeid 0x20<link>
+        ether 00:0c:29:d8:82:0a  txqueuelen 1000  (Ethernet)
+        RX packets 1713  bytes 130619 (127.5 KiB)
+        RX errors 0  dropped 4  overruns 0  frame 0
+        TX packets 656  bytes 88956 (86.8 KiB)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+
+lo: flags=73<UP,LOOPBACK,RUNNING>  mtu 65536
+        inet 127.0.0.1  netmask 255.0.0.0
+        inet6 ::1  prefixlen 128  scopeid 0x10<host>
+        loop  txqueuelen 1  (Local Loopback)
+        RX packets 0  bytes 0 (0.0 B)
+        RX errors 0  dropped 0  overruns 0  frame 0
+        TX packets 0  bytes 0 (0.0 B)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+
+vetha4e0348: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
+        inet6 fe80::ecf4:cff:fed6:850b  prefixlen 64  scopeid 0x20<link>
+        ether ee:f4:0c:d6:85:0b  txqueuelen 0  (Ethernet)
+        RX packets 339  bytes 24566 (23.9 KiB)
+        RX errors 0  dropped 0  overruns 0  frame 0
+        TX packets 346  bytes 33816 (33.0 KiB)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+
+[root@localhost ~]# 
+[root@localhost ~]# cat /etc/rc.local 
+#!/bin/bash
+# THIS FILE IS ADDED FOR COMPATIBILITY PURPOSES
+#
+# It is highly advisable to create own systemd services or udev rules
+# to run scripts during boot instead of using this file.
+#
+# In contrast to previous versions due to parallel execution during boot
+# this script will NOT be run after all other services.
+#
+# Please note that you must run 'chmod +x /etc/rc.d/rc.local' to ensure
+# that this script will be executed during boot.
+
+touch /var/lock/subsys/local
+#start nginx when start
+ /usr/local/nginx/sbin/nginx
+/usr/local/nginx/sbin/nginx 
+#ifdown ens37
+
+
+
+在/etc/rc.local 中加入一行
+
+ifconfig ens37 down
+
+
+[root@localhost ~]# docker swarm init
+Error response from daemon: could not choose an IP address to advertise since this system has multiple addresses on different interfaces (10.10.1.115 on ens33 and 10.10.1.228 on ens37) - specify one with --advertise-addr
+[root@localhost ~]# docker swarm init  --advertise-addr 10.10.1.115
+Swarm initialized: current node (qe9smn202e5a9if1ug41sos1j) is now a manager.
+
+To add a worker to this swarm, run the following command:
+
+    docker swarm join \
+    --token SWMTKN-1-5wnyu241jzu95bbtlq4h2nnuas5e7qow04iwzqoafkmu2z8p41-ek35b1gvvi294306678hwl172 \
+    10.10.1.115:2377
+
+To add a manager to this swarm, run 'docker swarm join-token manager' and follow the instructions.
+
+[root@localhost ~]# 
+

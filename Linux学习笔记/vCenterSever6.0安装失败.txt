@@ -1,0 +1,7 @@
+vCenterSever6.0（针对windows server2008 sp2平台的版本）需要至少2颗cpu，8G Ram才可以
+
+vCenterSever Appliance（针对vCenter做了优化的Linux版本）
+
+vCenterSever6.0 之后的版本都需要安装PSC(Platform Services Controller)
+分为embeded和external版本，embeded版本和vCenter处于同一physical或者vm上所以网络环境更好，而external PSC是针对大规模的vCenter集群的配置。
+

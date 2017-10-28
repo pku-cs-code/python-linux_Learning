@@ -1,0 +1,15 @@
+字符串
+有''和""共同存在时，输出时以''括起来，如果原来的字符串里面有'，则输出以\'打印
+
+
+>>> 'let\'s go "hello"'
+'let\'s go "hello"'
+>>> "let\'s go \"hello\""
+'let\'s go "hello"'
+>>> "let's go \"hello\""
+'let\'s go "hello"'
+>>> print  "let\'s go \"hello\""
+let's go "hello"
+>>> print  "let's go \"hello\""
+let's go "hello"
+

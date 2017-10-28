@@ -1,0 +1,17 @@
+重启网络
+sudo /etc/init.d/networking restart 
+
+
+设置固定dns
+方法二：
+
+通过/etc/network/interfaces，在它的最后增加一句：
+
+dns-nameservers 8.8.8.8
+
+# 如果多个dns：
+# dns-nameservers X.X.X.X Y.Y.Y.Y Z.Z.Z.Z
+然后重启网络：
+
+sudo ifdown eth0 && sudo ifup eth0
+

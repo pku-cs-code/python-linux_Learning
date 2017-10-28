@@ -23,6 +23,8 @@ class Person(object):
 
 
 person = Person('zhagn','cai')
+Person.full_name#没反应
+
 person.full_name
 person.first_name = 'zzz'
 person.full_name

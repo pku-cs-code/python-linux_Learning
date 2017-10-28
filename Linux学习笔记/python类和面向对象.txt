@@ -156,6 +156,12 @@ person.full_name
 person.first_name = 'zzz'
 person.full_name
 
+属性后面参数不用谢类而可以调用类的方法
+类方法classmethod是可以供实例和类使用的，但是cls参数对于实例和类都是抽象的类
+staticmethod是可以访问不可以访问类和实例的变量和方法，也就是不能访问self.name等
+而classmethod和property是可以访问的
+
+
 可以通过直接调用而不用写括号调用方法
 
 python中的下划线

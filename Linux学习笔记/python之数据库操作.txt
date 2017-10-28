@@ -20,7 +20,7 @@ desc students;
 
 show create table students;#创建表结构的语句
 
-InnoDB是支持多事务的，同时操作，可以回滚
+InnoDB是支持多事务的，同时操作，可以回滚。比如atm存款掉电回滚
 
 
 insert into students(name,sex,age,tel) values('alex','man',18,'151515
@@ -79,4 +79,7 @@ Command ""c:\program files\python35\python.exe" -u -c "import setuptools, tokeni
 mysql-python好像不支持python3
 安装在python2上
 直接安装去官网找python-mysql.exe安装在python2上
+
+commit提交了就不能回滚了
+提交之前可以回滚
 

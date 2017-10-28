@@ -1,0 +1,37 @@
+gitlab-ce安装
+
+安装参考文档
+https://about.gitlab.com/installation/?version=ce#centos-6
+
+几次尝试过通过yum安装，发现改成了安装文档上的源repository还是很慢。决定手动安装试试。
+
+先去这个页面手动把git的rpm包下载到windows本地，然后在linux上安装一个lrzsz工具传到linux
+端，然后进入到当前目录，执行命令yum install gitlab-ce-10.0.3-ce.0.el6.x86_64.rpm 既可安装。安装包比较大，安装的时候请确保自己的机器上磁盘空间足够。不够的话可以rpm删除一些旧的内核文件来腾出一些空间。对于是建立了lvm逻辑卷的可以直接扩容。
+gitlab包下载页面，后面的绿色download即下载链接。
+
+https://packages.gitlab.com/gitlab/gitlab-ce/packages/ol/7/gitlab-ce-10.0.3-ce.0.el7.x86_64.rpm
+
+然后配置重启gitlab，这可能需要一些时间。
+gitlab-ctl reconfigure
+
+
+然后在一个浏览器上输入linux机器对应的hostname，我输的是10.10.1.113,由于我的那台机器上也部署了自己测试用的apache服务，故访问不到gitlab页面，所以要尽量的将不同服务的服务器放在不同的机器上，以免混杂的情况。
+关掉http服务后，输入10.10.1.113能够访问了，这时候需要配置登录名和密码，第一次登录的时候，管理员账户是root，第一次输入的密码可以作为初始密码使用。设置好初始密码后，页面会重新返回到登录界面，此时输入root和你第一次输入的密码就可以了。也可以改密码。
+
+在登入到页面后，自己需要找一个像扳手一样的图标，是admin area控制页面，可以在里面查看一些gitlab信息。由于我们还没有新建project和配置gitlab-runner，所以还不能发挥gitlab的强大功能。自己可以试着新建一个测试的project，然后会看到对应project对应的网址。这个可以自己设置的。至于git里面代码怎么来做测试，我暂时还没搞明白。然后跳出提示添加sshkey，那么添加一个sshkey到这个项目里吧。
+去~/.ssh/中去找id_dsa.pub这样的文件，把里面的内容拷贝到gitlab设置页面里头去。
+
+
+
+
+在gitlab管理员新建project后，需要将成员members加入到项目中，成员才可以git push进去，不然会报错误。
+
+[root@localhost test]# git push origin master
+Username for 'http://10.10.1.113': caizhang  
+Password for 'http://caizhang@10.10.1.113': 
+fatal: repository 'http://10.10.1.113/root/test.git/' not found
+[root@localhost test]# git push origin master
+Username for 'http://10.10.1.113': caizhang    
+Password for 'http://caizhang@10.10.1.113': 
+fatal: repository 'http://10.10.1.113/root/test.git/' not found
+

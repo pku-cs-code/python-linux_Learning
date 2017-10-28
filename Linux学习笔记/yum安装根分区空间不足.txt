@@ -1,0 +1,20 @@
+yum安装根分区空间不足
+
+删除旧的内核
+
+[root@test app]# rpm -qa |grep kernel
+kernel-2.6.32-696.3.1.el6.x86_64
+kernel-devel-2.6.32-642.15.1.el6.x86_64
+kernel-headers-2.6.32-696.3.1.el6.x86_64
+kernel-2.6.32-642.15.1.el6.x86_64
+kernel-devel-2.6.32-696.1.1.el6.x86_64
+abrt-addon-kerneloops-2.0.8-43.el6.centos.x86_64
+libreport-plugin-kerneloops-2.0.9-33.el6.centos.x86_64
+kernel-devel-2.6.32-358.el6.x86_64
+dracut-kernel-004-409.el6_8.2.noarch
+kernel-firmware-2.6.32-696.3.1.el6.noarch
+kernel-devel-2.6.32-696.3.1.el6.x86_64
+[root@test app]# uname -a
+Linux test 2.6.32-696.3.1.el6.x86_64 #1 SMP Tue May 30 19:52:55 UTC 2017 x86_64 x86_64 x86_64 GNU/Linux
+[root@test app]# rpm -e kernel-devel-2.6.32-358.el6.x86_64
+

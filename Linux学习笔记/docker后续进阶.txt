@@ -1,0 +1,1123 @@
+docker后续进阶
+
+今天上班打开centos7和ubuntu两台虚拟机，发现10.10.1.169:8080和10.10.1.169:8081都不能连接
+只有10.10.1.115:8081可以
+两台虚拟机的各种状态如下
+
+ubuntu
+
+zhangcai@ubuntu:~$ sudo docker service ls
+[sudo] password for zhangcai: 
+ID                  NAME                       MODE                REPLICAS            IMAGE                             PORTS
+na4hksm9fwdn        getstartedlab_redis        replicated          0/1                 redis:latest                      *:6379->6379/tcp
+fpbsua0p84c7        getstartedlab_visualizer   replicated          1/1                 dockersamples/visualizer:stable   *:8080->8080/tcp
+yympdq8kkjbb        getstartedlab_web          replicated          5/5                 caizhang/testtag:v0.1             *:8081->80/tcp
+zhangcai@ubuntu:~$ ifconfig
+docker0   Link encap:Ethernet  HWaddr 02:42:1d:32:b0:9d  
+          inet addr:172.17.0.1  Bcast:0.0.0.0  Mask:255.255.0.0
+          inet6 addr: fe80::42:1dff:fe32:b09d/64 Scope:Link
+          UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1
+          RX packets:0 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:8 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:0 
+          RX bytes:0 (0.0 B)  TX bytes:648 (648.0 B)
+
+docker_gwbridge Link encap:Ethernet  HWaddr 02:42:82:fd:4a:fd  
+          inet addr:172.18.0.1  Bcast:0.0.0.0  Mask:255.255.0.0
+          inet6 addr: fe80::42:82ff:fefd:4afd/64 Scope:Link
+          UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1
+          RX packets:24 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:38 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:0 
+          RX bytes:1929 (1.9 KB)  TX bytes:33099 (33.0 KB)
+
+ens33     Link encap:Ethernet  HWaddr 00:0c:29:e3:c2:68  
+          inet addr:10.10.1.169  Bcast:10.10.1.255  Mask:255.255.255.0
+          inet6 addr: fe80::20c:29ff:fee3:c268/64 Scope:Link
+          UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1
+          RX packets:20320 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:17367 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:1000 
+          RX bytes:7456170 (7.4 MB)  TX bytes:2704646 (2.7 MB)
+          Interrupt:19 Base address:0x2000 
+
+lo        Link encap:Local Loopback  
+          inet addr:127.0.0.1  Mask:255.0.0.0
+          inet6 addr: ::1/128 Scope:Host
+          UP LOOPBACK RUNNING  MTU:65536  Metric:1
+          RX packets:0 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:0 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:1 
+          RX bytes:0 (0.0 B)  TX bytes:0 (0.0 B)
+
+veth7689329 Link encap:Ethernet  HWaddr 6a:ed:43:6c:6e:df  
+          inet6 addr: fe80::68ed:43ff:fe6c:6edf/64 Scope:Link
+          UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1
+          RX packets:0 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:8 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:0 
+          RX bytes:0 (0.0 B)  TX bytes:648 (648.0 B)
+
+veth3ea9759 Link encap:Ethernet  HWaddr 36:0d:08:40:57:55  
+          inet6 addr: fe80::340d:8ff:fe40:5755/64 Scope:Link
+          UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1
+          RX packets:24 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:39 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:0 
+          RX bytes:2265 (2.2 KB)  TX bytes:33169 (33.1 KB)
+
+veth439ec18 Link encap:Ethernet  HWaddr 46:89:f3:b4:2d:ed  
+          inet6 addr: fe80::4489:f3ff:feb4:2ded/64 Scope:Link
+          UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1
+          RX packets:0 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:10 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:0 
+          RX bytes:0 (0.0 B)  TX bytes:760 (760.0 B)
+
+veth50610e7 Link encap:Ethernet  HWaddr 66:c7:37:0b:e4:08  
+          inet6 addr: fe80::64c7:37ff:fe0b:e408/64 Scope:Link
+          UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1
+          RX packets:0 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:14 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:0 
+          RX bytes:0 (0.0 B)  TX bytes:1080 (1.0 KB)
+
+vethb0c83b8 Link encap:Ethernet  HWaddr 9e:21:26:44:4d:5f  
+          inet6 addr: fe80::9c21:26ff:fe44:4d5f/64 Scope:Link
+          UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1
+          RX packets:0 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:10 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:0 
+          RX bytes:0 (0.0 B)  TX bytes:760 (760.0 B)
+
+vethb36a79c Link encap:Ethernet  HWaddr 42:56:0c:55:0b:b4  
+          inet6 addr: fe80::4056:cff:fe55:bb4/64 Scope:Link
+          UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1
+          RX packets:0 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:10 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:0 
+          RX bytes:0 (0.0 B)  TX bytes:760 (760.0 B)
+
+vethc625105 Link encap:Ethernet  HWaddr 62:3a:27:46:12:12  
+          inet6 addr: fe80::603a:27ff:fe46:1212/64 Scope:Link
+          UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1
+          RX packets:0 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:8 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:0 
+          RX bytes:0 (0.0 B)  TX bytes:648 (648.0 B)
+
+vethe42d5b9 Link encap:Ethernet  HWaddr ba:cb:db:ff:37:c2  
+          inet6 addr: fe80::b8cb:dbff:feff:37c2/64 Scope:Link
+          UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1
+          RX packets:0 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:16 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:0 
+          RX bytes:0 (0.0 B)  TX bytes:1296 (1.2 KB)
+
+zhangcai@ubuntu:~$ 
+zhangcai@ubuntu:~$ 
+zhangcai@ubuntu:~$ sudo docker container ps
+CONTAINER ID        IMAGE                         COMMAND                  CREATED             STATUS              PORTS               NAMES
+43adc11b8f3a        caizhang/testtag:v0.1         "python app.py"          11 minutes ago      Up 10 minutes       80/tcp              getstartedlab_web.1.k30zc5z4l5r1ova60y95d3hl3
+8d5cdea7958b        caizhang/testtag:v0.1         "python app.py"          11 minutes ago      Up 10 minutes       80/tcp              getstartedlab_web.3.90xvuwh7b9q8l75qwxg33cjtf
+9f4a15690e13        caizhang/testtag:v0.1         "python app.py"          12 minutes ago      Up 12 minutes       80/tcp              getstartedlab_web.4.nv41dp0lavvcvfnfg2t3qaw9l
+33e69aaf49e5        caizhang/testtag:v0.1         "python app.py"          12 minutes ago      Up 12 minutes       80/tcp              getstartedlab_web.5.n7n7dt6zmtkjt8zqvllf4rhss
+b534a295708e        caizhang/testtag:v0.1         "python app.py"          12 minutes ago      Up 12 minutes       80/tcp              getstartedlab_web.2.saw2ae7mx66pj03rht62ajrij
+694d1c625fe2        gitlab/gitlab-runner:latest   "/usr/bin/dumb-ini..."   7 days ago          Up 13 minutes                           gitlab-runner
+zhangcai@ubuntu:~$ sudo docker container ps
+CONTAINER ID        IMAGE                         COMMAND                  CREATED             STATUS              PORTS               NAMES
+43adc11b8f3a        caizhang/testtag:v0.1         "python app.py"          11 minutes ago      Up 10 minutes       80/tcp              getstartedlab_web.1.k30zc5z4l5r1ova60y95d3hl3
+8d5cdea7958b        caizhang/testtag:v0.1         "python app.py"          11 minutes ago      Up 10 minutes       80/tcp              getstartedlab_web.3.90xvuwh7b9q8l75qwxg33cjtf
+9f4a15690e13        caizhang/testtag:v0.1         "python app.py"          12 minutes ago      Up 12 minutes       80/tcp              getstartedlab_web.4.nv41dp0lavvcvfnfg2t3qaw9l
+33e69aaf49e5        caizhang/testtag:v0.1         "python app.py"          12 minutes ago      Up 12 minutes       80/tcp              getstartedlab_web.5.n7n7dt6zmtkjt8zqvllf4rhss
+b534a295708e        caizhang/testtag:v0.1         "python app.py"          12 minutes ago      Up 12 minutes       80/tcp              getstartedlab_web.2.saw2ae7mx66pj03rht62ajrij
+694d1c625fe2        gitlab/gitlab-runner:latest   "/usr/bin/dumb-ini..."   7 days ago          Up 13 minutes                           gitlab-runner
+zhangcai@ubuntu:~$ sudo docker service ls
+ID                  NAME                       MODE                REPLICAS            IMAGE                             PORTS
+na4hksm9fwdn        getstartedlab_redis        replicated          0/1                 redis:latest                      *:6379->6379/tcp
+fpbsua0p84c7        getstartedlab_visualizer   replicated          0/1                 dockersamples/visualizer:stable   *:8080->8080/tcp
+yympdq8kkjbb        getstartedlab_web          replicated          5/5                 caizhang/testtag:v0.1             *:8081->80/tcp
+zhangcai@ubuntu:~$ sudo docker stackt ls getstartedlab
+docker: 'stackt' is not a docker command.
+See 'docker --help'
+zhangcai@ubuntu:~$ sudo docker stack ls getstartedlab 
+"docker stack ls" accepts no arguments.
+See 'docker stack ls --help'.
+
+Usage:  docker stack ls
+
+List stacks
+zhangcai@ubuntu:~$ sudo docker stack ps getstartedlab 
+ID                  NAME                         IMAGE                             NODE                    DESIRED STATE       CURRENT STATE                   ERROR                              PORTS
+jdlzpsqx7wie        getstartedlab_redis.1        redis:latest                      localhost.localdomain   Shutdown            Failed less than a second ago   "starting container failed: gr…"   
+ipyw17fijvsc         \_ getstartedlab_redis.1    redis:latest                      localhost.localdomain   Shutdown            Failed less than a second ago   "starting container failed: gr…"   
+lonffkivkb6k         \_ getstartedlab_redis.1    redis:latest                      localhost.localdomain   Shutdown            Failed less than a second ago   "starting container failed: gr…"   
+jh6hdauppxaj         \_ getstartedlab_redis.1    redis:latest                      localhost.localdomain   Shutdown            Failed less than a second ago   "starting container failed: gr…"   
+k30zc5z4l5r1        getstartedlab_web.1          caizhang/testtag:v0.1             ubuntu                  Running             Running 4 minutes ago                                              
+gdobuceq942o         \_ getstartedlab_web.1      caizhang/testtag:v0.1             localhost.localdomain   Shutdown            Failed less than a second ago   "starting container failed: gr…"   
+wqpmn0is9zqw         \_ getstartedlab_web.1      caizhang/testtag:v0.1             localhost.localdomain   Shutdown            Failed less than a second ago   "starting container failed: gr…"   
+srfd0mc555fy        getstartedlab_redis.1        redis:latest                                              Running             New 4 minutes ago                                                  
+evzxdzci8cju        getstartedlab_visualizer.1   dockersamples/visualizer:stable                           Running             New 4 minutes ago                                                  
+zw0mirwgvlo9        getstartedlab_web.1          caizhang/testtag:v0.1             localhost.localdomain   Shutdown            Failed less than a second ago   "starting container failed: gr…"   
+j0oximakruyt        getstartedlab_visualizer.1   dockersamples/visualizer:stable   ubuntu                  Shutdown            Rejected 4 minutes ago                                             
+7miz70vuxqqx        getstartedlab_web.1          caizhang/testtag:v0.1             localhost.localdomain   Shutdown            Failed less than a second ago   "starting container failed: tr…"   
+yzff9im4dp2d        getstartedlab_visualizer.1   dockersamples/visualizer:stable   ubuntu                  Shutdown            Failed 14 minutes ago           "No such container: getstarted…"   
+saw2ae7mx66p        getstartedlab_web.2          caizhang/testtag:v0.1             ubuntu                  Running             Running 13 minutes ago                                             
+6wp540fiedbm         \_ getstartedlab_web.2      caizhang/testtag:v0.1             ubuntu                  Shutdown            Failed 14 minutes ago           "No such container: getstarted…"   
+90xvuwh7b9q8        getstartedlab_web.3          caizhang/testtag:v0.1             ubuntu                  Running             Running 4 minutes ago                                              
+vtwvahpis1kz         \_ getstartedlab_web.3      caizhang/testtag:v0.1             localhost.localdomain   Shutdown            Failed less than a second ago   "starting container failed: gr…"   
+nw3v29jqlqzj         \_ getstartedlab_web.3      caizhang/testtag:v0.1             localhost.localdomain   Shutdown            Failed less than a second ago   "starting container failed: gr…"   
+px7avtinj2mu         \_ getstartedlab_web.3      caizhang/testtag:v0.1             localhost.localdomain   Shutdown            Failed less than a second ago   "starting container failed: gr…"   
+gzbg6mszsc2y         \_ getstartedlab_web.3      caizhang/testtag:v0.1             localhost.localdomain   Shutdown            Failed less than a second ago   "starting container failed: tr…"   
+nv41dp0lavvc        getstartedlab_web.4          caizhang/testtag:v0.1             ubuntu                  Running             Running 13 minutes ago                                             
+lhd6oatlwylo         \_ getstartedlab_web.4      caizhang/testtag:v0.1             ubuntu                  Shutdown            Failed 14 minutes ago           "No such container: getstarted…"   
+n7n7dt6zmtkj        getstartedlab_web.5          caizhang/testtag:v0.1             ubuntu                  Running             Running 13 minutes ago                                             
+mbxyvoj02zkj         \_ getstartedlab_web.5      caizhang/testtag:v0.1             ubuntu                  Shutdown            Failed 14 minutes ago           "task: non-zero exit (137)"        
+
+
+
+centos7
+[root@localhost ~]# docker container ls
+CONTAINER ID        IMAGE                         COMMAND                  CREATED             STATUS              PORTS               NAMES
+03c89f481c96        gitlab/gitlab-runner:latest   "/usr/bin/dumb-ini..."   2 weeks ago         Up 3 minutes                            gitlab-runner
+[root@localhost ~]# docker service ls
+ID            NAME                      MODE        REPLICAS  IMAGE
+fpbsua0p84c7  getstartedlab_visualizer  replicated  1/1       dockersamples/visualizer:stable
+na4hksm9fwdn  getstartedlab_redis       replicated  0/1       redis:latest
+yympdq8kkjbb  getstartedlab_web         replicated  5/5       caizhang/testtag:v0.1
+[root@localhost ~]# docker stack ls
+NAME           SERVICES
+getstartedlab  3
+[root@localhost ~]# docker swarm ls
+
+Usage:	docker swarm COMMAND
+
+Manage Swarm
+
+Options:
+      --help   Print usage
+
+Commands:
+  init        Initialize a swarm
+  join        Join a swarm as a node and/or manager
+  join-token  Manage join tokens
+  leave       Leave the swarm
+  unlock      Unlock swarm
+  unlock-key  Manage the unlock key
+  update      Update the swarm
+
+Run 'docker swarm COMMAND --help' for more information on a command.
+[root@localhost ~]# docker stack ps getstartedlab
+ID            NAME                        IMAGE                            NODE                   DESIRED STATE  CURRENT STATE          ERROR                             PORTS
+g6q1e8wdiuz8  getstartedlab_redis.1       redis:latest                     ubuntu                 Ready          Rejected 11 hours ago  "invalid mount config for type…"  
+iz09pj9kjijz   \_ getstartedlab_redis.1   redis:latest                     localhost.localdomain  Shutdown       Failed 3 seconds ago   "starting container failed: gr…"  
+pwnc8jgn6zek   \_ getstartedlab_redis.1   redis:latest                     localhost.localdomain  Shutdown       Failed 14 seconds ago  "starting container failed: gr…"  
+xsxdeba2vvvk   \_ getstartedlab_redis.1   redis:latest                     localhost.localdomain  Shutdown       Failed 25 seconds ago  "starting container failed: gr…"  
+nylnueep2r0c   \_ getstartedlab_redis.1   redis:latest                     localhost.localdomain  Shutdown       Failed 35 seconds ago  "starting container failed: gr…"  
+k30zc5z4l5r1  getstartedlab_web.1         caizhang/testtag:v0.1            ubuntu                 Running        Running 12 hours ago                                     
+gdobuceq942o   \_ getstartedlab_web.1     caizhang/testtag:v0.1            localhost.localdomain  Shutdown       Failed 3 minutes ago   "starting container failed: gr…"  
+wqpmn0is9zqw   \_ getstartedlab_web.1     caizhang/testtag:v0.1            localhost.localdomain  Shutdown       Failed 3 minutes ago   "starting container failed: gr…"  
+zw0mirwgvlo9   \_ getstartedlab_web.1     caizhang/testtag:v0.1            localhost.localdomain  Shutdown       Failed 4 minutes ago   "starting container failed: gr…"  
+j0oximakruyt  getstartedlab_visualizer.1  dockersamples/visualizer:stable  ubuntu                 Running        Running 12 hours ago                                     
+7miz70vuxqqx  getstartedlab_web.1         caizhang/testtag:v0.1            localhost.localdomain  Shutdown       Failed 5 minutes ago   "starting container failed: tr…"  
+yzff9im4dp2d  getstartedlab_visualizer.1  dockersamples/visualizer:stable  ubuntu                 Shutdown       Failed 12 hours ago    "No such container: getstarted…"  
+saw2ae7mx66p  getstartedlab_web.2         caizhang/testtag:v0.1            ubuntu                 Running        Running 12 hours ago                                     
+6wp540fiedbm   \_ getstartedlab_web.2     caizhang/testtag:v0.1            ubuntu                 Shutdown       Failed 12 hours ago    "No such container: getstarted…"  
+90xvuwh7b9q8  getstartedlab_web.3         caizhang/testtag:v0.1            ubuntu                 Running        Running 12 hours ago                                     
+vtwvahpis1kz   \_ getstartedlab_web.3     caizhang/testtag:v0.1            localhost.localdomain  Shutdown       Failed 3 minutes ago   "starting container failed: gr…"  
+nw3v29jqlqzj   \_ getstartedlab_web.3     caizhang/testtag:v0.1            localhost.localdomain  Shutdown       Failed 3 minutes ago   "starting container failed: gr…"  
+px7avtinj2mu   \_ getstartedlab_web.3     caizhang/testtag:v0.1            localhost.localdomain  Shutdown       Failed 4 minutes ago   "starting container failed: gr…"  
+gzbg6mszsc2y   \_ getstartedlab_web.3     caizhang/testtag:v0.1            localhost.localdomain  Shutdown       Failed 4 minutes ago   "starting container failed: tr…"  
+nv41dp0lavvc  getstartedlab_web.4         caizhang/testtag:v0.1            ubuntu                 Running        Running 12 hours ago                                     
+lhd6oatlwylo   \_ getstartedlab_web.4     caizhang/testtag:v0.1            ubuntu                 Shutdown       Failed 12 hours ago    "No such container: getstarted…"  
+n7n7dt6zmtkj  getstartedlab_web.5         caizhang/testtag:v0.1            ubuntu                 Running        Running 12 hours ago                                     
+mbxyvoj02zkj   \_ getstartedlab_web.5     caizhang/testtag:v0.1            ubuntu                 Shutdown       Failed 12 hours ago    "task: non-zero exit (137)"       
+[root@localhost ~]# netstat -lnt
+Active Internet connections (only servers)
+Proto Recv-Q Send-Q Local Address           Foreign Address         State      
+tcp        0      0 0.0.0.0:3306            0.0.0.0:*               LISTEN     
+tcp        0      0 0.0.0.0:22              0.0.0.0:*               LISTEN     
+tcp        0      0 127.0.0.1:25            0.0.0.0:*               LISTEN     
+tcp6       0      0 :::7946                 :::*                    LISTEN     
+tcp6       0      0 :::8081                 :::*                    LISTEN     
+tcp6       0      0 :::22                   :::*                    LISTEN     
+tcp6       0      0 ::1:25                  :::*                    LISTEN     
+tcp6       0      0 :::2377                 :::*                    LISTEN     
+[root@localhost ~]# ls
+anaconda-ks.cfg  gitlabtest  -v                                       VirtualBox-5.2-5.2.0_118431_el7-1.x86_64.rpm
+check-config.sh  test        VirtualBox-5.2.0-118431-Linux_amd64.run  virtualbox.repo
+[root@localhost ~]# cd /home/
+[root@localhost home]# ls
+docker  docker-compose.yml  zhangcai
+[root@localhost home]# cat docker
+cat: docker: Is a directory
+[root@localhost home]# cat docker-compose.yml 
+version: "3"
+services:
+  web:
+    # replace username/repo:tag with your name and image details
+    image: caizhang/testtag:v0.1 
+    deploy:
+      replicas: 5
+      resources:
+        limits:
+          cpus: "20"
+          memory: 200M
+      restart_policy:
+        condition: on-failure
+    ports:
+      - "8081:80"
+    networks:
+      - webnet
+  visualizer:
+    image: dockersamples/visualizer:stable
+    ports:
+      - "8080:8080"  
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+    deploy:
+      placement:
+        constraints: [node.role == manager]
+    networks:
+      - webnet
+  redis:
+    image: redis
+    ports:
+     - "6379:6379"
+    volumes:
+     - /home/docker/data:/data
+    deploy:
+      placement:
+        constraints: [node.role == manager]
+    command: redis-server --appendonly yes
+    networks:
+      - webnet
+networks:
+  webnet:
+[root@localhost home]# 
+[root@localhost home]# docker swarm ls
+
+Usage:	docker swarm COMMAND
+
+Manage Swarm
+
+Options:
+      --help   Print usage
+
+Commands:
+  init        Initialize a swarm
+  join        Join a swarm as a node and/or manager
+  join-token  Manage join tokens
+  leave       Leave the swarm
+  unlock      Unlock swarm
+  unlock-key  Manage the unlock key
+  update      Update the swarm
+
+Run 'docker swarm COMMAND --help' for more information on a command.
+[root@localhost home]# docker node ls
+ID                           HOSTNAME               STATUS  AVAILABILITY  MANAGER STATUS
+av44srahuorpl58jc8cyw4jya    ubuntu                 Ready   Active        Leader
+dmg9ww8s2daim2xz8odo1x721 *  localhost.localdomain  Ready   Active        Reachable
+
+
+这都启动不了啊
+
+[root@localhost home]# docker service ls
+ID            NAME                      MODE        REPLICAS  IMAGE
+fpbsua0p84c7  getstartedlab_visualizer  replicated  0/1       dockersamples/visualizer:stable
+na4hksm9fwdn  getstartedlab_redis       replicated  0/1       redis:latest
+yympdq8kkjbb  getstartedlab_web         replicated  5/5       caizhang/testtag:v0.1
+
+重启centos机器试试，排除虚拟机本身cpu和内存资源不足的可能性
+
+
+
+这个网址还是打不开
+http://10.10.1.169:8081/
+
+
+重启ubuntu上的swarm后，连centos上的web都不启动了
+[root@localhost ~]# docker service ls
+ID            NAME                      MODE        REPLICAS  IMAGE
+fpbsua0p84c7  getstartedlab_visualizer  replicated  0/1       dockersamples/visualizer:stable
+na4hksm9fwdn  getstartedlab_redis       replicated  0/1       redis:latest
+yympdq8kkjbb  getstartedlab_web         replicated  0/5       caizhang/testtag:v0.1
+
+
+提示
+[root@localhost home]# docker stack deploy -c docker-compose.yml getstartedlab
+Updating service getstartedlab_redis (id: na4hksm9fwdnchluvmp602y3e)
+Error response from daemon: rpc error: code = 9 desc = service needs ingress network, but no ingress network is present
+
+
+
+10月27日上午上班，代开centos7和ubuntu虚拟机，发现10.10.1.115:8081可以访问，swarm也是成功的。如下：
+[root@localhost ~]# docker service ls
+ID            NAME                      MODE        REPLICAS  IMAGE
+fpbsua0p84c7  getstartedlab_visualizer  replicated  1/1       dockersamples/visualizer:stable
+na4hksm9fwdn  getstartedlab_redis       replicated  1/1       redis:latest
+yympdq8kkjbb  getstartedlab_web         replicated  5/5       caizhang/testtag:v0.1
+[root@localhost ~]# docker node ls
+ID                           HOSTNAME               STATUS  AVAILABILITY  MANAGER STATUS
+av44srahuorpl58jc8cyw4jya    ubuntu                 Ready   Active        Reachable
+dmg9ww8s2daim2xz8odo1x721    localhost.localdomain  Down    Active        
+obsg23f516oi0amyxbctvuvcb *  localhost.localdomain  Ready   Active        Leader
+[root@localhost ~]# 
+
+
+10.10.1.115:8080也可以访问
+
+这时候centos7（对应ip10.10.1.115成了swarm的leader了）
+
+[root@localhost ~]# docker service ls
+ID            NAME                      MODE        REPLICAS  IMAGE
+fpbsua0p84c7  getstartedlab_visualizer  replicated  1/1       dockersamples/visualizer:stable
+na4hksm9fwdn  getstartedlab_redis       replicated  1/1       redis:latest
+yympdq8kkjbb  getstartedlab_web         replicated  5/5       caizhang/testtag:v0.1
+[root@localhost ~]# docker node ls
+ID                           HOSTNAME               STATUS  AVAILABILITY  MANAGER STATUS
+av44srahuorpl58jc8cyw4jya    ubuntu                 Ready   Active        Reachable
+dmg9ww8s2daim2xz8odo1x721    localhost.localdomain  Down    Active        
+obsg23f516oi0amyxbctvuvcb *  localhost.localdomain  Ready   Active        Leader
+[root@localhost ~]# docker stack ps getstartedlab
+ID            NAME                            IMAGE                            NODE                   DESIRED STATE  CURRENT STATE            ERROR                            PORTS
+kaq1e143t3h8  getstartedlab_visualizer.1      dockersamples/visualizer:stable  localhost.localdomain  Running        Running 18 minutes ago                                    
+94cscfa6sr3h  getstartedlab_redis.1           redis:latest                     localhost.localdomain  Running        Running 22 minutes ago                                    
+3yw063fdsf7h  getstartedlab_visualizer.1      dockersamples/visualizer:stable  ubuntu                 Shutdown       Rejected 12 hours ago    "Unable tocomplete atomic ope…"  
+1ohoe0rb8bfd   \_ getstartedlab_visualizer.1  dockersamples/visualizer:stable  ubuntu                 Shutdown       Rejected 12 hours ago    "Unable tocomplete atomic ope…"  
+dio3lscwp1jr   \_ getstartedlab_visualizer.1  dockersamples/visualizer:stable  ubuntu                 Shutdown       Rejected 12 hours ago    "Failed tofind a load balance…"  
+dm1pcw9fu3dv  getstartedlab_web.1             caizhang/testtag:v0.1            localhost.localdomain  Running        Running 22 minutes ago                                    
+tdsxjemftnc2  getstartedlab_visualizer.1      dockersamples/visualizer:stable  ubuntu                 Shutdown       Rejected 12 hours ago    "Unable tocomplete atomic ope…"  
+sb9fd0llxmy8  getstartedlab_redis.1           redis:latest                     localhost.localdomain  Shutdown       Failed 23 minutes ago    "task: nonzero exit (0): No s…"  
+muystke6q7km  getstartedlab_web.1             caizhang/testtag:v0.1            localhost.localdomain  Shutdown       Failed 23 minutes ago    "task: nonzero exit (0): No s…"  
+morm3qlzs256   \_ getstartedlab_web.1         caizhang/testtag:v0.1            localhost.localdomain  Shutdown       Shutdown 23 minutes ago                                   
+oh80eepgzebc  getstartedlab_redis.1           redis:latest                     localhost.localdomain  Shutdown       Shutdown 23 minutes ago                                   
+njq09hy9exhe   \_ getstartedlab_redis.1       redis:latest                     localhost.localdomain  Shutdown       Shutdown 23 minutes ago                                   
+8ziej7o4n03q  getstartedlab_web.1             caizhang/testtag:v0.1            localhost.localdomain  Shutdown       Shutdown 23 minutes ago                                   
+y9k765lkjfiy   \_ getstartedlab_web.1         caizhang/testtag:v0.1            localhost.localdomain  Shutdown       Shutdown 23 minutes ago                                   
+ltjz4b5edxyg  getstartedlab_redis.1           redis:latest                     localhost.localdomain  Shutdown       Shutdown 23 minutes ago                                   
+vf5i32pcwtkk  getstartedlab_web.2             caizhang/testtag:v0.1            localhost.localdomain  Running        Running 23 minutes ago                                    
+udo3vmio5h86   \_ getstartedlab_web.2         caizhang/testtag:v0.1            localhost.localdomain  Shutdown       Shutdown 23 minutes ago                                   
+ilodxqmp512g   \_ getstartedlab_web.2         caizhang/testtag:v0.1            localhost.localdomain  Shutdown       Shutdown 23 minutes ago                                   
+n7nlhjagz3fq   \_ getstartedlab_web.2         caizhang/testtag:v0.1            localhost.localdomain  Shutdown       Shutdown 23 minutes ago                                   
+eagycxzo1kqf   \_ getstartedlab_web.2         caizhang/testtag:v0.1            localhost.localdomain  Shutdown       Shutdown 23 minutes ago                                   
+pmlirlbglnd2  getstartedlab_web.3             caizhang/testtag:v0.1            localhost.localdomain  Running        Running 23 minutes ago                                    
+v7acqxbrupg4   \_ getstartedlab_web.3         caizhang/testtag:v0.1            localhost.localdomain  Shutdown       Failed 23 minutes ago    "task: nonzero exit (0): No s…"  
+owp184xwcdp1   \_ getstartedlab_web.3         caizhang/testtag:v0.1            localhost.localdomain  Shutdown       Shutdown 23 minutes ago                                   
+ppus4c4jv0oj   \_ getstartedlab_web.3         caizhang/testtag:v0.1            localhost.localdomain  Shutdown       Shutdown 23 minutes ago                                   
+jveatpol82v9   \_ getstartedlab_web.3         caizhang/testtag:v0.1            localhost.localdomain  Shutdown       Shutdown 23 minutes ago                                   
+g1e4ghwrisi7  getstartedlab_web.4             caizhang/testtag:v0.1            localhost.localdomain  Running        Running 23 minutes ago                                    
+ntxhxgd1vk6v   \_ getstartedlab_web.4         caizhang/testtag:v0.1            ubuntu                 Shutdown       Shutdown 12 hours ago                                     
+bkgmpw75je2f   \_ getstartedlab_web.4         caizhang/testtag:v0.1            localhost.localdomain  Shutdown       Shutdown 23 minutes ago                                   
+2hibbnludroi   \_ getstartedlab_web.4         caizhang/testtag:v0.1            localhost.localdomain  Shutdown       Shutdown 23 minutes ago                                   
+tfldqnp3pzp0   \_ getstartedlab_web.4         caizhang/testtag:v0.1            localhost.localdomain  Shutdown       Shutdown 23 minutes ago                                   
+bk5idr5501tu  getstartedlab_web.5             caizhang/testtag:v0.1            localhost.localdomain  Running        Running 22 minutes ago                                    
+2r00lntmpxpf   \_ getstartedlab_web.5         caizhang/testtag:v0.1            ubuntu                 Shutdown       Rejected 12 hours ago    "Failed tofind a load balance…"  
+cldlpcshicvr   \_ getstartedlab_web.5         caizhang/testtag:v0.1            localhost.localdomain  Shutdown       Shutdown 23 minutes ago                                   
+jh8j2d2kobo8   \_ getstartedlab_web.5         caizhang/testtag:v0.1            localhost.localdomain  Shutdown       Shutdown 23 minutes ago                                   
+u8k0lk6x5ms9   \_ getstartedlab_web.5         caizhang/testtag:v0.1            localhost.localdomain  Shutdown       Shutdown 23 minutes ago                                   
+[root@localhost ~]# 
+[root@localhost ~]# tail -f /var/log/docker.log
+tail: cannot open ‘/var/log/docker.log’ for reading: No such file or directory
+tail: no files remaining
+[root@localhost ~]# docker ps
+CONTAINER ID        IMAGE                                                                                              COMMAND                  CREATED            STATUS              PORTS               NAMES
+c86445fc865e        dockersamples/visualizer@sha256:bc680132f772cb44062795c514570db2f0b6f91063bc3afa2386edaaa0ef0b20   "npm start"              30 minuts ago      Up 30 minutes       8080/tcp            getstartedlab_visualizer.1.kaq1e143t3h8gxpyiebxfa8ik
+5bb3847401c7        redis@sha256:07e7b6cb753f8d06a894e22af30f94e04844461ab6cb002c688841873e5e5116                      "docker-entrypoint..."   34 minuts ago      Up 34 minutes       6379/tcp            getstartedlab_redis.1.94cscfa6sr3h4a4o6fno8ri3d
+c4225f6b5e72        caizhang/testtag@sha256:0d33bee5f70787ad05950024def472995604a4b3508f8a8974aa4d1bec463636           "python app.py"          34 minuts ago      Up 34 minutes       80/tcp              getstartedlab_web.5.bk5idr5501tuhzaog0o1bd2nu
+7c78fcb3a2f1        caizhang/testtag@sha256:0d33bee5f70787ad05950024def472995604a4b3508f8a8974aa4d1bec463636           "python app.py"          34 minuts ago      Up 34 minutes       80/tcp              getstartedlab_web.1.dm1pcw9fu3dvjkf70wylcgz75
+fbb94ff6a16d        caizhang/testtag@sha256:0d33bee5f70787ad05950024def472995604a4b3508f8a8974aa4d1bec463636           "python app.py"          35 minuts ago      Up 35 minutes       80/tcp              getstartedlab_web.3.pmlirlbglnd2kai5acoeuv52y
+21e343f79448        caizhang/testtag@sha256:0d33bee5f70787ad05950024def472995604a4b3508f8a8974aa4d1bec463636           "python app.py"          35 minuts ago      Up 35 minutes       80/tcp              getstartedlab_web.4.g1e4ghwrisi7h0fj2z84y2btk
+8e9455a677e3        caizhang/testtag@sha256:0d33bee5f70787ad05950024def472995604a4b3508f8a8974aa4d1bec463636           "python app.py"          35 minuts ago      Up 35 minutes       80/tcp              getstartedlab_web.2.vf5i32pcwtkkxjjvcka9bphix
+03c89f481c96        gitlab/gitlab-runner:latest                                                                        "/usr/bin/dumb-ini..."   2 weeks go         Up 37 minutes                           gitlab-runner
+[root@localhost ~]# docker service --help
+
+Usage:	docker service COMMAND
+
+Manage services
+
+Options:
+      --help   Print usage
+
+Commands:
+  create      Create a new service
+  inspect     Display detailed information on one or more services
+  ls          List services
+  ps          List the tasks of a service
+  rm          Remove one or more services
+  scale       Scale one or multiple replicated services
+  update      Update a service
+
+Run 'docker service COMMAND --help' for more information on a command.
+[root@localhost ~]# docker service inspect getstartedlab
+[]
+Status: Error: no such service: getstartedlab, Code: 1
+[root@localhost ~]# docker service ls
+ID            NAME                      MODE        REPLICAS  IMAGE
+fpbsua0p84c7  getstartedlab_visualizer  replicated  1/1       dockersamples/visualizer:stable
+na4hksm9fwdn  getstartedlab_redis       replicated  1/1       redis:latest
+yympdq8kkjbb  getstartedlab_web         replicated  5/5       caizhang/testtag:v0.1
+[root@localhost ~]# docker service inspect getstartedlab_visualizer
+[]
+Status: Error: no such service: getstarte_visualizer, Code: 1
+[root@localhost ~]# docker service inspect getstarted_visualizer
+[]
+Status: Error: no such service: getstarted_visualizer, Code: 1
+[root@localhost ~]# docker service inspect getstartedlab_visualizer
+[
+    {
+        "ID": "fpbsua0p84c7jlr40qwfut6iz",
+        "Version": {
+            "Index": 4140
+        },
+        "CreatedAt": "2017-10-25T08:47:35.744943933Z",
+        "UpdatedAt": "2017-10-27T13:43:46.970265832Z",
+        "Spec": {
+            "Name": "getstartedlab_visualizer",
+            "Labels": {
+                "com.docker.stack.namespace": "getstartedlab"
+            },
+            "TaskTemplate": {
+                "ContainerSpec": {
+                    "Image": "dockersamples/visualizer:stable@sha256:bc680132f772cb44062795c514570db2f0b6f91063bc3afa2386edaaa0ef0b20",
+                    "Labels": {
+                        "com.docker.stack.namespace": "getstartedlab"
+                    },
+                    "Mounts": [
+                        {
+                            "Type": "bind",
+                            "Source": "/var/run/docker.sock",
+                            "Target": "/var/run/docker.sock"
+                        }
+                    ]
+                },
+                "Resources": {},
+                "Placement": {
+                    "Constraints": [
+                        "node.role == manager"
+                    ]
+                },
+                "ForceUpdate": 0
+            },
+            "Mode": {
+                "Replicated": {
+                    "Replicas": 1
+                }
+            },
+            "Networks": [
+                {
+                    "Target": "ks6ej27luqnguz4uagbclz6dz",
+                    "Aliases": [
+                        "visualizer"
+                    ]
+                }
+            ],
+            "EndpointSpec": {
+                "Mode": "vip",
+                "Ports": [
+                    {
+                        "Protocol": "tcp",
+                        "TargetPort": 8080,
+                        "PublishedPort": 8080,
+                        "PublishMode": "ingress"
+                    }
+                ]
+            }
+        },
+        "Endpoint": {
+            "Spec": {
+                "Mode": "vip",
+                "Ports": [
+                    {
+                        "Protocol": "tcp",
+                        "TargetPort": 8080,
+                        "PublishedPort": 8080,
+                        "PublishMode": "ingress"
+                    }
+                ]
+            },
+            "Ports": [
+                {
+                    "Protocol": "tcp",
+                    "TargetPort": 8080,
+                    "PublishedPort": 8080,
+                    "PublishMode": "ingress"
+                }
+            ],
+            "VirtualIPs": [
+                {
+                    "NetworkID": "iaweapeyrx3h32mcbjm5l3a87",
+                    "Addr": "10.255.0.4/16"
+                },
+                {
+                    "NetworkID": "ks6ej27luqnguz4uagbclz6dz",
+                    "Addr": "10.0.0.4/24"
+                }
+            ]
+        },
+        "UpdateStatus": {
+            "StartedAt": "0001-01-01T00:00:00Z",
+            "CompletedAt": "0001-01-01T00:00:00Z"
+        }
+    }
+]
+[root@localhost ~]# docker network ls
+NETWORK ID          NAME                   DRIVER              SCOPE
+jk5qslwgqw71        bridge                 bridge              swarm
+063f609f0bbd        bridge                 bridge              local
+ff06e695b247        docker_gwbridge        bridge              local
+ks6ej27luqng        getstartedlab_webnet   overlay             swarm
+7m0c4pyv61n8        host                   host                swarm
+b10961a30481        host                   host                local
+iaweapeyrx3h        ingress                overlay             swarm
+2b4f1235e292        isolated_nw            bridge              local
+2c511b16f8b5        my_bridge              bridge              local
+0da5f58ef22a        none                   null                local
+[root@localhost ~]# 
+Message from syslogd@localhost at Oct 27 22:29:25 ...
+ kernel:unregister_netdevice: waiting for lo to become free. Usage count = 1
+[root@localhost ~]# docker inspect
+"docker inspect" requires at least 1 argument(s).
+See 'docker inspect --help'.
+
+Usage:  docker inspect [OPTIONS] NAME|ID [NAME|ID...]
+
+Return low-level information on Docker objects
+[root@localhost ~]# docker inspect node
+[]
+Error: No such object: node
+[root@localhost ~]# docker inspect --help
+
+Usage:	docker inspect [OPTIONS] NAME|ID [NAME|ID...]
+
+Return low-level information on Docker objects
+
+Options:
+  -f, --format string   Format the output using the given Go template
+      --help            Print usage
+  -s, --size            Display total file sizes if the type is container
+      --type string     Return JSON for specified type
+[root@localhost ~]# docker service ls
+ID            NAME                      MODE        REPLICAS  IMAGE
+fpbsua0p84c7  getstartedlab_visualizer  replicated  0/1       dockersamples/visualizer:stable
+na4hksm9fwdn  getstartedlab_redis       replicated  0/1       redis:latest
+yympdq8kkjbb  getstartedlab_web         replicated  5/5       caizhang/testtag:v0.1
+[root@localhost ~]# docker service scale getstartedlab_web=10
+getstartedlab_web: Error response from daemon: rpc error: code = 9 desc = service needs ingress network, but no ingress network is present
+[root@localhost ~]# docker network ls
+NETWORK ID          NAME                   DRIVER              SCOPE
+jk5qslwgqw71        bridge                 bridge              swarm
+063f609f0bbd        bridge                 bridge              local
+ff06e695b247        docker_gwbridge        bridge              local
+ks6ej27luqng        getstartedlab_webnet   overlay             swarm
+b10961a30481        host                   host                local
+7m0c4pyv61n8        host                   host                swarm
+iaweapeyrx3h        ingress                overlay             swarm
+2b4f1235e292        isolated_nw            bridge              local
+2c511b16f8b5        my_bridge              bridge              local
+0da5f58ef22a        none                   null                local
+[root@localhost ~]# docker network inspect bridge
+[
+    {
+        "Name": "bridge",
+        "Id": "063f609f0bbd4a48c9e7e4ea3b5b23d44d7d4bccc9b3f8eb1fd90fd46b634a72",
+        "Created": "2017-10-27T21:41:38.961372762+08:00",
+        "Scope": "local",
+        "Driver": "bridge",
+        "EnableIPv6": false,
+        "IPAM": {
+            "Driver": "default",
+            "Options": null,
+            "Config": [
+                {
+                    "Subnet": "172.17.0.0/16",
+                    "Gateway": "172.17.0.1"
+                }
+            ]
+        },
+        "Internal": false,
+        "Attachable": false,
+        "Containers": {
+            "03c89f481c96bb5e436a326028d30138ab594821675777733811b020758bf318": {
+                "Name": "gitlab-runner",
+                "EndpointID": "e41b506b6895ce10ae8d127a1abb1063499add5c462b62aa3d7a5501a7a34b7e",
+                "MacAddress": "02:42:ac:11:00:02",
+                "IPv4Address": "172.17.0.2/16",
+                "IPv6Address": ""
+            }
+        },
+        "Options": {
+            "com.docker.network.bridge.default_bridge": "true",
+            "com.docker.network.bridge.enable_icc": "true",
+            "com.docker.network.bridge.enable_ip_masquerade": "true",
+            "com.docker.network.bridge.host_binding_ipv4": "0.0.0.0",
+            "com.docker.network.bridge.name": "docker0",
+            "com.docker.network.driver.mtu": "1500"
+        },
+        "Labels": {}
+    }
+]
+[root@localhost ~]# docker network inspect overlay
+[]
+Error: No such network: overlay
+[root@localhost ~]# docker network inspect overlay
+[]
+Error: No such network: overlay
+[root@localhost ~]# docker network ls
+NETWORK ID          NAME                   DRIVER              SCOPE
+063f609f0bbd        bridge                 bridge              local
+jk5qslwgqw71        bridge                 bridge              swarm
+ff06e695b247        docker_gwbridge        bridge              local
+ks6ej27luqng        getstartedlab_webnet   overlay             swarm
+b10961a30481        host                   host                local
+7m0c4pyv61n8        host                   host                swarm
+iaweapeyrx3h        ingress                overlay             swarm
+2b4f1235e292        isolated_nw            bridge              local
+2c511b16f8b5        my_bridge              bridge              local
+0da5f58ef22a        none                   null                local
+[root@localhost ~]# docker network inspect getstarted_webnet
+[]
+Error: No such network: getstarted_webnet
+[root@localhost ~]# docker network inspect getstartedlab_webnet
+[
+    {
+        "Name": "getstartedlab_webnet",
+        "Id": "ks6ej27luqnguz4uagbclz6dz",
+        "Created": "2017-10-27T21:43:49.117145728+08:00",
+        "Scope": "swarm",
+        "Driver": "overlay",
+        "EnableIPv6": false,
+        "IPAM": {
+            "Driver": "default",
+            "Options": null,
+            "Config": [
+                {
+                    "Subnet": "10.0.0.0/24",
+                    "Gateway": "10.0.0.1"
+                }
+            ]
+        },
+        "Internal": false,
+        "Attachable": false,
+        "Containers": {
+            "21e343f7944841680f727d859395b646117ab9d63307a0608860a34385740c67": {
+                "Name": "getstartedlab_web.4.g1e4ghwrisi7h0fj2z84y2btk",
+                "EndpointID": "b8022b2299e417b4c594d7b78fd2baee98b88eb28c953bc02d66633f19e987fe",
+                "MacAddress": "02:42:0a:00:00:13",
+                "IPv4Address": "10.0.0.19/24",
+                "IPv6Address": ""
+            },
+            "7c78fcb3a2f19018fabc668f4306bd306036823b24cb5c6f74b73067c1fec109": {
+                "Name": "getstartedlab_web.1.dm1pcw9fu3dvjkf70wylcgz75",
+                "EndpointID": "2a7f5bc22ce7d8a6dc4e78379845a2530284c27be428e76aa48e9b3cea189c03",
+                "MacAddress": "02:42:0a:00:00:15",
+                "IPv4Address": "10.0.0.21/24",
+                "IPv6Address": ""
+            },
+            "8e9455a677e3ae48f767bc4a570a387e1f27d18d5eadf53d921c2ae34994f25f": {
+                "Name": "getstartedlab_web.2.vf5i32pcwtkkxjjvcka9bphix",
+                "EndpointID": "fa667459497bbc6e7f19c50f4ddbb5d252170d2bc5be2bae40612396d84cc515",
+                "MacAddress": "02:42:0a:00:00:17",
+                "IPv4Address": "10.0.0.23/24",
+                "IPv6Address": ""
+            },
+            "c4225f6b5e72ab671f0faf1d859a2f757151ec4086f727498291ddad672ea76f": {
+                "Name": "getstartedlab_web.5.bk5idr5501tuhzaog0o1bd2nu",
+                "EndpointID": "8142fa82b48ec878490c9624b97bf8c76fe1e2e8e47a791d6da0715fc7b2be09",
+                "MacAddress": "02:42:0a:00:00:14",
+                "IPv4Address": "10.0.0.20/24",
+                "IPv6Address": ""
+            },
+            "fbb94ff6a16db048f3d7a653dfabd97e15afa5a37497381d6ba7e3f806b40619": {
+                "Name": "getstartedlab_web.3.pmlirlbglnd2kai5acoeuv52y",
+                "EndpointID": "05551470ceca5a8aefcf27bfe60d309395e5285c3f9984122e31dc4a6745cda1",
+                "MacAddress": "02:42:0a:00:00:18",
+                "IPv4Address": "10.0.0.24/24",
+                "IPv6Address": ""
+            }
+        },
+        "Options": {
+            "com.docker.network.driver.overlay.vxlanid_list": "4097"
+        },
+        "Labels": {
+            "com.docker.stack.namespace": "getstartedlab"
+        },
+        "Peers": [
+            {
+                "Name": "localhost.localdomain-a4bf0b01ff3e",
+                "IP": "10.10.1.115"
+            }
+        ]
+    }
+]
+[root@localhost ~]# 
+[root@localhost ~]# docker network ls
+NETWORK ID          NAME                   DRIVER              SCOPE
+063f609f0bbd        bridge                 bridge              local
+jk5qslwgqw71        bridge                 bridge              swarm
+ff06e695b247        docker_gwbridge        bridge              local
+ks6ej27luqng        getstartedlab_webnet   overlay             swarm
+7m0c4pyv61n8        host                   host                swarm
+b10961a30481        host                   host                local
+iaweapeyrx3h        ingress                overlay             swarm
+2b4f1235e292        isolated_nw            bridge              local
+2c511b16f8b5        my_bridge              bridge              local
+0da5f58ef22a        none                   null                local
+[root@localhost ~]# docker service ls
+ID            NAME                      MODE        REPLICAS  IMAGE
+fpbsua0p84c7  getstartedlab_visualizer  replicated  0/1       dockersamples/visualizer:stable
+na4hksm9fwdn  getstartedlab_redis       replicated  0/1       redis:latest
+yympdq8kkjbb  getstartedlab_web         replicated  5/5       caizhang/testtag:v0.1
+
+
+我的redis和visualizer又掉了
+
+centos7上的网卡是两块，对应两个ip10.10.1.115和10.10.1.228
+
+http://10.10.1.228:8081/也能访问
+
+
+
+down掉第二块网卡后
+[root@localhost ~]# ifdown ens37
+Could not load file '/etc/sysconfig/network-scripts/ifcfg-ens37'
+Could not load file '/etc/sysconfig/network-scripts/ifcfg-ens37'
+Could not load file '/etc/sysconfig/network-scripts/ifcfg-ens37'
+Could not load file '/etc/sysconfig/network-scripts/ifcfg-ens37'
+[root@localhost ~]# ip addr
+1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN qlen 1
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+    inet 127.0.0.1/8 scope host lo
+       valid_lft forever preferred_lft forever
+    inet6 ::1/128 scope host 
+       valid_lft forever preferred_lft forever
+2: ens33: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc pfifo_fast state UP qlen 1000
+    link/ether 00:0c:29:d8:82:0a brd ff:ff:ff:ff:ff:ff
+    inet 10.10.1.115/24 brd 10.10.1.255 scope global ens33
+       valid_lft forever preferred_lft forever
+    inet6 fe80::a4d2:5e6c:a935:ea3a/64 scope link 
+       valid_lft forever preferred_lft forever
+3: ens37: <BROADCAST,MULTICAST> mtu 1500 qdisc pfifo_fast state DOWN qlen 1000
+    link/ether 00:0c:29:d8:82:14 brd ff:ff:ff:ff:ff:ff
+4: br-2b4f1235e292: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc noqueue state DOWN 
+    link/ether 02:42:3c:5c:a9:86 brd ff:ff:ff:ff:ff:ff
+    inet 172.20.0.1/16 scope global br-2b4f1235e292
+       valid_lft forever preferred_lft forever
+5: br-2c511b16f8b5: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc noqueue state DOWN 
+    link/ether 02:42:14:7a:d9:3b brd ff:ff:ff:ff:ff:ff
+    inet 172.19.0.1/16 scope global br-2c511b16f8b5
+       valid_lft forever preferred_lft forever
+6: docker0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue state UP 
+    link/ether 02:42:f6:44:02:d4 brd ff:ff:ff:ff:ff:ff
+    inet 172.17.0.1/16 scope global docker0
+       valid_lft forever preferred_lft forever
+    inet6 fe80::42:f6ff:fe44:2d4/64 scope link 
+       valid_lft forever preferred_lft forever
+7: docker_gwbridge: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue state UP 
+    link/ether 02:42:8c:ce:8e:42 brd ff:ff:ff:ff:ff:ff
+    inet 172.18.0.1/16 scope global docker_gwbridge
+       valid_lft forever preferred_lft forever
+    inet6 fe80::42:8cff:fece:8e42/64 scope link 
+       valid_lft forever preferred_lft forever
+9: veth3d961a7@if8: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue master docker0 state UP 
+    link/ether d6:0f:dc:c0:d2:b1 brd ff:ff:ff:ff:ff:ff link-netnsid 0
+    inet6 fe80::d40f:dcff:fec0:d2b1/64 scope link 
+       valid_lft forever preferred_lft forever
+15: vethd536f91@if14: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue master docker_gwbridge state UP 
+    link/ether 22:aa:bc:9a:47:4c brd ff:ff:ff:ff:ff:ff link-netnsid 2
+    inet6 fe80::20aa:bcff:fe9a:474c/64 scope link 
+       valid_lft forever preferred_lft forever
+21: veth3904b99@if20: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue master docker_gwbridge state UP 
+    link/ether 42:1e:ce:3d:e2:aa brd ff:ff:ff:ff:ff:ff link-netnsid 5
+    inet6 fe80::401e:ceff:fe3d:e2aa/64 scope link 
+       valid_lft forever preferred_lft forever
+23: veth562e5ee@if22: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue master docker_gwbridge state UP 
+    link/ether 5e:67:e0:8b:37:14 brd ff:ff:ff:ff:ff:ff link-netnsid 4
+    inet6 fe80::5c67:e0ff:fe8b:3714/64 scope link 
+       valid_lft forever preferred_lft forever
+27: veth5a1a4b4@if26: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue master docker_gwbridge state UP 
+    link/ether 96:f2:de:46:52:58 brd ff:ff:ff:ff:ff:ff link-netnsid 6
+    inet6 fe80::94f2:deff:fe46:5258/64 scope link 
+       valid_lft forever preferred_lft forever
+40: veth3b1e830@if39: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue master docker_gwbridge state UP 
+    link/ether 8a:1b:74:f1:51:20 brd ff:ff:ff:ff:ff:ff link-netnsid 7
+    inet6 fe80::881b:74ff:fef1:5120/64 scope link 
+       valid_lft forever preferred_lft forever
+42: vetha5d17ef@if41: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue master docker_gwbridge state UP 
+    link/ether ea:7d:98:00:1e:0d brd ff:ff:ff:ff:ff:ff link-netnsid 8
+    inet6 fe80::e87d:98ff:fe00:1e0d/64 scope link 
+       valid_lft forever preferred_lft forever
+[root@localhost ~]# 
+[root@localhost ~]# systemctl restart docker 
+[root@localhost ~]# docker service ls
+ID            NAME                      MODE        REPLICAS  IMAGE
+fpbsua0p84c7  getstartedlab_visualizer  replicated  0/1       dockersamples/visualizer:stable
+na4hksm9fwdn  getstartedlab_redis       replicated  0/1       redis:latest
+yympdq8kkjbb  getstartedlab_web         replicated  0/5       caizhang/testtag:v0.1
+
+
+两台机器上执行docker swarm leave --force后
+重新建立swarm
+
+zhangcai@ubuntu:~$ sudo docker swarm leave
+Error response from daemon: You are attempting to leave the swarm on a node that is participating as a manager. The only way to restore a swarm that has lost consensus is to reinitialize it with `--force-new-cluster`. Use `--force` to suppress this message.
+zhangcai@ubuntu:~$ sudo docker swarm leave --force
+     
+
+
+
+
+^C
+zhangcai@ubuntu:~$ sudo docker swarm leave --force
+Error response from daemon: This node is not part of a swarm
+zhangcai@ubuntu:~$ sudo docker swarm init
+Swarm initialized: current node (6k4y95w670kwkivhsstvr48zb) is now a manager.
+
+To add a worker to this swarm, run the following command:
+
+    docker swarm join --token SWMTKN-1-4fk3omqb70i0s9prohhim7cyipfypa25qac760lp5sdu6y4wdc-0nopjynvt0hkhwwusdd2onn1r 10.10.1.169:2377
+
+To add a manager to this swarm, run 'docker swarm join-token manager' and follow the instructions.
+
+zhangcai@ubuntu:~$ sudo docker swarm join-token manager
+To add a manager to this swarm, run the following command:
+
+    docker swarm join --token SWMTKN-1-4fk3omqb70i0s9prohhim7cyipfypa25qac760lp5sdu6y4wdc-6gfwoj1keh664hld0flw0t0j0 10.10.1.169:2377
+
+zhangcai@ubuntu:~$ 
+
+
+
+[root@localhost ~]# docker swarm leave
+Error response from daemon: You are attempting to leave the swarm on a node that is participating as a manager. Removing this node leaves 1 managers out of 2. Without a Raft quorum your swarm will be inaccessible. The only way to restore a swarm that has lost consensus is to reinitialize it with `--force-new-cluster`. Use `--force` to suppress this message.
+[root@localhost ~]# docker swarm leave --force
+Node left the swarm.
+[root@localhost ~]# docker swarm join --token SWMTKN-1-4fk3omqb70i0s9prohhim7cyipfypa25qac760lp5sdu6y4wdc-6gfwoj1keh664hld0flw0t0j0 10.10.1.169:2377
+This node joined a swarm as a manager.
+[root@localhost ~]# docker node ls
+ID                           HOSTNAME               STATUS  AVAILABILITY  MANAGER STATUS
+6k4y95w670kwkivhsstvr48zb    ubuntu                 Ready   Active        Leader
+t93aoudg9mt5prs4jcb6ab5d8 *  localhost.localdomain  Ready   Active        Reachable
+[root@localhost ~]# cd /home/
+[root@localhost home]# docker -c 
+docker/             docker-compose.yml  zhangcai/           
+[root@localhost home]# docker stack deploy -c docker-compose.yml getstartedlab
+Creating network getstartedlab_webnet
+Creating service getstartedlab_web
+Creating service getstartedlab_visualizer
+Creating service getstartedlab_redis
+[root@localhost home]# docker service ls
+ID            NAME                      MODE        REPLICAS  IMAGE
+h4cbltlp80ex  getstartedlab_web         replicated  5/5       caizhang/testtag:v0.1
+qaeelv5axly2  getstartedlab_visualizer  replicated  1/1       dockersamples/visualizer:stable
+y2jnra1taoe1  getstartedlab_redis       replicated  0/1       redis:latest
+[root@localhost home]# docker stack deploy -c docker-compose.yml getstartedlab
+Updating service getstartedlab_web (id: h4cbltlp80ex13oo4gudibwza)
+Updating service getstartedlab_visualizer (id: qaeelv5axly2q6knh4gsfuwbk)
+Updating service getstartedlab_redis (id: y2jnra1taoe1vy9qfuilhbjku)
+[root@localhost home]# docker service ls
+ID            NAME                      MODE        REPLICAS  IMAGE
+h4cbltlp80ex  getstartedlab_web         replicated  5/5       caizhang/testtag:v0.1
+qaeelv5axly2  getstartedlab_visualizer  replicated  1/1       dockersamples/visualizer:stable
+y2jnra1taoe1  getstartedlab_redis       replicated  1/1       redis:latest
+
+
+[root@localhost home]# docker node ls
+ID                           HOSTNAME               STATUS  AVAILABILITY  MANAGER STATUS
+6k4y95w670kwkivhsstvr48zb    ubuntu                 Ready   Active        Leader
+t93aoudg9mt5prs4jcb6ab5d8 *  localhost.localdomain  Ready   Active        Reachable
+[root@localhost home]# docker ps
+CONTAINER ID        IMAGE                                                                                      COMMAND                  CREATED             STATUS              PORTS               NAMES
+33babe6dad6d        redis@sha256:07e7b6cb753f8d06a894e22af30f94e04844461ab6cb002c688841873e5e5116              "docker-entrypoint..."   9 minutes ago       Up 9 minutes        6379/tcp            getstartedlab_redis.1.lamqozj5pcn7s4embl7t6erje
+2b4fbaf7abd2        caizhang/testtag@sha256:0d33bee5f70787ad05950024def472995604a4b3508f8a8974aa4d1bec463636   "python app.py"          10 minutes ago      Up 10 minutes       80/tcp              getstartedlab_web.4.y9wvthd7qzs07kwy6t14iun5h
+ab086c9dc880        caizhang/testtag@sha256:0d33bee5f70787ad05950024def472995604a4b3508f8a8974aa4d1bec463636   "python app.py"          10 minutes ago      Up 10 minutes       80/tcp              getstartedlab_web.1.ngxkm0dquoc5o1v9tnhrencsw
+143fdb88ddc8        caizhang/testtag@sha256:0d33bee5f70787ad05950024def472995604a4b3508f8a8974aa4d1bec463636   "python app.py"          10 minutes ago      Up 10 minutes       80/tcp              getstartedlab_web.3.aksqdsrna8rr9n5gffbfzjq8y
+03c89f481c96        gitlab/gitlab-runner:latest                                                                "/usr/bin/dumb-ini..."   2 weeks ago   
+
+
+也许是网卡的原因，再者如果重启之后执行docker ps试试。按照这个forum的解决方案尝试下。
+
+https://forums.docker.com/t/docker-worker-nodes-shown-as-down-after-re-start/22329/9
+
+
+[root@localhost home]# docker node inspect ubuntu
+[
+    {
+        "ID": "6k4y95w670kwkivhsstvr48zb",
+        "Version": {
+            "Index": 18
+        },
+        "CreatedAt": "2017-10-27T03:08:03.849295831Z",
+        "UpdatedAt": "2017-10-27T03:10:56.789353805Z",
+        "Spec": {
+            "Role": "manager",
+            "Availability": "active"
+        },
+        "Description": {
+            "Hostname": "ubuntu",
+            "Platform": {
+                "Architecture": "x86_64",
+                "OS": "linux"
+            },
+            "Resources": {
+                "NanoCPUs": 1000000000,
+                "MemoryBytes": 1022201856
+            },
+            "Engine": {
+                "EngineVersion": "17.10.0-ce",
+                "Plugins": [
+                    {
+                        "Type": "Log",
+                        "Name": "awslogs"
+                    },
+                    {
+                        "Type": "Log",
+                        "Name": "fluentd"
+                    },
+                    {
+                        "Type": "Log",
+                        "Name": "gcplogs"
+                    },
+                    {
+                        "Type": "Log",
+                        "Name": "gelf"
+                    },
+                    {
+                        "Type": "Log",
+                        "Name": "journald"
+                    },
+                    {
+                        "Type": "Log",
+                        "Name": "json-file"
+                    },
+                    {
+                        "Type": "Log",
+                        "Name": "logentries"
+                    },
+                    {
+                        "Type": "Log",
+                        "Name": "splunk"
+                    },
+                    {
+                        "Type": "Log",
+                        "Name": "syslog"
+                    },
+                    {
+                        "Type": "Network",
+                        "Name": "bridge"
+                    },
+                    {
+                        "Type": "Network",
+                        "Name": "host"
+                    },
+                    {
+                        "Type": "Network",
+                        "Name": "macvlan"
+                    },
+                    {
+                        "Type": "Network",
+                        "Name": "null"
+                    },
+                    {
+                        "Type": "Network",
+                        "Name": "overlay"
+                    },
+                    {
+                        "Type": "Volume",
+                        "Name": "local"
+                    }
+                ]
+            }
+        },
+        "Status": {
+            "State": "ready",
+            "Addr": "10.10.1.169"
+        },
+        "ManagerStatus": {
+            "Leader": true,
+            "Reachability": "reachable",
+            "Addr": "10.10.1.169:2377"
+        }
+    }
+]
+[root@localhost home]# docker node inspect localhost.localdomain
+[
+    {
+        "ID": "t93aoudg9mt5prs4jcb6ab5d8",
+        "Version": {
+            "Index": 18
+        },
+        "CreatedAt": "2017-10-27T03:08:24.849527477Z",
+        "UpdatedAt": "2017-10-27T03:10:56.789437835Z",
+        "Spec": {
+            "Role": "manager",
+            "Availability": "active"
+        },
+        "Description": {
+            "Hostname": "localhost.localdomain",
+            "Platform": {
+                "Architecture": "x86_64",
+                "OS": "linux"
+            },
+            "Resources": {
+                "NanoCPUs": 1000000000,
+                "MemoryBytes": 1023934464
+            },
+            "Engine": {
+                "EngineVersion": "17.03.0-ce",
+                "Plugins": [
+                    {
+                        "Type": "Network",
+                        "Name": "bridge"
+                    },
+                    {
+                        "Type": "Network",
+                        "Name": "host"
+                    },
+                    {
+                        "Type": "Network",
+                        "Name": "macvlan"
+                    },
+                    {
+                        "Type": "Network",
+                        "Name": "null"
+                    },
+                    {
+                        "Type": "Network",
+                        "Name": "overlay"
+                    },
+                    {
+                        "Type": "Volume",
+                        "Name": "local"
+                    }
+                ]
+            }
+        },
+        "Status": {
+            "State": "ready",
+            "Addr": "10.10.1.115"
+        },
+        "ManagerStatus": {
+            "Reachability": "reachable",
+            "Addr": "10.10.1.115:2377"
+        }
+    }
+]
+
+
+监听多个ip但是只有一个advertise-addr
+
+https://github.com/moby/moby/issues/23828
+
+@robbertkl 0.0.0.0:2377 means that the server will listen on all addresses but there is only one address that the server advertises it services on. In case of 0.0.0.0 this address is found based on your default route(10.0.2.15 in your case). This is because obviously your other node can't connect back to 0.0.0.0 because that would be it's own localhost. 
+
+有时候需要等一会儿这些service才可以running起来
+
+
+
+
+
+
+
+
+
