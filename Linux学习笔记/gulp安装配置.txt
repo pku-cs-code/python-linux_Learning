@@ -1,0 +1,328 @@
+gulp安装配置
+
+
+  317  sudo apt-get install nodejs
+  318  sudo apt-get install npm
+  319  npm install gulp
+  320  npm install --global gulp
+  321  sudo npm install --global gulp
+  
+  
+
+  
+  node: command not found的问题
+  
+  
+zhangcai@ubuntu:~$ sudo node --version
+sudo: node: command not found
+zhangcai@ubuntu:~$ npm --version
+3.5.2
+zhangcai@ubuntu:~$ sudo apt-get install nodejs
+Reading package lists... Done
+Building dependency tree       
+Reading state information... Done
+nodejs is already the newest version (4.2.6~dfsg-1ubuntu4.1).
+0 upgraded, 0 newly installed, 0 to remove and 68 not upgraded.
+zhangcai@ubuntu:~$ node --version
+sudo: node: command not foundThe program 'node' is currently not installed. You can install it by typing:
+sudo apt install nodejs-legacy
+zhangcai@ubuntu:~$ sudo: node: command not found
+No command 'sudo:' found, did you mean:
+ Command 'sudo' from package 'sudo-ldap' (universe)
+ Command 'sudo' from package 'sudo' (main)
+sudo:: command not found
+zhangcai@ubuntu:~$ 
+zhangcai@ubuntu:~$ nodejs --version
+v4.2.6
+zhangcai@ubuntu:~$ sudo ln -s /usr/bin/nodejs /usr/bin/node
+zhangcai@ubuntu:~$ node --version
+v4.2.6
+zhangcai@ubuntu:~$ 
+
+
+Like @minerz029 already said there is a conflict with the node package. But if you still need the node command (because a script uses only nodefor example), the correct way is to install the nodejs-legacy package:
+
+apt-get install nodejs-legacy
+and not create a symlink on your own (especially not in /usr/bin/). This will provide a node command for nodejs.
+
+
+
+
+zhangcai@ubuntu:~$ npm install upper-case
+/home/zhangcai
+└── upper-case@1.1.3 
+
+npm WARN enoent ENOENT: no such file or directory, open '/home/zhangcai/package.json'
+npm WARN zhangcai No description
+npm WARN zhangcai No repository field.
+npm WARN zhangcai No README data
+npm WARN zhangcai No license field.
+zhangcai@ubuntu:~$ sudo npm install upper-cases
+[sudo] password for zhangcai: 
+npm ERR! Linux 4.4.0-87-generic
+npm ERR! argv "/usr/bin/nodejs" "/usr/bin/npm" "install" "upper-cases"
+npm ERR! node v4.2.6
+npm ERR! npm  v3.5.2
+npm ERR! code E404
+
+npm ERR! 404 Registry returned 404 for GET on https://registry.npmjs.org/upper-cases
+npm ERR! 404 
+npm ERR! 404  'upper-cases' is not in the npm registry.
+npm ERR! 404 You should bug the author to publish it (or use the name yourself!)
+npm ERR! 404 
+npm ERR! 404 Note that you can also install from a
+npm ERR! 404 tarball, folder, http url, or git url.
+
+npm ERR! Please include the following file with any support request:
+npm ERR!     /home/zhangcai/npm-debug.log
+zhangcai@ubuntu:~$ sudo npm install upper-case
+/home/zhangcai
+└── upper-case@1.1.3 
+
+npm WARN enoent ENOENT: no such file or directory, open '/home/zhangcai/package.json'
+npm WARN zhangcai No description
+npm WARN zhangcai No repository field.
+npm WARN zhangcai No README data
+npm WARN zhangcai No license field.
+zhangcai@ubuntu:~$ vim demo.js 
+var http = require('http');
+var uc = require('upper-case');
+http.createServer(function (req, res) {
+    res.writeHead(200, {'Content-Type': 'text/html'});
+    res.write(uc("Hello World!"));
+    res.end();
+}).listen(8080);
+~
+~
+~
+~
+~
+zhangcai@ubuntu:~$ node demo.js 
+
+输入10.10.1.169:8080即可看到HELLOWORLD的字样
+
+
+zhangcai@ubuntu:~$ mkdir myproject
+zhangcai@ubuntu:~$ cd myproject/
+zhangcai@ubuntu:~/myproject$ sudo npm install --save-dev gulp
+[sudo] password for zhangcai: 
+npm WARN deprecated minimatch@2.0.10: Please update to minimatch 3.0.2 or higher to avoid a RegExp DoS issue
+npm WARN deprecated minimatch@0.2.14: Please update to minimatch 3.0.2 or higher to avoid a RegExp DoS issue
+npm WARN deprecated graceful-fs@1.2.3: graceful-fs v3.0.0 and before will fail on node releases >= v7.0. Please update to graceful-fs@^4.0.0 as soon as possible. Use 'npm ls graceful-fs' to find it in the tree.
+npm WARN saveError ENOENT: no such file or directory, open '/home/zhangcai/package.json'
+/home/zhangcai
+├─┬ gulp@3.9.1 
+│ ├── archy@1.0.0 
+│ ├─┬ chalk@1.1.3 
+│ │ ├── ansi-styles@2.2.1 
+│ │ ├── escape-string-regexp@1.0.5 
+│ │ ├─┬ has-ansi@2.0.0 
+│ │ │ └── ansi-regex@2.1.1 
+│ │ ├── strip-ansi@3.0.1 
+│ │ └── supports-color@2.0.0 
+│ ├── deprecated@0.0.1 
+│ ├─┬ gulp-util@3.0.8 
+│ │ ├── array-differ@1.0.0 
+│ │ ├── array-uniq@1.0.3 
+│ │ ├── beeper@1.1.1 
+│ │ ├── dateformat@2.2.0 
+│ │ ├─┬ fancy-log@1.3.0 
+│ │ │ └── time-stamp@1.1.0 
+│ │ ├─┬ gulplog@1.0.0 
+│ │ │ └── glogg@1.0.0 
+│ │ ├─┬ has-gulplog@0.1.0 
+│ │ │ └── sparkles@1.0.0 
+│ │ ├── lodash._reescape@3.0.0 
+│ │ ├── lodash._reevaluate@3.0.0 
+│ │ ├── lodash._reinterpolate@3.0.0 
+│ │ ├─┬ lodash.template@3.6.2 
+│ │ │ ├── lodash._basecopy@3.0.1 
+│ │ │ ├── lodash._basetostring@3.0.1 
+│ │ │ ├── lodash._basevalues@3.0.0 
+│ │ │ ├── lodash._isiterateecall@3.0.9 
+│ │ │ ├─┬ lodash.escape@3.2.0 
+│ │ │ │ └── lodash._root@3.0.1 
+│ │ │ ├─┬ lodash.keys@3.1.2 
+│ │ │ │ ├── lodash._getnative@3.9.1 
+│ │ │ │ ├── lodash.isarguments@3.1.0 
+│ │ │ │ └── lodash.isarray@3.0.4 
+│ │ │ ├── lodash.restparam@3.6.1 
+│ │ │ └── lodash.templatesettings@3.1.1 
+│ │ ├─┬ multipipe@0.1.2 
+│ │ │ └─┬ duplexer2@0.0.2 
+│ │ │   └── readable-stream@1.1.14 
+│ │ ├── object-assign@3.0.0 
+│ │ ├── replace-ext@0.0.1 
+│ │ ├─┬ through2@2.0.3 
+│ │ │ ├─┬ readable-stream@2.3.3 
+│ │ │ │ ├── core-util-is@1.0.2 
+│ │ │ │ ├── inherits@2.0.3 
+│ │ │ │ ├── isarray@1.0.0 
+│ │ │ │ ├── process-nextick-args@1.0.7 
+│ │ │ │ ├── safe-buffer@5.1.1 
+│ │ │ │ ├── string_decoder@1.0.3 
+│ │ │ │ └── util-deprecate@1.0.2 
+│ │ │ └── xtend@4.0.1 
+│ │ └─┬ vinyl@0.5.3 
+│ │   ├── clone@1.0.2 
+│ │   └── clone-stats@0.0.1 
+│ ├── interpret@1.0.4 
+│ ├─┬ liftoff@2.3.0 
+│ │ ├── extend@3.0.1 
+│ │ ├─┬ findup-sync@0.4.3 
+│ │ │ ├─┬ detect-file@0.1.0 
+│ │ │ │ └── fs-exists-sync@0.1.0 
+│ │ │ ├─┬ is-glob@2.0.1 
+│ │ │ │ └── is-extglob@1.0.0 
+│ │ │ ├─┬ micromatch@2.3.11 
+│ │ │ │ ├─┬ arr-diff@2.0.0 
+│ │ │ │ │ └── arr-flatten@1.1.0 
+│ │ │ │ ├── array-unique@0.2.1 
+│ │ │ │ ├─┬ braces@1.8.5 
+│ │ │ │ │ ├─┬ expand-range@1.8.2 
+│ │ │ │ │ │ └─┬ fill-range@2.2.3 
+│ │ │ │ │ │   ├── is-number@2.1.0 
+│ │ │ │ │ │   ├─┬ isobject@2.1.0 
+│ │ │ │ │ │   │ └── isarray@1.0.0 
+│ │ │ │ │ │   ├─┬ randomatic@1.1.7 
+│ │ │ │ │ │   │ ├─┬ is-number@3.0.0 
+│ │ │ │ │ │   │ │ └── kind-of@3.2.2 
+│ │ │ │ │ │   │ └── kind-of@4.0.0 
+│ │ │ │ │ │   └── repeat-string@1.6.1 
+│ │ │ │ │ ├── preserve@0.2.0 
+│ │ │ │ │ └── repeat-element@1.1.2 
+│ │ │ │ ├─┬ expand-brackets@0.1.5 
+│ │ │ │ │ └── is-posix-bracket@0.1.1 
+│ │ │ │ ├── extglob@0.3.2 
+│ │ │ │ ├── filename-regex@2.0.1 
+│ │ │ │ ├─┬ kind-of@3.2.2 
+│ │ │ │ │ └── is-buffer@1.1.6 
+│ │ │ │ ├─┬ normalize-path@2.1.1 
+│ │ │ │ │ └── remove-trailing-separator@1.1.0 
+│ │ │ │ ├─┬ object.omit@2.0.1 
+│ │ │ │ │ ├── for-own@0.1.5 
+│ │ │ │ │ └── is-extendable@0.1.1 
+│ │ │ │ ├─┬ parse-glob@3.0.4 
+│ │ │ │ │ ├─┬ glob-base@0.3.0 
+│ │ │ │ │ │ └── glob-parent@2.0.0 
+│ │ │ │ │ └── is-dotfile@1.0.3 
+│ │ │ │ └─┬ regex-cache@0.4.4 
+│ │ │ │   └─┬ is-equal-shallow@0.1.3 
+│ │ │ │     └── is-primitive@2.0.0 
+│ │ │ └─┬ resolve-dir@0.1.1 
+│ │ │   ├── expand-tilde@1.2.2 
+│ │ │   └─┬ global-modules@0.2.3 
+│ │ │     ├─┬ global-prefix@0.1.5 
+│ │ │     │ ├── ini@1.3.4 
+│ │ │     │ └─┬ which@1.3.0 
+│ │ │     │   └── isexe@2.0.0 
+│ │ │     └── is-windows@0.2.0 
+│ │ ├─┬ fined@1.1.0 
+│ │ │ ├─┬ expand-tilde@2.0.2 
+│ │ │ │ └─┬ homedir-polyfill@1.0.1 
+│ │ │ │   └── parse-passwd@1.0.0 
+│ │ │ ├─┬ is-plain-object@2.0.4 
+│ │ │ │ └── isobject@3.0.1 
+│ │ │ ├─┬ object.defaults@1.1.0 
+│ │ │ │ ├── array-each@1.0.1 
+│ │ │ │ ├── array-slice@1.0.0 
+│ │ │ │ ├─┬ for-own@1.0.0 
+│ │ │ │ │ └── for-in@1.0.2 
+│ │ │ │ └── isobject@3.0.1 
+│ │ │ ├─┬ object.pick@1.3.0 
+│ │ │ │ └── isobject@3.0.1 
+│ │ │ └─┬ parse-filepath@1.0.1 
+│ │ │   ├─┬ is-absolute@0.2.6 
+│ │ │   │ └─┬ is-relative@0.2.1 
+│ │ │   │   └─┬ is-unc-path@0.1.2 
+│ │ │   │     └── unc-path-regex@0.1.2 
+│ │ │   ├── map-cache@0.2.2 
+│ │ │   └─┬ path-root@0.1.1 
+│ │ │     └── path-root-regex@0.1.2 
+│ │ ├── flagged-respawn@0.3.2 
+│ │ ├── lodash.isplainobject@4.0.6 
+│ │ ├── lodash.isstring@4.0.1 
+│ │ ├── lodash.mapvalues@4.6.0 
+│ │ ├── rechoir@0.6.2 
+│ │ └─┬ resolve@1.5.0 
+│ │   └── path-parse@1.0.5 
+│ ├── minimist@1.2.0 
+│ ├─┬ orchestrator@0.3.8 
+│ │ ├─┬ end-of-stream@0.1.5 
+│ │ │ └─┬ once@1.3.3 
+│ │ │   └── wrappy@1.0.2 
+│ │ ├── sequencify@0.0.7 
+│ │ └── stream-consume@0.1.0 
+│ ├── pretty-hrtime@1.0.3 
+│ ├── semver@4.3.6 
+│ ├─┬ tildify@1.2.0 
+│ │ └── os-homedir@1.0.2 
+│ ├─┬ v8flags@2.1.1 
+│ │ └── user-home@1.1.1 
+│ └─┬ vinyl-fs@0.3.14 
+│   ├── defaults@1.0.3 
+│   ├─┬ glob-stream@3.1.18 
+│   │ ├─┬ glob@4.5.3 
+│   │ │ └── inflight@1.0.6 
+│   │ ├─┬ glob2base@0.0.12 
+│   │ │ └── find-index@0.1.1 
+│   │ ├─┬ minimatch@2.0.10 
+│   │ │ └─┬ brace-expansion@1.1.8 
+│   │ │   ├── balanced-match@1.0.0 
+│   │ │   └── concat-map@0.0.1 
+│   │ ├── ordered-read-streams@0.1.0 
+│   │ ├─┬ through2@0.6.5 
+│   │ │ └── readable-stream@1.0.34 
+│   │ └── unique-stream@1.0.0 
+│   ├─┬ glob-watcher@0.0.6 
+│   │ └─┬ gaze@0.5.2 
+│   │   └─┬ globule@0.1.0 
+│   │     ├─┬ glob@3.1.21 
+│   │     │ ├── graceful-fs@1.2.3 
+│   │     │ └── inherits@1.0.2 
+│   │     ├── lodash@1.0.2 
+│   │     └─┬ minimatch@0.2.14 
+│   │       ├── lru-cache@2.7.3 
+│   │       └── sigmund@1.0.1 
+│   ├─┬ graceful-fs@3.0.11 
+│   │ └── natives@1.1.0 
+│   ├─┬ mkdirp@0.5.1 
+│   │ └── minimist@0.0.8 
+│   ├─┬ strip-bom@1.0.0 
+│   │ ├── first-chunk-stream@1.0.0 
+│   │ └── is-utf8@0.2.1 
+│   ├─┬ through2@0.6.5 
+│   │ └─┬ readable-stream@1.0.34 
+│   │   ├── isarray@0.0.1 
+│   │   └── string_decoder@0.10.31 
+│   └─┬ vinyl@0.4.6 
+│     └── clone@0.2.0 
+└── upper-case@1.1.3 
+
+npm WARN enoent ENOENT: no such file or directory, open '/home/zhangcai/package.json'
+npm WARN zhangcai No description
+npm WARN zhangcai No repository field.
+npm WARN zhangcai No README data
+npm WARN zhangcai No license field.
+
+
+
+zhangcai@ubuntu:~/myproject$ sudo gulp hello-world
+[sudo] password for zhangcai: 
+[14:25:28] Using gulpfile ~/myproject/gulpfile.js
+[14:25:28] Starting 'hello-world'...
+hello world
+[14:25:28] Finished 'hello-world' after 3.46 ms
+zhangcai@ubuntu:~/myproject$ 
+zhangcai@ubuntu:~/myproject$ sudo gulp --version
+[14:27:05] CLI version 3.9.1
+[14:27:05] Local version 3.9.1
+zhangcai@ubuntu:~/myproject$ sudo gulp --help
+[14:27:09] Using gulpfile ~/myproject/gulpfile.js
+[14:27:09] Task 'default' is not in your gulpfile
+[14:27:09] Please check the documentation for proper gulpfile formatting
+zhangcai@ubuntu:~/myproject$ 
+
+
+
+

@@ -1,0 +1,17 @@
+man的doc文档导出
+
+ref：http://ju.outofmemory.cn/entry/11734
+
+ man inotifywait | col -b > inotifywait.txt
+
+
+zhangcai@ubuntu:~$ sudo npm help json |col -b > npm_help_json_man.txt
+zhangcai@ubuntu:~$ sz npm_help_json_man.txt 
+rz
+Starting zmodem transfer.  Press Ctrl+C to cancel.
+Transferring npm_help_json_man.txt...
+  100%      24 KB      24 KB/sec    00:00:01       0 Errors  
+
+zhangcai@ubuntu:~$ man col
+zhangcai@ubuntu:~$ 
+

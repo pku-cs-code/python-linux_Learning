@@ -1,0 +1,3 @@
+centos7下dig的安装
+
+yum install bind-utils

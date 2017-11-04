@@ -1,0 +1,91 @@
+shell脚本
+zhangcai@ubuntu:~$ a=1
+zhangcai@ubuntu:~$ echo '$a'
+$a
+zhangcai@ubuntu:~$ echo "$a"
+1
+zhangcai@ubuntu:~$ 
+
+zhangcai@ubuntu:~$ echo "`$a`"
+1: command not found
+
+zhangcai@ubuntu:~$ echo '`$a`'
+`$a`
+zhangcai@ubuntu:~$ 
+
+zhangcai@ubuntu:~$ echo '\$a' 
+\$a
+zhangcai@ubuntu:~$ echo "\$a" 
+$a
+zhangcai@ubuntu:~$ echo "\$a\"
+> 
+> 
+> ^C
+zhangcai@ubuntu:~$ echo "\$a\\"
+$a\
+zhangcai@ubuntu:~$ 
+
+zhangcai@ubuntu:~$ echo 'fjdkjf\'df\'df'
+> ^C
+zhangcai@ubuntu:~$ 
+
+zhangcai@ubuntu:~$ echo '\!'
+\!
+zhangcai@ubuntu:~$ echo "\!" 
+\!
+zhangcai@ubuntu:~$ echo "\!a"
+\!a
+zhangcai@ubuntu:~$ echo "\!$a"
+\!1
+
+
+
+
+ref关于!是很有趣的
+https://stackoverflow.com/questions/40331108/multiple-variables-into-one-variable-with-wildcard
+
+${#string[*]}取数组长度
+
+
+zhangcai@ubuntu:~$ var = (jjj,kkk)
+-bash: syntax error near unexpected token `('
+zhangcai@ubuntu:~$ var = (jjj kkk)
+-bash: syntax error near unexpected token `('
+zhangcai@ubuntu:~$ var = ('jjj' 'kkk')
+-bash: syntax error near unexpected token `('
+zhangcai@ubuntu:~$ var = ('jjj' 'kkk')
+-bash: syntax error near unexpected token `('
+zhangcai@ubuntu:~$ array=(1 2 3)
+zhangcai@ubuntu:~$ echo $array
+1
+zhangcai@ubuntu:~$ echo $array[*]
+1[*]
+zhangcai@ubuntu:~$ echo $array[@]
+1[@]
+zhangcai@ubuntu:~$ echo $array
+1
+zhangcai@ubuntu:~$ echo ${array}
+1
+zhangcai@ubuntu:~$ echo ${array[]}
+-bash: ${array[]}: bad substitution
+zhangcai@ubuntu:~$ echo ${array[*]}
+1 2 3
+zhangcai@ubuntu:~$ var = (orin jj)
+-bash: syntax error near unexpected token `('
+zhangcai@ubuntu:~$ var = ("orin" "jj")
+-bash: syntax error near unexpected token `('
+zhangcai@ubuntu:~$ var = ('orin' 'jj')  
+-bash: syntax error near unexpected token `('
+zhangcai@ubuntu:~$ array=([1]=one [2]=two [3]=three)  
+zhangcai@ubuntu:~$ echo ${array[*]}                   
+one two three
+zhangcai@ubuntu:~$ a=(origin)
+zhangcai@ubuntu:~$ echo $a
+origin
+zhangcai@ubuntu:~$ a=(origin [2]=jjj)
+zhangcai@ubuntu:~$ echo $a           
+origin
+zhangcai@ubuntu:~$ echo ${a[*]}
+origin jjj
+zhangcai@ubuntu:~$ 
+

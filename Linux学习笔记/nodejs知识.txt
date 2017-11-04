@@ -1,0 +1,199 @@
+nodejs知识
+
+const http = require('http');
+
+const hostname = '127.0.0.1';
+const port = 3000;
+
+const server = http.createServer((req, res) => {
+  res.statusCode = 200;
+  res.setHeader('Content-Type', 'text/plain');
+  res.end('Hello World\n');
+});
+
+server.listen(port, hostname, () => {
+  console.log(`Server running at http://${hostname}:${port}/`);
+});
+
+
+在ubuntu虚拟机上能curl到，但是在windows宿主机的浏览器是访问不了的，试了三个浏览器都不行
+原因是
+
+server.listen(port, [hostname], [backlog], [callback])
+如果省略主机名，服务器会接收指向任意IPv4地址的链接
+如果指定hostname是127.0.0.1的话，就只可以本机可以访问了
+
+zhangcai@ubuntu:~$ curl http://localhost:3000
+Hello World
+
+改了就好了
+
+
+
+zhangcai@ubuntu:~$ man node.js
+No manual entry for node.js
+zhangcai@ubuntu:~$ man np
+No manual entry for np
+zhangcai@ubuntu:~$ man npm
+zhangcai@ubuntu:~$ man nodejs
+zhangcai@ubuntu:~$ 
+
+
+以下错误原因是刚刚在另一个tty中执行的node e1.js还没有取消，在内存中，8080端口被占用。
+netstat -lnt也能看到
+
+
+zhangcai@ubuntu:~/code$ node e1.js 
+events.js:141
+      throw er; // Unhandled 'error' event
+      ^
+
+Error: listen EADDRINUSE :::8080
+    at Object.exports._errnoException (util.js:870:11)
+    at exports._exceptionWithHostPort (util.js:893:20)
+    at Server._listen2 (net.js:1237:14)
+    at listen (net.js:1273:10)
+    at Server.listen (net.js:1369:5)
+    at Object.<anonymous> (/home/zhangcai/code/e1.js:9:4)
+    at Module._compile (module.js:410:26)
+    at Object.Module._extensions..js (module.js:417:10)
+    at Module.load (module.js:344:32)
+    at Function.Module._load (module.js:301:12)
+
+	
+	zhangcai@ubuntu:~$ curl -I localhost:8080
+HTTP/1.1 200 OK
+Content-Type: text/html
+Date: Thu, 02 Nov 2017 08:39:09 GMT
+Connection: keep-alive
+
+zhangcai@ubuntu:~$ curl localhost:8080
+The date and time are currently:Thu Nov 02 2017 16:39:18 GMT+0800 (SGT)
+
+
+zhangcai@ubuntu:~/code$ cat e2.js 
+var http = require('http');
+var dt = require('./myfirstmodule');
+
+http.createServer(function (req, res){
+  res.writeHead(200,{'Content-Type':'text/html'});
+  res.write(req.url);
+  res.end();
+
+}).listen(8080);
+
+在浏览器端输入http://10.10.1.169:8080/sss/sss页面会显示
+
+/sss/sss
+
+
+zhangcai@ubuntu:~/code$ cat e3.js 
+var http = require('http');
+var url = require('url');
+
+http.createServer(function (req, res){
+  res.writeHead(200,{'Content-Type':'text/html'});
+  var q = url.parse(req.url, true).query;
+  var txt = q.year + " " + q.month;
+  //res.write(req.url);
+  res.end(txt);
+
+}).listen(8080);
+
+浏览器端输入http://10.10.1.169:8080/?year=2017&month=July
+
+
+显示2017 July
+
+
+
+
+zhangcai@ubuntu:~/code$ cat demo1.js 
+var http = require('http');
+var fs = require('fs');
+http.createServer(function (req, res) {
+  fs.readFile('demo1.html', function(err, data) {
+    res.writeHead(200, {'Content-Type': 'text/html'});
+    res.write(data);
+    res.end();
+  });
+}).listen(8080);
+zhangcai@ubuntu:~/code$ cat demo1.html 
+<html>
+<body>
+<h1>My Header</h1>
+<p>My paragraph.</p>
+</body>
+</html>
+
+
+输入http://10.10.1.169:8080/
+显示My paragraph.
+
+
+
+
+zhangcai@ubuntu:~$ npm help 7
+Top hits for "7"
+————————————————————————————————————————————————————————————————————————————————
+npm help package.json                                                       7:17
+npm help index                                                              7:13
+npm help semver                                                             7:12
+npm help config                                                             7:10
+npm help install                                                             7:9
+npm help faq                                                                 7:8
+npm help adduser                                                             7:6
+npm help link                                                                7:6
+npm help registry                                                            7:6
+npm help folders                                                             7:5
+npm help developers                                                          7:5
+npm help npm                                                                 7:5
+npm help coding-style                                                        7:4
+npm help publish                                                             7:4
+npm help help                                                                7:3
+npm help logout                                                              7:3
+npm help version                                                             7:3
+npm help config                                                              7:2
+npm help edit                                                                7:2
+npm help prefix                                                              7:2
+npm help unpublish                                                           7:2
+npm help restart                                                             7:2
+npm help run-script                                                          7:2
+npm help npmrc                                                               7:2
+npm help uninstall                                                           7:2
+npm help start                                                               7:2
+npm help disputes                                                            7:2
+npm help scripts                                                             7:2
+npm help orgs                                                                7:2
+npm help bugs                                                                7:2
+npm help tag                                                                 7:2
+npm help dist-tag                                                            7:2
+npm help owner                                                               7:2
+npm help view                                                                7:2
+npm help docs                                                                7:2
+npm help search                                                              7:2
+npm help shrinkwrap                                                          7:2
+npm help access                                                              7:2
+npm help completion                                                          7:2
+npm help ls                                                                  7:1
+npm help whoami                                                              7:1
+npm help update                                                              7:1
+npm help test                                                                7:1
+npm help stop                                                                7:1
+npm help team                                                                7:1
+npm help root                                                                7:1
+npm help ping                                                                7:1
+npm help pack                                                                7:1
+npm help outdated                                                            7:1
+npm help init                                                                7:1
+npm help help-search                                                         7:1
+npm help deprecate                                                           7:1
+npm help cache                                                               7:1
+npm help build                                                               7:1
+npm help bin                                                                 7:1
+npm help scope                                                               7:1
+————————————————————————————————————————————————————————————————————————————————
+(run with -l or --long to see more context)
+
+
+

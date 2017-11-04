@@ -1,0 +1,679 @@
+docker-compose安装配置
+
+
+
+ref:https://docs.docker.com/compose/gettingstarted/#step-7-update-the-application
+
+
+zhangcai@ubuntu:~$ mkdir composetest
+zhangcai@ubuntu:~$ cd composetest/
+zhangcai@ubuntu:~/composetest$ vim  app.py
+
+from flask import Flask
+from redis import Redis
+  
+app = Flask(__name__)
+redis = Redis(host='redis', port=6379)
+
+@app.route('/')
+def hello():
+    count = redis.incr('hits')
+    return 'Hello World! I have been seen {} times.\n'.format(count)
+
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", debug=True)
+~                                                                                             
+~                                                                                             
+~                                                                                             
+~                                                                                             
+~                                                                                             
+~                                                                                             
+~                                                                                             
+"app.py" [New] 14L, 309C written                                            
+zhangcai@ubuntu:~/composetest$ vim requirements.txt
+flask
+redis
+~                                                                                             
+~                                                                                             
+~                                                                                             
+                                                                                              
+~                                                                                             
+~                                                                                             
+~                                                                                             
+~                                                                                             
+~                                                                                             
+~                                                                                             
+~                                                                                             
+~                                                                                             
+~                                                                                             
+~                                                                                             
+~                                                                                             
+~                                                                                             
+~                                                                                             
+~                                                                                             
+~                                                                                             
+"requirements.txt" [New] 2L, 12C written                                    
+zhangcai@ubuntu:~/composetest$ Dockerfile
+Dockerfile: command not found
+zhangcai@ubuntu:~/composetest$ vim Dockerfile
+FROM python:3.4-alpine
+ADD . /code
+WORKDIR /code
+  N pip install -r requirements.txt
+CMD ["python", "app.py"]
+
+~                                                                                             
+~                                                                                             
+~                                                                                             
+~                                                                                             
+~                                                                                             
+~                                                                                             
+~                                                                                             
+~                                                                                             
+~                                                                                             
+~                                                                                             
+~                                                                                             
+~                                                                                             
+~                                                                                             
+~                                                                                             
+~                                                                                             
+"Dockerfile" [New] 6L, 111C written                                         
+zhangcai@ubuntu:~/composetest$ vim docker-compose.yml
+version: '3'
+services:
+  web:
+    build: .
+    ports:
+     - "5000:5000"
+  redis:
+    image: "redis:alpine"
+~                                                                                             
+~                                                                                             
+~                                                                                             
+~                                                                                             
+~                                                                                             
+~                                                                                             
+~                                                                                             
+~                                                                                             
+~                                                                                             
+~                                                                                             
+~                                                                                             
+~                                                                                             
+~                                                                                             
+"docker-compose.yml" [New] 8L, 108C written                                 
+zhangcai@ubuntu:~/composetest$ docker-compose up
+ERROR: Couldn't connect to Docker daemon at http+docker://localunixsocket - is it running?
+
+If it's at a non-standard location, specify the URL with the DOCKER_HOST environment variable.
+zhangcai@ubuntu:~/composetest$ sudo curl -L https://github.com/docker/compose/releases/download/1.16.1/docker-compose-`uname -s`-`uname -m` -o /usr/local/bin/docker-compose
+[sudo] password for zhangcai: 
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+100   617    0   617    0     0    260      0 --:--:--  0:00:02 --:--:--   260
+100 8648k  100 8648k    0     0  57145      0  0:02:34  0:02:34 --:--:-- 69932
+zhangcai@ubuntu:~/composetest$ sudo chmod +x /usr/local/bin/docker-compose 
+zhangcai@ubuntu:~/composetest$ docker-compose --version
+docker-compose version 1.16.1, build 6d1ac21
+
+
+
+zhangcai@ubuntu:~$ cd composetest/
+zhangcai@ubuntu:~/composetest$ vim  app.py
+
+from flask import Flask
+from redis import Redis
+  
+app = Flask(__name__)
+redis = Redis(host='redis', port=6379)
+
+@app.route('/')
+def hello():
+    count = redis.incr('hits')
+    return 'Hello World! I have been seen {} times.\n'.format(count)
+
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", debug=True)
+~                                                                                             
+~                                                                                             
+~                                                                                             
+~                                                                                             
+~                                                                                             
+~                                                                                             
+~                                                                                             
+"app.py" [New] 14L, 309C written                                            
+zhangcai@ubuntu:~/composetest$ vim requirements.txt
+flask
+redis
+~                                                                                             
+~                                                                                             
+~                                                                                             
+                                                                                              
+~                                                                                             
+~                                                                                             
+~                                                                                             
+~                                                                                             
+~                                                                                             
+~                                                                                             
+~                                                                                             
+~                                                                                             
+~                                                                                             
+~                                                                                             
+~                                                                                             
+~                                                                                             
+~                                                                                             
+~                                                                                             
+~                                                                                             
+"requirements.txt" [New] 2L, 12C written                                    
+zhangcai@ubuntu:~/composetest$ Dockerfile
+Dockerfile: command not found
+zhangcai@ubuntu:~/composetest$ vim Dockerfile
+FROM python:3.4-alpine
+ADD . /code
+WORKDIR /code
+  N pip install -r requirements.txt
+CMD ["python", "app.py"]
+
+~                                                                                             
+~                                                                                             
+~                                                                                             
+~                                                                                             
+~                                                                                             
+~                                                                                             
+~                                                                                             
+~                                                                                             
+~                                                                                             
+~                                                                                             
+~                                                                                             
+~                                                                                             
+~                                                                                             
+~                                                                                             
+~                                                                                             
+"Dockerfile" [New] 6L, 111C written                                         
+zhangcai@ubuntu:~/composetest$ vim docker-compose.yml
+version: '3'
+services:
+  web:
+    build: .
+    ports:
+     - "5000:5000"
+  redis:
+    image: "redis:alpine"
+~                                                                                             
+~                                                                                             
+~                                                                                             
+~                                                                                             
+~                                                                                             
+~                                                                                             
+~                                                                                             
+~                                                                                             
+~                                                                                             
+~                                                                                             
+~                                                                                             
+~                                                                                             
+~                                                                                             
+"docker-compose.yml" [New] 8L, 108C written                                 
+zhangcai@ubuntu:~/composetest$ docker-compose up
+ERROR: Couldn't connect to Docker daemon at http+docker://localunixsocket - is it running?
+
+If it's at a non-standard location, specify the URL with the DOCKER_HOST environment variable.
+zhangcai@ubuntu:~/composetest$ sudo curl -L https://github.com/docker/compose/releases/download/1.16.1/docker-compose-`uname -s`-`uname -m` -o /usr/local/bin/docker-compose
+[sudo] password for zhangcai: 
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+100   617    0   617    0     0    260      0 --:--:--  0:00:02 --:--:--   260
+100 8648k  100 8648k    0     0  57145      0  0:02:34  0:02:34 --:--:-- 69932
+zhangcai@ubuntu:~/composetest$ sudo chmod +x /usr/local/bin/docker-compose 
+zhangcai@ubuntu:~/composetest$ docker-compose --version
+docker-compose version 1.16.1, build 6d1ac21
+zhangcai@ubuntu:~/composetest$ docker-compose  up
+ERROR: Couldn't connect to Docker daemon at http+docker://localunixsocket - is it running?
+
+If it's at a non-standard location, specify the URL with the DOCKER_HOST environment variable.
+zhangcai@ubuntu:~/composetest$ sudo systemctl status docker 
+● docker.service - Docker Application Container Engine
+   Loaded: loaded (/lib/systemd/system/docker.service; enabled; vendor preset: enabled)
+   Active: active (running) since Mon 2017-10-30 17:49:43 SGT; 21min ago
+     Docs: https://docs.docker.com
+ Main PID: 1085 (dockerd)
+    Tasks: 114
+   Memory: 124.1M
+      CPU: 31.262s
+   CGroup: /system.slice/docker.service
+           ├─1085 /usr/bin/dockerd -H fd://
+           ├─1400 docker-containerd -l unix:///var/run/docker/libcontainerd/docker-containerd.
+           ├─1923 /usr/bin/docker-proxy -proto tcp -host-ip 0.0.0.0 -host-port 5000 -container
+           ├─1983 /usr/bin/docker-proxy -proto tcp -host-ip 0.0.0.0 -host-port 5002 -container
+           ├─1994 /usr/bin/docker-proxy -proto tcp -host-ip 0.0.0.0 -host-port 5004 -container
+           ├─2008 docker-containerd-shim a6fa68cf0884db8987353622dfc0a1c8fb01223c5cf52db7c06ae
+           ├─2009 docker-containerd-shim fd4c690281808f53dfb9b876610db7bb530e3118cbe895349a340
+           ├─2010 docker-containerd-shim f6f96b14ccfb39c7a0729e65d4fc6fafa47c8eadaee858be63f4d
+           ├─2018 docker-containerd-shim 694d1c625fe2b83da2e7cdd7505c2dde09b5ab43800cc72362e30
+           ├─2662 docker-containerd-shim 747a498e4a6aed77f1594497c32b310801582388b20eefec43bc8
+           └─3042 docker-containerd-shim a6c9192ca8a3f209f2dc24bdd5fc18df841a2b1c2e7926e248b46
+
+Oct 30 18:07:18 ubuntu dockerd[1085]: time="2017-10-30T18:07:18.983948262+08:00" level=warning
+Oct 30 18:07:18 ubuntu dockerd[1085]: time="2017-10-30T18:07:18.985340481+08:00" level=warning
+Oct 30 18:07:18 ubuntu dockerd[1085]: time="2017-10-30T18:07:18.986825604+08:00" level=warning
+Oct 30 18:07:18 ubuntu dockerd[1085]: time="2017-10-30T18:07:18.988118201+08:00" level=warning
+zhangcai@ubuntu:~/composetest$ 
+zhangcai@ubuntu:~/composetest$ pwd
+/home/zhangcai/composetest
+zhangcai@ubuntu:~/composetest$ ls
+app.py  docker-compose.yml  Dockerfile  requirements.txt
+zhangcai@ubuntu:~/composetest$ 
+zhangcai@ubuntu:~/composetest$ sudo docker-compose  up           
+WARNING: The Docker Engine you're using is running in swarm mode.
+
+Compose does not use swarm mode to deploy services to multiple nodes in a swarm. All containers will be scheduled on the current node.
+
+To deploy your application across the swarm, use `docker stack deploy`.
+
+Creating network "composetest_default" with the default driver
+Building web
+Step 1/5 : FROM python:3.4-alpine
+3.4-alpine: Pulling from library/python
+49388a8c9c86: Already exists
+001230eb5e15: Pull complete
+b68165f82e4a: Downloading [==============>                                    ]  6.619MB/23.02MB4dc8db5dd6: Download complete
+b68165f82e4a: Downloading [=====================>                             ]  10.06MB/23.02MB
+b68165f82e4a: Pull complete
+a84dc8db5dd6: Pull complete
+27f8ac15c583: Pull complete
+Digest: sha256:6d6682de3ffc905f60f11a955cce0b8e28a66e00b72e29fb8b611bf6d4e89266
+Status: Downloaded newer image for python:3.4-alpine
+ ---> 18a468742a05
+Step 2/5 : ADD . /code
+ ---> 90962f5be639
+Step 3/5 : WORKDIR /code
+ ---> ca485e3968ea
+Step 4/5 : RUN pip install -r requirements.txt
+ ---> Running in a48a061ce5a8
+Collecting flask (from -r requirements.txt (line 1))
+  Downloading Flask-0.12.2-py2.py3-none-any.whl (83kB)
+Collecting redis (from -r requirements.txt (line 2))
+  Downloading redis-2.10.6-py2.py3-none-any.whl (64kB)
+Collecting itsdangerous>=0.21 (from flask->-r requirements.txt (line 1))
+  Downloading itsdangerous-0.24.tar.gz (46kB)
+Collecting Jinja2>=2.4 (from flask->-r requirements.txt (line 1))
+  Downloading Jinja2-2.9.6-py2.py3-none-any.whl (340kB)
+Collecting click>=2.0 (from flask->-r requirements.txt (line 1))
+  Downloading click-6.7-py2.py3-none-any.whl (71kB)
+Collecting Werkzeug>=0.7 (from flask->-r requirements.txt (line 1))
+  Downloading Werkzeug-0.12.2-py2.py3-none-any.whl (312kB)
+Collecting MarkupSafe>=0.23 (from Jinja2>=2.4->flask->-r requirements.txt (line 1))
+  Downloading MarkupSafe-1.0.tar.gz
+Building wheels for collected packages: itsdangerous, MarkupSafe
+  Running setup.py bdist_wheel for itsdangerous: started
+  Running setup.py bdist_wheel for itsdangerous: finished with status 'done'
+  Stored in directory: /root/.cache/pip/wheels/fc/a8/66/24d655233c757e178d45dea2de22a04c6d92766abfb741129a
+  Running setup.py bdist_wheel for MarkupSafe: started
+  Running setup.py bdist_wheel for MarkupSafe: finished with status 'done'
+  Stored in directory: /root/.cache/pip/wheels/88/a7/30/e39a54a87bcbe25308fa3ca64e8ddc75d9b3e5afa21ee32d57
+Successfully built itsdangerous MarkupSafe
+Installing collected packages: itsdangerous, MarkupSafe, Jinja2, click, Werkzeug, flask, redis
+Successfully installed Jinja2-2.9.6 MarkupSafe-1.0 Werkzeug-0.12.2 click-6.7 flask-0.12.2 itsdangerous-0.24 redis-2.10.6
+ ---> f8e33c4162d4
+Step 5/5 : CMD ["python", "app.py"]
+ ---> Running in 524ca774b522
+ ---> 17fd585a1188
+Removing intermediate container 2e3dc1fb1cf2
+Removing intermediate container a48a061ce5a8
+Removing intermediate container 524ca774b522
+Successfully built 17fd585a1188
+Successfully tagged composetest_web:latest
+WARNING: Image for service web was built because it did not already exist. To rebuild this image you must use `docker-compose build` or `docker-compose up --build`.
+Pulling redis (redis:alpine)...
+alpine: Pulling from library/redis
+b56ae66c2937: Pull complete
+04a0c92b265a: Pull complete
+45313f4bbda3: Pull complete
+fd40d26d0cb9: Pull complete
+d0a73b87a9ce: Pull complete
+57e46142ef9b: Pull complete
+Digest: sha256:e1613e271fdf97ecdb0a8824966bb79132a9cc139143d7005766c60a20322a0d
+Status: Downloaded newer image for redis:alpine
+  eating composetest_web_1 ... 
+Creating composetest_redis_1 ... 
+Creating composetest_web_1
+Creating composetest_web_1 ... error
+
+ERROR: for composetest_web_1  Cannot start service web: driver failed programming external connectivity on endpoint composetest_web_1 (502e96d3f6af3d954eebce77bf7bae6fc783cbd767e3d24fa47d9Creating composetest_redis_1 ... done
+
+ERROR: for web  Cannot start service web: driver failed programming external connectivity on endpoint composetest_web_1 (502e96d3f6af3d954eebce77bf7bae6fc783cbd767e3d24fa47d9478c7eb102a): Bind for 0.0.0.0:5000 failed: port is already allocated
+ERROR: Encountered errors while bringing up the project.
+zhangcai@ubuntu:~/composetest$ 
+zhangcai@ubuntu:~/composetest$ 
+zhangcai@ubuntu:~/composetest$ 
+zhangcai@ubuntu:~/composetest$ 
+zhangcai@ubuntu:~/composetest$ ls
+app.py  docker-compose.yml  Dockerfile  requirements.txt
+zhangcai@ubuntu:~/composetest$ vim Dockerfile 
+FROM python:3.4-alpine
+ADD . /code
+WORKDIR /code
+RUN pip install -r requirements.txt
+  D ["python", "app.py"]
+
+~                                                                                             
+~                                                                                             
+~                                                                                             
+~                                                                                             
+~                                                                                             
+~                                                                                             
+~                                                                                             
+~                                                                                             
+~                                                                                             
+~                                                                                             
+~                                                                                             
+~                                                                                             
+~                                                                                             
+~                                                                                             
+~                                                                                             
+zhangcai@ubuntu:~/composetest$ ls
+app.py  docker-compose.yml  Dockerfile  requirements.txt
+zhangcai@ubuntu:~/composetest$ vim docker-compose.yml 
+version: '3'
+services:
+  web:
+    build: .
+    ports:
+     - "8888:8888"
+  redis:
+    image: "redis:alpine"
+~                                                                                             
+~                                                                                             
+~                                                                                             
+~                                                                                             
+~                                                                                             
+~                                                                                             
+~                                                                                             
+~                                                                                             
+~                                                                                             
+~                                                                                             
+~                                                                                             
+~                                                                                             
+~                                                                                             
+"docker-compose.yml" 8L, 108C written                                       
+zhangcai@ubuntu:~/composetest$ sudo docker-compose  up
+WARNING: The Docker Engine you're using is running in swarm mode.
+
+Compose does not use swarm mode to deploy services to multiple nodes in a swarm. All containers will be scheduled on the current node.
+
+To deploy your application across the swarm, use `docker stack deploy`.
+
+Recreating composetest_web_1 ... 
+composetest_redis_1 is up-to-date
+Recreating composetest_web_1 ... done
+Attaching to composetest_redis_1, composetest_web_1
+redis_1  | 1:C 30 Oct 10:20:27.027 # oO0OoO0OoO0Oo Redis is starting oO0OoO0OoO0Oo
+redis_1  | 1:C 30 Oct 10:20:27.027 # Redis version=4.0.2, bits=64, commit=00000000, modified=0, pid=1, just started
+redis_1  | 1:C 30 Oct 10:20:27.027 # Warning: no config file specified, using the default config. In order to specify a config file use redis-server /path/to/redis.conf
+redis_1  | 1:M 30 Oct 10:20:27.029 * Running mode=standalone, port=6379.
+redis_1  | 1:M 30 Oct 10:20:27.029 # WARNING: The TCP backlog setting of 511 cannot be enforced because /proc/sys/net/core/somaxconn is set to the lower value of 128.
+redis_1  | 1:M 30 Oct 10:20:27.029 # Server initialized
+redis_1  | 1:M 30 Oct 10:20:27.030 # WARNING overcommit_memory is set to 0! Background save may fail under low memory condition. To fix this issue add 'vm.overcommit_memory = 1' to /etc/sysctl.conf and then reboot or run the command 'sysctl vm.overcommit_memory=1' for this to take   fect.
+redis_1  | 1:M 30 Oct 10:20:27.030 # WARNING you have Transparent Huge Pages (THP) support enabled in your kernel. This will create latency and memory usage issues with Redis. To fix this issue run the command 'echo never > /sys/kernel/mm/transparent_hugepage/enabled' as root, and add it to your /etc/rc.local in order to retain the setting after a reboot. Redis must be restarted after THP is disabled.
+redis_1  | 1:M 30 Oct 10:20:27.030 * Ready to accept connections
+web_1    |  * Running on http://0.0.0.0:5000/ (Press CTRL+C to quit)
+web_1    |  * Restarting with stat
+web_1    |  * Debugger is active!
+web_1    |  * Debugger PIN: 658-643-417
+
+
+
+
+
+^CGracefully stopping... (press Ctrl+C again to force)
+Stopping composetest_web_1   ... done
+Stopping composetest_redis_1 ... done
+zhangcai@ubuntu:~/composetest$ vim docker-compose.yml 
+version: '3'
+services:
+  web:
+    build: .
+    ports:
+     - "8888:8888"
+  redis:
+    image: "redis:alpine"
+~                                                                                             
+~                                                                                             
+~                                                                                             
+~                                                                                             
+~                                                                                             
+~                                                                                             
+~                                                                                             
+~                                                                                             
+~                                                                                             
+~                                                                                             
+~                                                                                             
+~                                                                                             
+~                                                                                             
+zhangcai@ubuntu:~/composetest$ sudo docker-compose  up
+[sudo] password for zhangcai: 
+WARNING: The Docker Engine you're using is running in swarm mode.
+
+Compose does not use swarm mode to deploy services to multiple nodes in a swarm. All containers will be scheduled on the current node.
+
+To deploy your application across the swarm, use `docker stack deploy`.
+
+Starting composetest_web_1 ... 
+Starting composetest_redis_1 ... 
+Starting composetest_web_1
+Starting composetest_redis_1 ... done
+Attaching to composetest_web_1, composetest_redis_1
+redis_1  | 1:C 30 Oct 10:36:55.153 # oO0OoO0OoO0Oo Redis is starting oO0OoO0OoO0Oo
+redis_1  | 1:C 30 Oct 10:36:55.154 # Redis version=4.0.2, bits=64, commit=00000000, modified=0, pid=1, just started
+redis_1  | 1:C 30 Oct 10:36:55.157 # Warning: no config file specified, using the default config. In order to specify a config file use redis-server /path/to/redis.conf
+redis_1  | 1:M 30 Oct 10:36:55.162 * Running mode=standalone, port=6379.
+redis_1  | 1:M 30 Oct 10:36:55.165 # WARNING: The TCP backlog setting of 511 cannot be enforced because /proc/sys/net/core/somaxconn is set to the lower value of 128.
+  dis_1  | 1:M 30 Oct 10:36:55.165 # Server initialized
+redis_1  | 1:M 30 Oct 10:36:55.165 # WARNING overcommit_memory is set to 0! Background save may fail under low memory condition. To fix this issue add 'vm.overcommit_memory = 1' to /etc/sysctl.conf and then reboot or run the command 'sysctl vm.overcommit_memory=1' for this to take effect.
+redis_1  | 1:M 30 Oct 10:36:55.165 # WARNING you have Transparent Huge Pages (THP) support enabled in your kernel. This will create latency and memory usage issues with Redis. To fix this issue run the command 'echo never > /sys/kernel/mm/transparent_hugepage/enabled' as root, and add it to your /etc/rc.local in order to retain the setting after a reboot. Redis must be restarted after THP is disabled.
+redis_1  | 1:M 30 Oct 10:36:55.165 * DB loaded from disk: 0.000 seconds
+redis_1  | 1:M 30 Oct 10:36:55.165 * Ready to accept connections
+web_1    |  * Running on http://0.0.0.0:5000/ (Press CTRL+C to quit)
+web_1    |  * Restarting with stat
+web_1    |  * Debugger is active!
+web_1    |  * Debugger PIN: 658-643-417
+^CGracefully stopping... (press Ctrl+C again to force)
+Stopping composetest_web_1   ... done
+Stopping composetest_redis_1 ... done
+^[[Azhangcai@ubuntu:~/composetest$ vim docker-compose.yml 
+version: '3'
+services:
+  web:
+    build: .
+    ports:
+     - "8888:5000"
+  redis:
+    image: "redis:alpine"
+~                                                                                             
+~                                                                                             
+~                                                                                             
+~                                                                                             
+~                                                                                             
+~                                                                                             
+~                                                                                             
+~                                                                                             
+~                                                                                             
+~                                                                                             
+~                                                                                             
+~                                                                                             
+~                                                                                             
+"docker-compose.yml" 8L, 108C written                                       
+zhangcai@ubuntu:~/composetest$ netstat -lnt
+Active Internet connections (only servers)
+Proto Recv-Q Send-Q Local Address           Foreign Address         State      
+tcp        0      0 0.0.0.0:22              0.0.0.0:*               LISTEN     
+tcp6       0      0 :::5000                 :::*                    LISTEN     
+tcp6       0      0 :::2377                 :::*                    LISTEN     
+tcp6       0      0 :::7946                 :::*                    LISTEN     
+tcp6       0      0 :::5002                 :::*                    LISTEN     
+tcp6       0      0 :::5004                 :::*                    LISTEN     
+tcp6       0      0 :::22                   :::*                    LISTEN     
+zhangcai@ubuntu:~/composetest$ sudo docker-compose  up
+WARNING: The Docker Engine you're using is running in swarm mode.
+
+Compose does not use swarm mode to deploy services to multiple nodes in a swarm. All containers will be scheduled on the current node.
+
+To deploy your application across the swarm, use `docker stack deploy`.
+
+Recreating composetest_web_1 ... 
+Starting composetest_redis_1 ... 
+Recreating composetest_web_1
+Recreating composetest_web_1 ... done
+Attaching to composetest_redis_1, composetest_web_1
+redis_1  | 1:C 30 Oct 10:37:42.213 # oO0OoO0OoO0Oo Redis is starting oO0OoO0OoO0Oo
+redis_1  | 1:C 30 Oct 10:37:42.213 # Redis version=4.0.2, bits=64, commit=00000000, modified=0, pid=1, just started
+redis_1  | 1:C 30 Oct 10:37:42.213 # Warning: no config file specified, using the default config. In order to specify a config file use redis-server /path/to/redis.conf
+redis_1  | 1:M 30 Oct 10:37:42.215 * Running mode=standalone, port=6379.
+redis_1  | 1:M 30 Oct 10:37:42.218 # WARNING: The TCP backlog setting of 511 cannot be enforced because /proc/sys/net/core/somaxconn is set to the lower value of 128.
+redis_1  | 1:M 30 Oct 10:37:42.218 # Server initialized
+redis_1  | 1:M 30 Oct 10:37:42.218 # WARNING overcommit_memory is set to 0! Background save may fail under low memory condition. To fix this issue add 'vm.overcommit_memory = 1' to /etc/sysctl.conf and then reboot or run the command 'sysctl vm.overcommit_memory=1' for this to take effect.
+redis_1  | 1:M 30 Oct 10:37:42.218 # WARNING you have Transparent Huge Pages (THP) support enabled in your kernel. This will create latency and memory usage issues with Redis. To fix this issue run the command 'echo never > /sys/kernel/mm/transparent_hugepage/enabled' as root, and add it to your /etc/rc.local in order to retain the setting after a reboot. Redis must be restarted after THP is disabled.
+redis_1  | 1:M 30 Oct 10:37:42.218 * DB loaded from disk: 0.000 seconds
+redis_1  | 1:M 30 Oct 10:37:42.218 * Ready to accept connections
+web_1    |  * Running on http://0.0.0.0:5000/ (Press CTRL+C to quit)
+web_1    |  * Restarting with stat
+web_1    |  * Debugger is active!
+web_1    |  * Debugger PIN: 318-859-326
+
+
+web_1    | 10.10.1.217 - - [30/Oct/2017 10:38:27] "GET / HTTP/1.1" 200 -
+web_1    | 10.10.1.217 - - [30/Oct/2017 10:38:28] "GET /favicon.ico HTTP/1.1" 404 -
+web_1    | 10.10.1.217 - - [30/Oct/2017 10:38:33] "GET / HTTP/1.1" 200 -
+
+
+
+zhangcai@ubuntu:~/composetest$ docker-compose up -d
+ERROR: Couldn't connect to Docker daemon at http+docker://localunixsocket - is it running?
+
+If it's at a non-standard location, specify the URL with the DOCKER_HOST environment variable.
+zhangcai@ubuntu:~/composetest$ sudo docker-compose up -d
+[sudo] password for zhangcai: 
+WARNING: The Docker Engine you're using is running in swarm mode.
+
+Compose does not use swarm mode to deploy services to multiple nodes in a swarm. All containers will be scheduled on the current node.
+
+To deploy your application across the swarm, use `docker stack deploy`.
+
+composetest_web_1 is up-to-date
+composetest_redis_1 is up-to-date
+zhangcai@ubuntu:~/composetest$ sudo docker-compose ps
+       Name                      Command               State           Ports         
+-------------------------------------------------------------------------------------
+composetest_redis_1   docker-entrypoint.sh redis ...   Up      6379/tcp              
+composetest_web_1     python app.py                    Up      0.0.0.0:8888->5000/tcp
+
+
+
+zhangcai@ubuntu:~/composetest$ docker-compose up -d
+ERROR: Couldn't connect to Docker daemon at http+docker://localunixsocket - is it running?
+
+If it's at a non-standard location, specify the URL with the DOCKER_HOST environment variable.
+zhangcai@ubuntu:~/composetest$ sudo docker-compose up -d
+[sudo] password for zhangcai: 
+WARNING: The Docker Engine you're using is running in swarm mode.
+
+Compose does not use swarm mode to deploy services to multiple nodes in a swarm. All containers will be scheduled on the current node.
+
+To deploy your application across the swarm, use `docker stack deploy`.
+
+composetest_web_1 is up-to-date
+composetest_redis_1 is up-to-date
+zhangcai@ubuntu:~/composetest$ sudo docker-compose ps
+       Name                      Command               State           Ports         
+-------------------------------------------------------------------------------------
+composetest_redis_1   docker-entrypoint.sh redis ...   Up      6379/tcp              
+composetest_web_1     python app.py                    Up      0.0.0.0:8888->5000/tcp
+zhangcai@ubuntu:~/composetest$ date
+Mon Oct 30 18:43:46 SGT 2017
+zhangcai@ubuntu:~/composetest$ pwd
+/home/zhangcai/composetest
+zhangcai@ubuntu:~/composetest$ docker-compose up -d
+ERROR: Couldn't connect to Docker daemon at http+docker://localunixsocket - is it running?
+
+If it's at a non-standard location, specify the URL with the DOCKER_HOST environment variable.
+zhangcai@ubuntu:~/composetest$ sudo docker-compose up -d
+WARNING: The Docker Engine you're using is running in swarm mode.
+
+Compose does not use swarm mode to deploy services to multiple nodes in a swarm. All containers will be scheduled on the current node.
+
+To deploy your application across the swarm, use `docker stack deploy`.
+
+composetest_web_1 is up-to-date
+composetest_redis_1 is up-to-date
+zhangcai@ubuntu:~/composetest$ sudo docker-compose ps
+       Name                      Command               State           Ports         
+-------------------------------------------------------------------------------------
+composetest_redis_1   docker-entrypoint.sh redis ...   Up      6379/tcp              
+composetest_web_1     python app.py                    Up      0.0.0.0:8888->5000/tcp
+zhangcai@ubuntu:~/composetest$ sudo compose run web env
+Unescaped left brace in regex is deprecated, passed through in regex; marked by <-- HERE in m/%{ <-- HERE (.*?)}/ at /usr/bin/compose line 528.
+Error: no "compose" mailcap rules found for type "cannot open `run' (No such file or directory)"
+Error: no "compose" mailcap rules found for type "cannot open `web' (No such file or directory)"
+Error: no "compose" mailcap rules found for type "cannot open `env' (No such file or directory)"
+zhangcai@ubuntu:~/composetest$ sudo docker-compose --help
+Define and run multi-container applications with Docker.
+
+Usage:
+  docker-compose [-f <arg>...] [options] [COMMAND] [ARGS...]
+  docker-compose -h|--help
+
+Options:
+  -f, --file FILE             Specify an alternate compose file (default: docker-compose.yml)
+  -p, --project-name NAME     Specify an alternate project name (default: directory name)
+  --verbose                   Show more output
+  --no-ansi                   Do not print ANSI control characters
+  -v, --version               Print version and exit
+  -H, --host HOST             Daemon socket to connect to
+
+  --tls                       Use TLS; implied by --tlsverify
+  --tlscacert CA_PATH         Trust certs signed only by this CA
+  --tlscert CLIENT_CERT_PATH  Path to TLS certificate file
+  --tlskey TLS_KEY_PATH       Path to TLS key file
+  --tlsverify                 Use TLS and verify the remote
+  --skip-hostname-check       Don't check the daemon's hostname against the name specified
+                              in the client certificate (for example if your docker host
+                              is an IP address)
+  --project-directory PATH    Specify an alternate working directory
+                              (default: the path of the Compose file)
+
+Commands:
+  build              Build or rebuild services
+  bundle             Generate a Docker bundle from the Compose file
+  config             Validate and view the Compose file
+  create             Create services
+  down               Stop and remove containers, networks, images, and volumes
+  events             Receive real time events from containers
+  exec               Execute a command in a running container
+  help               Get help on a command
+  images             List images
+  kill               Kill containers
+  logs               View output from containers
+  pause              Pause services
+  port               Print the public port for a port binding
+  ps                 List containers
+  pull               Pull service images
+  push               Push service images
+  restart            Restart services
+  rm                 Remove stopped containers
+  run                Run a one-off command
+  scale              Set number of containers for a service
+  start              Start services
+  stop               Stop services
+  top                Display the running processes
+  unpause            Unpause services
+  up                 Create and start containers
+  version            Show the Docker-Compose version information
+zhangcai@ubuntu:~/composetest$ sudo docker-compose stop
+Stopping composetest_web_1   ... done
+Stopping composetest_redis_1 ... done
+zhangcai@ubuntu:~/composetest$ sudo docker-compose down --volumes
+Removing composetest_web_1   ... done
+Removing composetest_redis_1 ... done
+Removing network composetest_default
+
+
+
+

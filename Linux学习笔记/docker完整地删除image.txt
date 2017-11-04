@@ -1,0 +1,202 @@
+docker完整地删除image
+
+ref
+http://yaxin-cn.github.io/Docker/how-to-delete-a-docker-image.html
+
+
+
+
+
+[root@localhost ~]# docker container ls -a
+CONTAINER ID        IMAGE                                                                                              COMMAND                  CREATED             STATUS                     PORTS               NAMES
+325e59254939        dockersamples/visualizer@sha256:bc680132f772cb44062795c514570db2f0b6f91063bc3afa2386edaaa0ef0b20   "npm start"              20 minutes ago      Up 20 minutes              8080/tcp            getstartedlab_visualizer.1.99gond100acwwyltlmu4qwgsl
+cba1493689f1        redis@sha256:07e7b6cb753f8d06a894e22af30f94e04844461ab6cb002c688841873e5e5116                      "docker-entrypoint..."   20 minutes ago      Up 20 minutes              6379/tcp            getstartedlab_redis.1.ks0mwstojgvoao5cjqrpx53e9
+e496618a653b        caizhang/testtag@sha256:0d33bee5f70787ad05950024def472995604a4b3508f8a8974aa4d1bec463636           "python app.py"          5 hours ago         Up 5 hours                 80/tcp              getstartedlab_web.1.ynsqejdwgdvs3xi4zbr5b6kh2
+8d440a02d2c3        caizhang/testtag@sha256:0d33bee5f70787ad05950024def472995604a4b3508f8a8974aa4d1bec463636           "python app.py"          5 hours ago         Up 5 hours                 80/tcp              getstartedlab_web.2.hznnpcgv08xvx5ugq8aue203n
+7fa310470dbb        caizhang/testtag@sha256:0d33bee5f70787ad05950024def472995604a4b3508f8a8974aa4d1bec463636           "python app.py"          5 hours ago         Up 5 hours                 80/tcp              getstartedlab_web.4.j295a66cimyhqfold0gsixfr0
+472f07f6734f        caizhang/testtag@sha256:0d33bee5f70787ad05950024def472995604a4b3508f8a8974aa4d1bec463636           "python app.py"          5 hours ago         Up 5 hours                 80/tcp              getstartedlab_web.5.wpqty7588g7fgozn0j5rc2qua
+fbc8a38e9c0b        caizhang/testtag@sha256:0d33bee5f70787ad05950024def472995604a4b3508f8a8974aa4d1bec463636           "python app.py"          5 hours ago         Up 5 hours                 80/tcp              getstartedlab_web.3.vety0p3k4n1v10rpawai9o37z
+c39937434683        caizhang/testtag@sha256:0d33bee5f70787ad05950024def472995604a4b3508f8a8974aa4d1bec463636           "python app.py"          7 hours ago         Exited (137) 6 hours ago                       getstartedlab_web.2.t2tmxgrozxm9zl00e69j0ixwc
+cb28d384f901        caizhang/testtag@sha256:0d33bee5f70787ad05950024def472995604a4b3508f8a8974aa4d1bec463636           "python app.py"          7 hours ago         Exited (137) 6 hours ago                       getstartedlab_web.3.zak6njt8j14ya6asu7uigtvr1
+4a5acca79a76        caizhang/testtag@sha256:0d33bee5f70787ad05950024def472995604a4b3508f8a8974aa4d1bec463636           "python app.py"          7 hours ago         Exited (137) 6 hours ago                       getstartedlab_web.5.1rpuue20h4r3vejf0006lpa51
+d82a7ebf87ad        caizhang/testtag@sha256:0d33bee5f70787ad05950024def472995604a4b3508f8a8974aa4d1bec463636           "python app.py"          7 hours ago         Exited (137) 6 hours ago                       getstartedlab_web.4.dsjzsvjqagu85f7qffa3n17oa
+6ca90fc5c512        registry:2                                                                                         "/entrypoint.sh /e..."   3 days ago          Exited (2) 3 days ago                          registry
+45249dc75ccb        busybox                                                                                            "sh"                     4 days ago          Exited (137) 4 days ago                        container3
+18e1f25e31d4        busybox                                                                                            "sh"                     4 days ago          Exited (0) 4 days ago                          container2
+8dc9f0023eaf        busybox                                                                                            "sh"                     4 days ago          Exited (137) 4 days ago                        container1
+f8fa23784b3a        ubuntu                                                                                             "/bin/bash"              4 days ago          Exited (0) 4 days ago                          practical_lamport
+e39e6dfbf030        ubuntu                                                                                             "/bin/bash"              4 days ago          Exited (0) 4 days ago                          priceless_brown
+3de29feab84f        ubuntu                                                                                             "/bin/bash"              4 days ago          Exited (0) 4 days ago                          adoring_edison
+4661e9ef7637        training/webapp                                                                                    "python app.py"          5 days ago          Exited (137) 5 days ago                        web
+31fdfbd53e82        training/postgres                                                                                  "su postgres -c '/..."   5 days ago          Exited (0) 5 days ago                          db
+1fba8562a15d        ubuntu                                                                                             "/bin/bash"              5 days ago          Exited (0) 5 days ago                          networktest
+4c96db30cd75        hello-world                                                                                        "/hello"                 5 days ago          Exited (0) 5 days ago                          pensive_cray
+f693d38333e8        friendlyhello                                                                                      "python app.py"          6 days ago          Exited (0) 6 days ago                          sharp_wilson
+f3b2bf061393        friendlyhello                                                                                      "python app.py"          6 days ago          Exited (0) 6 days ago                          cranky_minsky
+e8a988705e23        friendlyhello                                                                                      "python app.py"          6 days ago          Exited (0) 6 days ago                          elastic_kilby
+f5d57a897836        friendlyhello                                                                                      "python app.py"          7 days ago          Exited (137) 7 days ago                        compassionate_wright
+8b2812c1b79d        friendlyhello                                                                                      "python app.py"          7 days ago          Exited (137) 7 days ago                        jovial_blackwell
+ae8c8ab7cf9f        friendlyhello                                                                                      "python app.py"          7 days ago          Created                                        peaceful_cray
+28b433e65f1b        friendlyhello                                                                                      "python app.py"          7 days ago          Created                                        dazzling_hypatia
+66b365dfc46b        friendlyhello                                                                                      "python app.py"          7 days ago          Exited (137) 7 days ago                        elegant_jang
+7b2132603ee0        gitlab/gitlab-runner                                                                               "/usr/bin/dumb-ini..."   7 days ago          Exited (0) 7 days ago                          goofy_euclid
+72b039e4db83        friendlyhello                                                                                      "python app.py"          7 days ago          Exited (137) 7 days ago                        vibrant_swirles
+664607dd82a2        friendlyhello                                                                                      "python app.py"          10 days ago         Exited (137) 10 days ago                       wizardly_darwin
+b47c1968a630        friendlyhello                                                                                      "bash"                   10 days ago         Exited (127) 10 days ago                       goofy_kalam
+8f6f8c03646f        friendlyhello                                                                                      "python app.py"          10 days ago         Exited (0) 10 days ago                         focused_saha
+3791b2a24318        gitlab/gitlab-runner:latest                                                                        "/usr/bin/dumb-ini..."   13 days ago         Exited (0) 13 days ago                         optimistic_cori
+9636715b2b1b        hello-world                                                                                        "/hello"                 13 days ago         Exited (0) 13 days ago                         hopeful_swanson
+e7dea553176c        golang:1.5                                                                                         "/bin/bash"              13 days ago         Exited (0) 13 days ago                         kind_hawking
+9fb55f5c18ef        hello-world                                                                                        "/hello"                 13 days ago         Exited (0) 13 days ago                         gallant_lichterman
+b2610b3ee934        golang:1.5                                                                                         "/bin/bash"              2 weeks ago         Exited (0) 2 weeks ago                         determined_banach
+2cb49e6f710f        e5e66321e8ec                                                                                       "gitlab-runner-cac..."   2 weeks ago         Exited (0) 2 weeks ago                         runner-986e2214-project-4-concurrent-0-cache-3c3f060a0374fc8bc39395164f415a70
+076ebf612c73        e5e66321e8ec                                                                                       "gitlab-runner-cac..."   2 weeks ago         Exited (0) 2 weeks ago                         runner-986e2214-project-4-concurrent-0-cache-28934d7b9a9154212a5dd671e4fa5704
+03c89f481c96        gitlab/gitlab-runner:latest                                                                        "/usr/bin/dumb-ini..."   2 weeks ago         Up 7 hours                                     gitlab-runner
+25e219c94557        hello-world                                                                                        "/hello"                 2 weeks ago         Exited (0) 2 weeks ago                         elastic_beaver
+3d0a40d53c20        hello-world                                                                                        "/hello"                 2 weeks ago         Exited (0) 2 weeks ago                         agitated_roentgen
+[root@localhost ~]# docker image ls
+REPOSITORY                    TAG                 IMAGE ID            CREATED             SIZE
+composetest_web               latest              cc24cf456ccc        3 days ago          93.9 MB
+registry                      2                   2ba7189700c8        5 days ago          33.3 MB
+python                        3.4-alpine          18a468742a05        5 days ago          82.5 MB
+caizhang/testimage            version0.1          8519ea07ed26        10 days ago         195 MB
+caizhang/testtag              latest              8519ea07ed26        10 days ago         195 MB
+caizhang/testtag              v0.1                8519ea07ed26        10 days ago         195 MB
+friendlyhello                 latest              8519ea07ed26        10 days ago         195 MB
+john/getstarted               part2               8519ea07ed26        10 days ago         195 MB
+gitlab/gitlab-runner-helper   x86_64-a9a76a50     e5e66321e8ec        2 weeks ago         43.1 MB
+localhost:5000/myfirstimage   latest              747cb2d60bbe        2 weeks ago         122 MB
+ubuntu                        latest              747cb2d60bbe        2 weeks ago         122 MB
+python                        2.7-slim            9724e90f1f17        3 weeks ago         184 MB
+redis                         latest              1fb7b6c8c0d0        3 weeks ago         107 MB
+gitlab/gitlab-runner          latest              fa332bc1925c        3 weeks ago         371 MB
+busybox                       latest              54511612f1c4        6 weeks ago         1.13 MB
+hello-world                   latest              05a3bd381fc2        6 weeks ago         1.84 kB
+dockersamples/visualizer      <none>              8dbf7c60cf88        3 months ago        148 MB
+golang                        1.5                 99668503de15        15 months ago       725 MB
+training/webapp               latest              6fae60ef3446        2 years ago         349 MB
+training/postgres             latest              6fa973bb3c26        3 years ago         365 MB
+[root@localhost ~]# docker image remove golang
+Error response from daemon: No such image: golang:latest
+[root@localhost ~]# docker image remove golang
+Error response from daemon: No such image: golang:latest
+[root@localhost ~]# docker rmi golang
+Error response from daemon: No such image: golang:latest
+You have new mail in /var/spool/mail/root
+[root@localhost ~]# docker rmi golang:1.5
+Error response from daemon: conflict: unable to remove repository reference "golang:1.5" (must force) - container b2610b3ee934 is using its referenced image 99668503de15
+[root@localhost ~]# docker ps -a
+CONTAINER ID        IMAGE                                                                                              COMMAND                  CREATED             STATUS                     PORTS               NAMES
+325e59254939        dockersamples/visualizer@sha256:bc680132f772cb44062795c514570db2f0b6f91063bc3afa2386edaaa0ef0b20   "npm start"              26 minutes ago      Up 26 minutes              8080/tcp            getstartedlab_visualizer.1.99gond100acwwyltlmu4qwgsl
+cba1493689f1        redis@sha256:07e7b6cb753f8d06a894e22af30f94e04844461ab6cb002c688841873e5e5116                      "docker-entrypoint..."   27 minutes ago      Up 27 minutes              6379/tcp            getstartedlab_redis.1.ks0mwstojgvoao5cjqrpx53e9
+e496618a653b        caizhang/testtag@sha256:0d33bee5f70787ad05950024def472995604a4b3508f8a8974aa4d1bec463636           "python app.py"          5 hours ago         Up 5 hours                 80/tcp              getstartedlab_web.1.ynsqejdwgdvs3xi4zbr5b6kh2
+8d440a02d2c3        caizhang/testtag@sha256:0d33bee5f70787ad05950024def472995604a4b3508f8a8974aa4d1bec463636           "python app.py"          5 hours ago         Up 5 hours                 80/tcp              getstartedlab_web.2.hznnpcgv08xvx5ugq8aue203n
+7fa310470dbb        caizhang/testtag@sha256:0d33bee5f70787ad05950024def472995604a4b3508f8a8974aa4d1bec463636           "python app.py"          6 hours ago         Up 6 hours                 80/tcp              getstartedlab_web.4.j295a66cimyhqfold0gsixfr0
+472f07f6734f        caizhang/testtag@sha256:0d33bee5f70787ad05950024def472995604a4b3508f8a8974aa4d1bec463636           "python app.py"          6 hours ago         Up 6 hours                 80/tcp              getstartedlab_web.5.wpqty7588g7fgozn0j5rc2qua
+fbc8a38e9c0b        caizhang/testtag@sha256:0d33bee5f70787ad05950024def472995604a4b3508f8a8974aa4d1bec463636           "python app.py"          6 hours ago         Up 6 hours                 80/tcp              getstartedlab_web.3.vety0p3k4n1v10rpawai9o37z
+c39937434683        caizhang/testtag@sha256:0d33bee5f70787ad05950024def472995604a4b3508f8a8974aa4d1bec463636           "python app.py"          7 hours ago         Exited (137) 6 hours ago                       getstartedlab_web.2.t2tmxgrozxm9zl00e69j0ixwc
+cb28d384f901        caizhang/testtag@sha256:0d33bee5f70787ad05950024def472995604a4b3508f8a8974aa4d1bec463636           "python app.py"          7 hours ago         Exited (137) 6 hours ago                       getstartedlab_web.3.zak6njt8j14ya6asu7uigtvr1
+4a5acca79a76        caizhang/testtag@sha256:0d33bee5f70787ad05950024def472995604a4b3508f8a8974aa4d1bec463636           "python app.py"          7 hours ago         Exited (137) 6 hours ago                       getstartedlab_web.5.1rpuue20h4r3vejf0006lpa51
+d82a7ebf87ad        caizhang/testtag@sha256:0d33bee5f70787ad05950024def472995604a4b3508f8a8974aa4d1bec463636           "python app.py"          7 hours ago         Exited (137) 6 hours ago                       getstartedlab_web.4.dsjzsvjqagu85f7qffa3n17oa
+6ca90fc5c512        registry:2                                                                                         "/entrypoint.sh /e..."   3 days ago          Exited (2) 3 days ago                          registry
+45249dc75ccb        busybox                                                                                            "sh"                     4 days ago          Exited (137) 4 days ago                        container3
+18e1f25e31d4        busybox                                                                                            "sh"                     4 days ago          Exited (0) 4 days ago                          container2
+8dc9f0023eaf        busybox                                                                                            "sh"                     4 days ago          Exited (137) 4 days ago                        container1
+f8fa23784b3a        ubuntu                                                                                             "/bin/bash"              4 days ago          Exited (0) 4 days ago                          practical_lamport
+e39e6dfbf030        ubuntu                                                                                             "/bin/bash"              4 days ago          Exited (0) 4 days ago                          priceless_brown
+3de29feab84f        ubuntu                                                                                             "/bin/bash"              4 days ago          Exited (0) 4 days ago                          adoring_edison
+4661e9ef7637        training/webapp                                                                                    "python app.py"          5 days ago          Exited (137) 5 days ago                        web
+31fdfbd53e82        training/postgres                                                                                  "su postgres -c '/..."   5 days ago          Exited (0) 5 days ago                          db
+1fba8562a15d        ubuntu                                                                                             "/bin/bash"              5 days ago          Exited (0) 5 days ago                          networktest
+4c96db30cd75        hello-world                                                                                        "/hello"                 5 days ago          Exited (0) 5 days ago                          pensive_cray
+f693d38333e8        friendlyhello                                                                                      "python app.py"          6 days ago          Exited (0) 6 days ago                          sharp_wilson
+f3b2bf061393        friendlyhello                                                                                      "python app.py"          6 days ago          Exited (0) 6 days ago                          cranky_minsky
+e8a988705e23        friendlyhello                                                                                      "python app.py"          6 days ago          Exited (0) 6 days ago                          elastic_kilby
+f5d57a897836        friendlyhello                                                                                      "python app.py"          7 days ago          Exited (137) 7 days ago                        compassionate_wright
+8b2812c1b79d        friendlyhello                                                                                      "python app.py"          7 days ago          Exited (137) 7 days ago                        jovial_blackwell
+ae8c8ab7cf9f        friendlyhello                                                                                      "python app.py"          7 days ago          Created                                        peaceful_cray
+28b433e65f1b        friendlyhello                                                                                      "python app.py"          7 days ago          Created                                        dazzling_hypatia
+66b365dfc46b        friendlyhello                                                                                      "python app.py"          7 days ago          Exited (137) 7 days ago                        elegant_jang
+7b2132603ee0        gitlab/gitlab-runner                                                                               "/usr/bin/dumb-ini..."   7 days ago          Exited (0) 7 days ago                          goofy_euclid
+72b039e4db83        friendlyhello                                                                                      "python app.py"          7 days ago          Exited (137) 7 days ago                        vibrant_swirles
+664607dd82a2        friendlyhello                                                                                      "python app.py"          10 days ago         Exited (137) 10 days ago                       wizardly_darwin
+b47c1968a630        friendlyhello                                                                                      "bash"                   10 days ago         Exited (127) 10 days ago                       goofy_kalam
+8f6f8c03646f        friendlyhello                                                                                      "python app.py"          10 days ago         Exited (0) 10 days ago                         focused_saha
+3791b2a24318        gitlab/gitlab-runner:latest                                                                        "/usr/bin/dumb-ini..."   13 days ago         Exited (0) 13 days ago                         optimistic_cori
+9636715b2b1b        hello-world                                                                                        "/hello"                 13 days ago         Exited (0) 13 days ago                         hopeful_swanson
+e7dea553176c        golang:1.5                                                                                         "/bin/bash"              13 days ago         Exited (0) 13 days ago                         kind_hawking
+9fb55f5c18ef        hello-world                                                                                        "/hello"                 13 days ago         Exited (0) 13 days ago                         gallant_lichterman
+b2610b3ee934        golang:1.5                                                                                         "/bin/bash"              2 weeks ago         Exited (0) 2 weeks ago                         determined_banach
+2cb49e6f710f        e5e66321e8ec                                                                                       "gitlab-runner-cac..."   2 weeks ago         Exited (0) 2 weeks ago                         runner-986e2214-project-4-concurrent-0-cache-3c3f060a0374fc8bc39395164f415a70
+076ebf612c73        e5e66321e8ec                                                                                       "gitlab-runner-cac..."   2 weeks ago         Exited (0) 2 weeks ago                         runner-986e2214-project-4-concurrent-0-cache-28934d7b9a9154212a5dd671e4fa5704
+03c89f481c96        gitlab/gitlab-runner:latest                                                                        "/usr/bin/dumb-ini..."   2 weeks ago         Up 7 hours                                     gitlab-runner
+25e219c94557        hello-world                                                                                        "/hello"                 2 weeks ago         Exited (0) 2 weeks ago                         elastic_beaver
+3d0a40d53c20        hello-world                                                                                        "/hello"                 2 weeks ago         Exited (0) 2 weeks ago                         agitated_roentgen
+You have new mail in /var/spool/mail/root
+[root@localhost ~]# docker ps -a
+CONTAINER ID        IMAGE                                                                                              COMMAND                  CREATED             STATUS                     PORTS               NAMES
+325e59254939        dockersamples/visualizer@sha256:bc680132f772cb44062795c514570db2f0b6f91063bc3afa2386edaaa0ef0b20   "npm start"              26 minutes ago      Up 26 minutes              8080/tcp            getstartedlab_visualizer.1.99gond100acwwyltlmu4qwgsl
+cba1493689f1        redis@sha256:07e7b6cb753f8d06a894e22af30f94e04844461ab6cb002c688841873e5e5116                      "docker-entrypoint..."   27 minutes ago      Up 27 minutes              6379/tcp            getstartedlab_redis.1.ks0mwstojgvoao5cjqrpx53e9
+e496618a653b        caizhang/testtag@sha256:0d33bee5f70787ad05950024def472995604a4b3508f8a8974aa4d1bec463636           "python app.py"          5 hours ago         Up 5 hours                 80/tcp              getstartedlab_web.1.ynsqejdwgdvs3xi4zbr5b6kh2
+8d440a02d2c3        caizhang/testtag@sha256:0d33bee5f70787ad05950024def472995604a4b3508f8a8974aa4d1bec463636           "python app.py"          5 hours ago         Up 5 hours                 80/tcp              getstartedlab_web.2.hznnpcgv08xvx5ugq8aue203n
+7fa310470dbb        caizhang/testtag@sha256:0d33bee5f70787ad05950024def472995604a4b3508f8a8974aa4d1bec463636           "python app.py"          6 hours ago         Up 6 hours                 80/tcp              getstartedlab_web.4.j295a66cimyhqfold0gsixfr0
+472f07f6734f        caizhang/testtag@sha256:0d33bee5f70787ad05950024def472995604a4b3508f8a8974aa4d1bec463636           "python app.py"          6 hours ago         Up 6 hours                 80/tcp              getstartedlab_web.5.wpqty7588g7fgozn0j5rc2qua
+fbc8a38e9c0b        caizhang/testtag@sha256:0d33bee5f70787ad05950024def472995604a4b3508f8a8974aa4d1bec463636           "python app.py"          6 hours ago         Up 6 hours                 80/tcp              getstartedlab_web.3.vety0p3k4n1v10rpawai9o37z
+c39937434683        caizhang/testtag@sha256:0d33bee5f70787ad05950024def472995604a4b3508f8a8974aa4d1bec463636           "python app.py"          7 hours ago         Exited (137) 6 hours ago                       getstartedlab_web.2.t2tmxgrozxm9zl00e69j0ixwc
+cb28d384f901        caizhang/testtag@sha256:0d33bee5f70787ad05950024def472995604a4b3508f8a8974aa4d1bec463636           "python app.py"          7 hours ago         Exited (137) 6 hours ago                       getstartedlab_web.3.zak6njt8j14ya6asu7uigtvr1
+4a5acca79a76        caizhang/testtag@sha256:0d33bee5f70787ad05950024def472995604a4b3508f8a8974aa4d1bec463636           "python app.py"          7 hours ago         Exited (137) 6 hours ago                       getstartedlab_web.5.1rpuue20h4r3vejf0006lpa51
+d82a7ebf87ad        caizhang/testtag@sha256:0d33bee5f70787ad05950024def472995604a4b3508f8a8974aa4d1bec463636           "python app.py"          7 hours ago         Exited (137) 6 hours ago                       getstartedlab_web.4.dsjzsvjqagu85f7qffa3n17oa
+6ca90fc5c512        registry:2                                                                                         "/entrypoint.sh /e..."   3 days ago          Exited (2) 3 days ago                          registry
+45249dc75ccb        busybox                                                                                            "sh"                     4 days ago          Exited (137) 4 days ago                        container3
+18e1f25e31d4        busybox                                                                                            "sh"                     4 days ago          Exited (0) 4 days ago                          container2
+8dc9f0023eaf        busybox                                                                                            "sh"                     4 days ago          Exited (137) 4 days ago                        container1
+f8fa23784b3a        ubuntu                                                                                             "/bin/bash"              4 days ago          Exited (0) 4 days ago                          practical_lamport
+e39e6dfbf030        ubuntu                                                                                             "/bin/bash"              4 days ago          Exited (0) 4 days ago                          priceless_brown
+3de29feab84f        ubuntu                                                                                             "/bin/bash"              4 days ago          Exited (0) 4 days ago                          adoring_edison
+4661e9ef7637        training/webapp                                                                                    "python app.py"          5 days ago          Exited (137) 5 days ago                        web
+31fdfbd53e82        training/postgres                                                                                  "su postgres -c '/..."   5 days ago          Exited (0) 5 days ago                          db
+1fba8562a15d        ubuntu                                                                                             "/bin/bash"              5 days ago          Exited (0) 5 days ago                          networktest
+4c96db30cd75        hello-world                                                                                        "/hello"                 5 days ago          Exited (0) 5 days ago                          pensive_cray
+f693d38333e8        friendlyhello                                                                                      "python app.py"          6 days ago          Exited (0) 6 days ago                          sharp_wilson
+f3b2bf061393        friendlyhello                                                                                      "python app.py"          6 days ago          Exited (0) 6 days ago                          cranky_minsky
+e8a988705e23        friendlyhello                                                                                      "python app.py"          6 days ago          Exited (0) 6 days ago                          elastic_kilby
+f5d57a897836        friendlyhello                                                                                      "python app.py"          7 days ago          Exited (137) 7 days ago                        compassionate_wright
+8b2812c1b79d        friendlyhello                                                                                      "python app.py"          7 days ago          Exited (137) 7 days ago                        jovial_blackwell
+ae8c8ab7cf9f        friendlyhello                                                                                      "python app.py"          7 days ago          Created                                        peaceful_cray
+28b433e65f1b        friendlyhello                                                                                      "python app.py"          7 days ago          Created                                        dazzling_hypatia
+66b365dfc46b        friendlyhello                                                                                      "python app.py"          7 days ago          Exited (137) 7 days ago                        elegant_jang
+7b2132603ee0        gitlab/gitlab-runner                                                                               "/usr/bin/dumb-ini..."   7 days ago          Exited (0) 7 days ago                          goofy_euclid
+72b039e4db83        friendlyhello                                                                                      "python app.py"          7 days ago          Exited (137) 7 days ago                        vibrant_swirles
+664607dd82a2        friendlyhello                                                                                      "python app.py"          10 days ago         Exited (137) 10 days ago                       wizardly_darwin
+b47c1968a630        friendlyhello                                                                                      "bash"                   10 days ago         Exited (127) 10 days ago                       goofy_kalam
+8f6f8c03646f        friendlyhello                                                                                      "python app.py"          10 days ago         Exited (0) 10 days ago                         focused_saha
+3791b2a24318        gitlab/gitlab-runner:latest                                                                        "/usr/bin/dumb-ini..."   13 days ago         Exited (0) 13 days ago                         optimistic_cori
+9636715b2b1b        hello-world                                                                                        "/hello"                 13 days ago         Exited (0) 13 days ago                         hopeful_swanson
+e7dea553176c        golang:1.5                                                                                         "/bin/bash"              13 days ago         Exited (0) 13 days ago                         kind_hawking
+9fb55f5c18ef        hello-world                                                                                        "/hello"                 13 days ago         Exited (0) 13 days ago                         gallant_lichterman
+b2610b3ee934        golang:1.5                                                                                         "/bin/bash"              2 weeks ago         Exited (0) 2 weeks ago                         determined_banach
+2cb49e6f710f        e5e66321e8ec                                                                                       "gitlab-runner-cac..."   2 weeks ago         Exited (0) 2 weeks ago                         runner-986e2214-project-4-concurrent-0-cache-3c3f060a0374fc8bc39395164f415a70
+076ebf612c73        e5e66321e8ec                                                                                       "gitlab-runner-cac..."   2 weeks ago         Exited (0) 2 weeks ago                         runner-986e2214-project-4-concurrent-0-cache-28934d7b9a9154212a5dd671e4fa5704
+03c89f481c96        gitlab/gitlab-runner:latest                                                                        "/usr/bin/dumb-ini..."   2 weeks ago         Up 7 hours                                     gitlab-runner
+25e219c94557        hello-world                                                                                        "/hello"                 2 weeks ago         Exited (0) 2 weeks ago                         elastic_beaver
+3d0a40d53c20        hello-world                                                                                        "/hello"                 2 weeks ago         Exited (0) 2 weeks ago                         agitated_roentgen
+[root@localhost ~]# 
+[root@localhost ~]# docker rm b2610b3ee934
+b2610b3ee934
+[root@localhost ~]# docker rmi golang:1.5
+Error response from daemon: conflict: unable to remove repository reference "golang:1.5" (must force) - container e7dea553176c is using its referenced image 99668503de15
+[root@localhost ~]# docker rmi 99668503de15
+Error response from daemon: conflict: unable to delete 99668503de15 (must be forced) - image is being used by stopped container e7dea553176c
+[root@localhost ~]# docker rm e7dea553176c
+e7dea553176c
+[root@localhost ~]# docker rmi golang:1.5
+Untagged: golang:1.5
+Untagged: golang@sha256:3be07b667a868a246b9cee4ddc5ecce2ad1e211958bd6043a25fc1d19d55e6ba
+Deleted: sha256:99668503de157252ba311f570f036490602095f2620c46cb407d3d2dd88aeb6e
+Deleted: sha256:ad4faca185b74dde7b79c6dc6dd6826ede9b778c93e2be73b6af9f7965c9cf99
+Deleted: sha256:9228e4dfd65d3085f875963d12037b647ca48b4bf6c032989897aedf0969092a
+Deleted: sha256:c94b011176e7752e65ebd00a53c6a822f5ce097083166e8d46ff01fda666482b
+Deleted: sha256:e90b39670c0033a274267f8534a4cd4eb99d4a7ee4bba5f3bc2612977dbcfa5a
+Deleted: sha256:d3c72419ca593d81f207884b70670fd69c4fa3bdecf926ecbbbd9d3bbdd6c7bf
+Deleted: sha256:016fc440b1e6b49d889b0f325d2439c82c92f554d3f015db67ffde823bd2ff3e
+Deleted: sha256:2f71b45e4e254ddceb187b1467f5471f0e14d7124ac2dd7fdd7ddbc76e13f0e5
